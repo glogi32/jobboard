@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class UserProfileController extends FrontController
 {
     public function index($id){
-        $user = User::with("role","image","user_cvs")->where("id",$id)->first();
+        $user = User::with("role","image","user_main_cv")->where("id",$id)->first();
         if(!$user){
             return redirect()->back()->with("error",["title" => "Error","message" => "User doesn't exist"]);
         }

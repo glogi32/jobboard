@@ -145,7 +145,7 @@
                 </div>
                 <div class="row form-group mb-4">
                     <div class="col-md-6 mb-3 mb-md-0">
-                        <label class="text-black" for="CV">CV</label><br/>
+                        <label class="text-black" for="CV">Main CV</label><br/>
                         <input type="file" name="cv" id="CV" aria-describedby="CVHelp" class="">
                         <small id="CVHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
                     </div>
@@ -159,9 +159,25 @@
                           @endif
                     </div>
                 </div>
+                <div class="row form-group mb-4">
+                  <div class="col-md-6 mb-3 mb-md-0">
+                      <label class="text-black" for="otherDocs">Other Documents</label><br/>
+                      <input type="file" name="otherDocs[]" id="otherDocs" aria-describedby="CVHelp" class="" multiple>
+                      <small id="OtherCVHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
+                  </div>
+                  <div class="col-md-6 mb-md-0">
+                    @if($errors->has("otherDocs"))
+                          <div class="alert alert-danger" role="alert">
+                            @foreach ($errors->get("otherDocs") as $msg)
+                                {{$msg}}
+                            @endforeach
+                          </div>
+                        @endif
+                  </div>
+              </div>
                 <div class="row form-group md-4">
                   <div class="col-md-6  mb-3 mb-md-0">
-                    <label class="text-black" for="tbImage">Image</label><br/>
+                    <label class="text-black" for="tbImage">Profile image</label><br/>
                     <input type="file" name="image" id="tbImage">
                   </div>
                   <div class="col-md-6 mb-md-0">
@@ -184,31 +200,6 @@
   
               </form>
             </div>
-            {{-- <div class="col-lg-6">
-              <h2 class="mb-4">Log In To JobBoard</h2>
-              <form action="#" class="p-4 border rounded">
-  
-                <div class="row form-group">
-                  <div class="col-md-12 mb-3 mb-md-0">
-                    <label class="text-black" for="fname">Email</label>
-                    <input type="text" id="fname" class="form-control" placeholder="Email address">
-                  </div>
-                </div>
-                <div class="row form-group mb-4">
-                  <div class="col-md-12 mb-3 mb-md-0">
-                    <label class="text-black" for="fname">Password</label>
-                    <input type="password" id="fname" class="form-control" placeholder="Password">
-                  </div>
-                </div>
-  
-                <div class="row form-group">
-                  <div class="col-md-12">
-                    <input type="submit" value="Log In" class="btn px-4 btn-primary text-white">
-                  </div>
-                </div>
-  
-              </form>
-            </div> --}}
           </div>
         </div>
       </section>

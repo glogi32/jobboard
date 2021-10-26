@@ -3,8 +3,9 @@
 use App\Http\Controllers\Resource\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompanyController as ResourceCompanyController;
 use App\Http\Controllers\CompanyDetailsController;
-use App\Http\Controllers\JobController as ControllersJobController;
+use App\Http\Controllers\JobController as ResourceJobController;
 use App\Http\Controllers\JobDetailsController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\Resource\ApplicationController;
@@ -43,11 +44,14 @@ Route::get('/login', function () {
 });
 
 
-Route::get("/jobs",[ControllersJobController::class,"index"])->name("jobs");
+Route::get("/jobs",[ResourceJobController::class,"index"])->name("jobs");
 
+Route::get("/companies",[ResourceCompanyController::class,"index"])->name("companies");
 
 Route::get("/company-details/{id}",[CompanyDetailsController::class,"index"])->name("company-details");
 Route::post("/company-details/insert-comment",[CompanyDetailsController::class,"insertComment"]);
+Route::post("/company-details/{id}/vote",[CompanyDetailsController::class,"vote"]);
+Route::patch("/company-details/updateVote",[CompanyDetailsController::class,"updateVote"])->name("update-vote");
 
 Route::get("/job-details/{id}",[JobDetailsController::class,"index"])->name("job-details");
 Route::post("/job-details/save-job",[JobDetailsController::class,"saveJob"]);
@@ -76,7 +80,8 @@ Route::post("/login",[AuthController::class,"login"])->name("login");
 Route::get("/logout",[AuthController::class,"logout"])->name("logout");
 Route::get("/verify",[AuthController::class,"verifyAccount"]);
 
-Route::get("/remove-user-cv/{id}",[UserController::class,"removeUserCV"])->name("remove-cv");
+Route::delete("/remove-user-cv",[OptionController::class,"removeUserCV"])->name("remove-cv");
+Route::delete("/remove-user-docs",[OptionController::class,"removeUserDocs"])->name("remove-docs");
 
 Route::prefix("admin")->group(function(){
     Route::resource("users",UserController::class);

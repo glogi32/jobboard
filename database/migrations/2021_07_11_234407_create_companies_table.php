@@ -20,6 +20,8 @@ class CreateCompaniesTable extends Migration
             $table->string("website", 250)->nullable();
             $table->string("phone", 25)->nullable();
             $table->text("about_us");
+            $table->decimal("vote")->default(0);
+            $table->integer("statistics")->default(0);
             $table->foreignId("user_id")->nullable()->constrained("users")->nullOnDelete();
             $table->foreignId("city_id")->nullable()->constrained("cities")->nullOnDelete();
             $table->softDeletes();

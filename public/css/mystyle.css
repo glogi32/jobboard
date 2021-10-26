@@ -86,3 +86,59 @@
 .icons{
     font-size: 150%;
 }
+
+/*********************** voting stars *****************************/
+.ratings {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    direction: rtl;
+    text-align: left;
+  }
+  
+  .star {
+    position: relative;
+    line-height: 60px;
+    display: inline-block;
+    transition: color 0.2s ease;
+    color: #ebebeb;
+  }
+
+  .star-small {
+    position: relative;
+    line-height: 60px;
+    display: inline-block;
+    transition: color 0.2s ease;
+    color: #ebebeb;
+  }
+  .star-small:before {
+    content: '\2605';
+    width: 20px;
+    height: 20px;
+    font-size: 25px;
+  }
+  
+  .star:before {
+    content: '\2605';
+    width: 40px;
+    height: 40px;
+    font-size: 35px;
+  }
+  
+  .star:hover,
+  .star.selected,
+  .star:hover ~ .star,
+  .star.selected ~ .star{
+    transition: color 0.8s ease;
+    color: #ea0;
+  }
+  
+  .star-color{
+    color: #ea0;
+  }
+/************************* companies **********************************/
+
+.company-info li{
+    padding: 4% 2%;
+}

@@ -14,17 +14,16 @@
     @include('fixed.mobile-menu')
     
 
-    <!-- NAVBAR -->
+    
     @include('fixed.header')
 
-    <!-- HOME -->
+    
     @yield('content')
     
     @include('fixed.footer')
   
   </div>
 
-    <!-- SCRIPTS -->
     @include('fixed.scripts')
     
     @if(session()->has("success"))

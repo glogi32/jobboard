@@ -142,11 +142,14 @@
 
       <div class="row form-group mb-2">
           <div class="col-md-12 my-3">
-            @if (session("user")->user_cvs_id)
-                <label class="d-inline">Selected CV: {{session("user")->user_cvs->name}}</label> 
-                <a class="btn btn-info mb-3 d-inline" href="{{url(session("user")->user_cvs->src)}}" download>Download CV</a>
-                <a class="btn btn-info mb-3 d-inline" href="{{route("remove-cv",session("user")->id)}}">Remove CV</a>
-              @endif
+            <label class="d-inline">Main CV:
+            @if ($user_main_cv)
+               {{session("user")->user_main_cv->name}}</label> 
+              <a class="btn btn-info mb-3 d-inline" href="{{url(session("user")->user_main_cv->src)}}" download>Download CV</a>
+              <a class="btn btn-info mb-3 d-inline btn-remove-docs text-white" data-id="{{$user_main_cv->id}}">Remove CV</a>
+            @else
+              There is no cv assigned.</label>
+            @endif
           </div>
           <div class="col-md-6 mb-3 mb-md-0">
               <label class="text-black" for="CV">Change CV</label><br/>
@@ -163,6 +166,42 @@
                 @endif
           </div>
       </div>
+      
+      <div class="row form-group mb-2">
+        <div class="col-md-12 my-3">
+          <label class="d-inline">Other documents: </label> 
+
+            @if (!$user_other_docs->isEmpty())
+              <ul>
+                @foreach ($user_other_docs as $docs)
+                  <li class="my-2">
+                    <label>{{$docs->name}}</label>
+                    <a class="btn btn-info mb-3 d-inline" href="{{$docs->src}}" download>Download Document</a>
+                    <a class="btn btn-info mb-3 d-inline btn-remove-docs text-white" data-id="{{$docs->id}}">Remove Document</a>
+                  </li>
+                @endforeach
+              </ul>
+            @else
+              <p>There is no documents assigned.</p>
+            @endif
+
+        </div>
+        <div class="col-md-6 mb-3 mb-md-0">
+            <label class="text-black" for="other-docs">Change Documents</label><br/>
+            <input type="file" name="other-docs[]" id="other-docs" aria-describedby="other-docsHelp" multiple>
+            <small id="other-docsHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
+        </div>
+        <div class="col-md-6 mb-md-0">
+          @if($errors->has("other-docs"))
+                <div class="alert alert-danger" role="alert">
+                  @foreach ($errors->get("other-docs") as $msg)
+                      {{$msg}}
+                  @endforeach
+                </div>
+              @endif
+          </div>
+      </div>
+      
       <div class="row form-group md-2">
         <div class="col-md-6  mb-3 mb-md-0">
           <label class="text-black" for="tbImage">Change Image</label><br/>

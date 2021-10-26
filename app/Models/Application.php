@@ -17,7 +17,7 @@ class Application extends Model
 
     public function user_cv()
     {
-        return $this->belongsTo(User_cv::class,"user_cvs_id")->withTrashed();
+        return $this->belongsTo(User_cv::class,"user_cv_id")->withTrashed();
     }
 
     public function job()

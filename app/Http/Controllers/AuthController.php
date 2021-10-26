@@ -37,41 +37,63 @@ class AuthController extends Controller
         
         try {
             $fileCV = $request->file("cv");
+            $filesOtherDocs = $request->file("otherDocs");
             $fileImage = $request->file("image");
+            $userInsert = $user->save();
+
             if($fileCV){
                 $fileName = time()."_".$fileCV->getClientOriginalName();
                 $directory = \public_path()."/user_cv-s";
                 $path = "user_cv-s/".$fileName;
 
                 $fileUpload = $fileCV->move($directory,$fileName);
-                
-                
 
                 $user_cv = new User_cv();
                 $user_cv->name = $fileCV->getClientOriginalName();
                 $user_cv->src = $path;
+                $user_cv->main = true;
+                $user_cv->user_id = $user->id;
                 $user_cv->save();
-                $user->user_cvs_id = $user_cv->id;
             }
-            
-            $userInsert = $user->save();
+
+            if($filesOtherDocs){
+                foreach ($filesOtherDocs as $cv) {
+                    $fileName = time()."_".$cv->getClientOriginalName();
+                    $directory = \public_path()."/user_cv-s";
+                    $path = "user_cv-s/".$fileName;
+
+                    $fileUpload = $cv->move($directory,$fileName);
+
+                    $user_cv = new User_cv();
+                    $user_cv->name = $cv->getClientOriginalName();
+                    $user_cv->src = $path;
+                    $user_cv->main = false;
+                    $user_cv->user_id = $user->id;
+                    $user_cv->save();
+                }
+            }
+
+            $image_directory = \public_path()."/img/users";
+            $imageable_type = "App\Models\User";
 
             if($fileImage){
                 $imageName = time()."_".$fileImage->getClientOriginalName();
-                $image_directory = \public_path()."/img/users";
                 $path = "img/users/".$imageName;
-                $imageable_type = "App\Models\User";
 
                 $imageUpload = $fileImage->move($image_directory,$imageName);
-
-                $image = new Image();
-                $image->src = $path;
-                $image->alt = $imageName;
-                $image->imageable_type = $imageable_type;
-                $image->imageable_id = $user->id;
-                $image->save();
+                
+            }else{
+                $imageName = "default.jpg";
+                $path = "img/users/".$imageName;
             }
             
+            $image = new Image();
+            $image->src = $path;
+            $image->alt = $imageName;
+            $image->imageable_type = $imageable_type;
+            $image->imageable_id = $user->id;
+            $image->save();
+
             DB::commit();
 
             
@@ -82,10 +104,6 @@ class AuthController extends Controller
 
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            if(File::exists($path)) {
-
-                File::delete($path);
-            }
             return redirect()->back()->with("error" ,["title" => "Error","message" => "Server error on sign up, try again later."])->withInput();
         }
         
@@ -99,7 +117,7 @@ class AuthController extends Controller
         $password = md5($request->input("password"));
 
         try {
-            $user = User::with("role","image","user_cvs")->where([
+            $user = User::with("role","image","user_cvs","user_main_cv","user_other_docs")->where([
                 ["email","=",$email],
                 ["password","=",$password]
             ])->first();

@@ -7,6 +7,7 @@
             <input type="hidden" id="userId" name="userId" value="{{session("user")->id}}">          
         @endif
        <div class="row">
+          @if(session("user")->role->name == "Employer")
            <div class="col-md-3">
                <label for="ddlCompanies">Filter by companies</label>
                <select id="ddlCompanies" class="form-control">
@@ -18,6 +19,7 @@
                    @endif
                </select>
            </div>
+          @endif
            <div class="col-md-3">
                 <label for="ddlSort">Sort</label>
                 <select id="ddlSort" class="form-control">

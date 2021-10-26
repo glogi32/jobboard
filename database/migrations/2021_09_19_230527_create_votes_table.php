@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserCvsTable extends Migration
+class CreateVotesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateUserCvsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_cvs', function (Blueprint $table) {
+        Schema::create('votes', function (Blueprint $table) {
             $table->id();
-            $table->string("name",120);
-            $table->string("src",255);
-            $table->softDeletes();
+            $table->integer("vote");
+            $table->foreignId("user_id")->nullable()->constrained("users")->nullOnDelete();
+            $table->foreignId("company_id")->constrained("companies")->cascadeOnDelete();
             $table->timestamps();
         });
-
-        
     }
 
     /**
@@ -31,6 +29,6 @@ class CreateUserCvsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_cvs');
+        Schema::dropIfExists('votes');
     }
 }

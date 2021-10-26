@@ -29,6 +29,13 @@
                     <span class="m-2"><span class="icon-room mr-2"></span>{{$job->city->name}}</span>
                     <span class="m-2"><span class="icon-clock-o mr-2"></span><span class="text-primary">{{$emp_status[$job->employment_status]}}</span></span>
                   </div>
+                  <div class="my-2">
+                    Company rating: 
+                    @component('components.star-rating',["companyVote" => $job->company->vote])
+                        
+                    @endcomponent
+                    ({{$job->company->vote}})
+                  </div>
                   <div>
                     @foreach ($job->technologies as $t)
                       <span class="badge badge-info">{{$t->name}}</span>
@@ -184,111 +191,62 @@
                 <div class="row form-group mt-3">
                   <div class="col-md-6  mb-md-0">
                     <label class="text-black" for="fname">First Name</label>
-                    <input type="text" id="tbFname" name="first-name" class="form-control @if($errors->has("first-name")) is-invalid @endif" 
-                        value="@if(old("frst-name")){{old("first-name")}}@else{{session("user")->first_name}}@endif">
-                    <div class="invalid-feedback">
-
-                      @if($errors->has("first-name"))
-                        @foreach ($errors->get("first-name") as $msg)
-                            {{$msg}}
-                        @endforeach
-                      @endif
-
-                    </div>
+                    <input type="text" id="tbFname" name="first-name" class="form-control" value="{{session("user")->first_name}}" disabled>
                   </div>
                   <div class="col-md-6  mb-md-0">
                     <label class="text-black" for="lname">Last Name</label>
-                    <input type="text" id="tbLname" name="last-name" class="form-control @if($errors->has("last-name")) is-invalid @endif"
-                       value="@if(old("last-name")) {{old("last-name")}} @else {{session("user")->last_name}} @endif">
-                    <div class="invalid-feedback">
-
-                      @if($errors->has("last-name"))
-                        @foreach ($errors->get("last-name") as $msg)
-                            {{$msg}}
-                        @endforeach
-                      @endif
-
-                    </div>
+                    <input type="text" id="tbLname" name="last-name" class="form-control" value="{{session("user")->last_name}}" disabled>
                   </div>
                 </div>
                 <div class="row form-group ">
                   <div class="col-md-12 mb-3 mb-md-0">
                     <label class="text-black" for="tbEmail">Email</label>
-                    <input type="email" id="tbEmail" name="email" class="form-control @if($errors->has("email")) is-invalid @endif"
-                       value="@if(old("emial")){{old("email")}}@else{{session("user")->email}}@endif">
-                    <div class="invalid-feedback">
-                      @if($errors->has("email"))
-                        @foreach ($errors->get("email") as $msg)
-                            {{$msg}}
-                        @endforeach
-                      @endif
-                    </div>
+                    <input type="email" id="tbEmail" name="email" class="form-control" value="{{session("user")->email}}" disabled>
                   </div>
                 </div>
                 <div class="row form-group ">
                   <div class="col-md-12 mb-3 mb-md-0">
                     <label class="text-black" for="tbEmail">Phone</label>
-                    <input type="text" id="tbPhone" name="phone" class="form-control @if($errors->has("phone")) is-invalid @endif"
-                       value="@if(old("phone")){{old("phone")}}@else{{session("user")->phone}}@endif">
-                    <div class="invalid-feedback">
-                      @if($errors->has("phone"))
-                        @foreach ($errors->get("phone") as $msg)
-                            {{$msg}}
-                        @endforeach
-                      @endif
-                    </div>
+                    <input type="text" id="tbPhone" name="phone" class="form-control" value="{{session("user")->phone}}" disabled>
                   </div>
                 </div>
                 <div class="row form-group ">
                   <div class="col-md-12 mb-3 mb-md-0">
                     <label class="text-black" for="tbEmail">Info links</label>
-                    <div class="col-md-12  mb-md-0">
-                      <label class="text-black" for="tbLinkedin">Linkedin</label>
-                      <input type="text" id="tbLinkedin" name="linkedin" class="form-control @if($errors->has("linkedin")) is-invalid @endif"
-                         value="@if(old("linedin")){{old("linkedin")}}@else{{session("user")->linkedin}}@endif" >
-                      <div class="invalid-feedback">
-                        @if($errors->has("linkedin"))
-                          @foreach ($errors->get("linkedin") as $msg)
-                              {{$msg}}
-                          @endforeach
-                        @endif
+                    @if(session("user")->linkedin)
+                      <div class="col-md-12  mb-md-0">
+                        <label class="text-black" for="tbLinkedin">Linkedin</label>
+                        <input type="text" id="tbLinkedin" name="linkedin" class="form-control" value="{{session("user")->linkedin}}" disabled>
                       </div>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-md-0">
-                      <label class="text-black" for="tbGithub">Github</label>
-                      <input type="text" id="tbGithub" name="github" class="form-control @if($errors->has("github")) is-invalid @endif" 
-                        value="@if(old("github")){{old("github")}}@else{{session("user")->github}}@endif" >
-                      <div class="invalid-feedback">
-                        @if($errors->has("github"))
-                          @foreach ($errors->get("github") as $msg)
-                              {{$msg}}
-                          @endforeach
-                        @endif
+                    @endif
+                    @if(session("user")->github)
+                      <div class="col-md-12 mt-2 mb-md-0">
+                        <label class="text-black" for="tbGithub">Github</label>
+                        <input type="text" id="tbGithub" name="github" class="form-control" value="{{session("user")->github}}" disabled>
                       </div>
-                    </div>
-                    <div class="col-md-12 mt-2 mb-md-0">
-                      <label class="text-black" for="tbPortfolio">Portfolio website</label>
-                      <input type="text" id="tbPortfolio" name="portfolio-website" class="form-control @if($errors->has("portfolio-website")) is-invalid @endif"
-                         value="@if(old("portfolio-website")){{old("portfolio-website")}}@else{{session("user")->portfolio_link}}@endif" >
-                      <div class="invalid-feedback">
-                        @if($errors->has("portfolio-website"))
-                          @foreach ($errors->get("portfolio-website") as $msg)
-                              {{$msg}}
-                          @endforeach
-                        @endif
+                    @endif
+                    @if(session("user")->portfolio_link)
+                      <div class="col-md-12 mt-2 mb-md-0">
+                        <label class="text-black" for="tbPortfolio">Portfolio website</label>
+                        <input type="text" id="tbPortfolio" name="portfolio-website" class="form-control" value="{{session("user")->portfolio_link}}" disabled>
                       </div>
-                  </div>
+                    @endif
                   </div>
                 </div>
                 <div class="row form-group">
                   <div class="col-md-12 mb-md-0">
-                    @if (session()->has("user") && session("user")->user_cvs)
-                      <label for="cv-apply">Applay with: {{session("user")->user_cvs->name}}</label> 
-                      <input type="hidden" name="cvId" value="{{session("user")->user_cvs->id}}" class="@if($errors->has("cvId")) is-invalid @endif">
+                    @if (session()->has("user") && session("user")->user_main_cv)
+                      <label for="cv-apply">Applay with:</label>
                       <input type="checkbox" id="cv-apply" name="cv-apply" checked>
+                      <select name="user-cvs" id="user-cvs" class="form-control w-75 @if($errors->has("user-cvs")) is-invalid @endif">
+                        @foreach (session("user")->user_cvs as $doc)
+                            <option value="{{$doc->id}}" @if($doc->main) selected @endif>{{$doc->name}}</option>
+                        @endforeach
+                      </select>
+                      
                       <div class="invalid-feedback">
-                        @if($errors->has("cvId"))
-                          @foreach ($errors->get("cvId") as $msg)
+                        @if($errors->has("user-cvs"))
+                          @foreach ($errors->get("user-cvs") as $msg)
                               {{$msg}}
                           @endforeach
                         @endif
@@ -298,7 +256,7 @@
                 </div>
                 <div class="row form-group ">
                   <div class="col-md-6 mb-3 mb-md-0">
-                      <label class="text-black" for="CV">CV</label><br/>
+                      <label class="text-black" for="CV">Upload CV</label><br/>
                       <input type="file" name="cv" id="cv" aria-describedby="CVHelp" class="" >
                       <small id="CVHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
                   </div>

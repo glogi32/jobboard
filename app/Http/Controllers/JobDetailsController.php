@@ -19,6 +19,7 @@ class JobDetailsController extends FrontController
 
     public function index($id)
     {
+        Job::find($id)->increment("statistics");
         $this->data["job"] = Job::with("company","company.logoImage","city","technologies")->where("id",$id)->first();
         if(!$this->data["job"]){
             return redirect()->back();
@@ -111,13 +112,6 @@ class JobDetailsController extends FrontController
     {
         
         $application = new Application();
-        $application->first_name = $request->input("first-name");
-        $application->last_name = $request->input("last-name");
-        $application->email = $request->input("email");
-        $application->phone = $request->input("phone");
-        $application->linkedin = $request->input("linkedin");
-        $application->github = $request->input("github");
-        $application->portfolio_website = $request->input("portfolio-website");
         $application->message = $request->input("message");
         $application->status = ApplicationStatus::OnHold;
         $application->user_id = $request->input("userId");
@@ -136,10 +130,12 @@ class JobDetailsController extends FrontController
             $user_cv = new User_cv();
             $user_cv->name = $fileCV->getClientOriginalName();
             $user_cv->src = $path;
+            $user_cv->user_id = $request->input("userId");
+            $user_cv->main = false;
             $user_cv->save();
-            $application->user_cvs_id = $user_cv->id;
+            $application->user_cv_id = $user_cv->id;
         }else{
-            $application->user_cvs_id = $request->input("cvId");
+            $application->user_cv_id = $request->input("user-cvs");
         }
 
         try {

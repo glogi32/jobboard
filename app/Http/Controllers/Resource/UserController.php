@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\User_cv;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -79,7 +80,7 @@ class UserController extends FrontController
     public function update(UserRequest $request, $id)
     {
 
-        $user = User::with("image","user_cvs")->find($id);
+        $user = User::with("image","user_main_cv","user_other_docs")->find($id);
 
         if(!$user){
             return redirect()->back()->with("error",["title" => "Error","message" => "User not found."]);
@@ -105,6 +106,7 @@ class UserController extends FrontController
         
         try {
             $fileCV = $request->file("cv");
+            $fileDocs = $request->file("other-docs");
             $fileImage = $request->file("image");
 
             if($fileCV){
@@ -114,18 +116,40 @@ class UserController extends FrontController
 
                 $fileUpload = $fileCV->move($directory,$fileName);
 
-                if($user->user_cvs){
-                    $this->deleteFile($user->user_cvs->src);
-                    $user_cv = User_cv::find($user->user_cvs_id);
+                if($user->user_main_cv){
+                    $user_cv = User_cv::find($user->user_main_cv->id);
                     $user_cv->name = $fileCV->getClientOriginalName();
                     $user_cv->src = $path;
+                    $user_cv->user_id = $user->id;
+                    $user_cv->main = true;
                     $user_cv->save();
                 }else{
                     $user_cv = new User_cv();
                     $user_cv->name = $fileCV->getClientOriginalName();
                     $user_cv->src = $path;
+                    $user_cv->main = true;
+                    $user_cv->user_id = $user->id;
                     $user_cv->save();
-                    $user->user_cvs_id = $user_cv->id;
+                }
+            }
+
+            if($fileDocs){
+                $directory = \public_path()."/user_cv-s";
+                $user_docs_ids = Arr::pluck($user->user_other_docs,"id");
+                User_cv::whereIn("id",$user_docs_ids)->delete();
+
+                foreach ($fileDocs as $docs) {
+                    $fileName = time()."_".$docs->getClientOriginalName();
+                    $path = "user_cv-s/".$fileName;
+
+                    $fileUpload = $docs->move($directory,$fileName);
+
+                    $user_cv = new User_cv();
+                    $user_cv->name = $docs->getClientOriginalName();
+                    $user_cv->src = $path;
+                    $user_cv->main = false;
+                    $user_cv->user_id = $user->id;
+                    $user_cv->save();
                 }
             }
             $updateUser = $user->save();
@@ -171,34 +195,5 @@ class UserController extends FrontController
         //
     }
 
-    public function removeUserCV($id){
-        $user = User::find($id);
-        if(!$user){
-            return redirect()->back()->with("error",["title" => "Error","message" => "User not found." ]);
-        }
-        if(!$user->user_cvs_id){
-            return redirect()->back()->with("error",["title" => "Error","message" => "User doesn't have uploaded CV." ]);
-        }
-
-        $user_cv = User_cv::find($user->user_cvs_id);
-
-        if(!$user_cv){
-            return redirect()->back()->with("error",["title" => "Error","message" => "Users CV not found." ]);
-        }
-
-        DB::beginTransaction();
-        $user->user_cvs_id = null;
-        try {
-            $user_cv->delete();
-            $user->save();
-            DB::commit();
-            session("user")->user_cvs_id = null;
-            return redirect()->back()->with("success",["title" => "Success","message" => "You successfuly removed CV from your profile."]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error($th);
-            return redirect()->back()->with("error",["title" => "Error","message" => "Server error, try again later." ]);
-        }
-
-    }
+    
 }

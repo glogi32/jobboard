@@ -7,7 +7,7 @@
 @section('content')
     @component('fixed.header-section')
         @slot('headerTitle')
-            {{$company->name}}
+            {{$company->name}} 
         @endslot
         @slot('additionalNav')
           @if(session()->has("user"))
@@ -109,11 +109,27 @@
             <div class="col-lg-4 ml-auto h-100 jm-sticky-top">
              
   
-              <div class="mb-4">
-                <h3 class="mb-4 h4 border-bottom">Informations</h3>
+              <div class="">
+                <h3 class=" h4 border-bottom">Informations</h3>
                 <img class="img-fluid img-thumbnail" src="{{url($company->logoImage[0]->src)}}" alt="{{$company->logoImage[0]->alt}}" />
               </div>
   
+              <div class="row">
+                <div class="col-md-12 d-flex">
+                  <strong class="d-block text-black mt-4">Company rating: </strong>
+                  <ul class="mt-4">
+                    @component('components.star-rating',["companyVote" => $company->vote])
+                        
+                    @endcomponent
+                    {{-- <li class="fa fa-star star-color" ></li>
+                    <li class="fa fa-star star-color" ></li>
+                    <li class="fa fa-star-half-alt star-color" ></li>
+                    <li class="star-small " ></li>
+                    <li class="star-small  " ></li> --}}
+                    ({{$company->vote}})
+                  </ul>
+                </div>
+              </div>
               <div class="row mb-4">
 
                 <div class="col-sm-6 col-md-12 mb-4 col-lg-6">
@@ -127,7 +143,7 @@
                   {{$company->email}}
                 </div>
                 @if ($company->phone)
-                    <div class="col-sm-12 col-md-12 mb-4 col-lg-6">
+                    <div class="col-sm-12 col-md-12  col-lg-6">
 
                         <strong class="d-block text-black">Phone</strong>
                         {{$company->phone}}
@@ -135,13 +151,40 @@
                 @endif
                 
                 @if ($company->website)
-                    <div class="col-sm-12 col-md-12 mb-4 col-lg-6">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
                         <strong class="d-block text-black mb-3">Website URL</strong>
                         <a target="_blank" href="{{$company->website}}" class="btn btn-outline-primary border-width-2">Visit Website</a>
                     </div>
                 @endif
-                
               </div>
+
+              @if (session()->has("user"))
+                <div>
+                  <h3 class="h4 border-bottom">Vote this company</h3>
+                </div>
+                <div class="row mb-4">
+                  <div class="col-md-12">
+                    <ul class="ratings">
+                      @if ($user_vote)
+                        @for ($i = 5; $i >= 1; $i--)
+                          @if ($i <= $user_vote->vote)
+                            <li class="star vote star-color star-half" data-id="{{$i}}"></li>
+                          @else
+                            <li class="star vote " data-id="{{$i}}"></li>
+                          @endif
+                        @endfor
+                        <p>You voted {{$user_vote->vote}} out of 5</p>
+                      @else
+                        <li class="star vote" data-id="5"></li>
+                        <li class="star vote" data-id="4"></li>
+                        <li class="star vote" data-id="3"></li>
+                        <li class="star vote" data-id="2"></li>
+                        <li class="star vote" data-id="1"></li>
+                      @endif
+                    </ul>
+                  </div>
+                </div>
+              @endif
   
               <div class="block__87154 mb-0">
                 <blockquote>
@@ -157,6 +200,7 @@
               </div>
   
             </div>
+            
           </div>
   
           

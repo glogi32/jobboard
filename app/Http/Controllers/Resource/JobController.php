@@ -58,7 +58,7 @@ class JobController extends Controller
         }
 
         if(!empty($keyword)){
-            $query->where("title","like","%".$keyword."%")
+           $query = $query->where("title","like","%".$keyword."%")
                 ->orWhereHas("area",function($query) use($keyword){
                     $query->where("name","like","%".$keyword."%");
                 })

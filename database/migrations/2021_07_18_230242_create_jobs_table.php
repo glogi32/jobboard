@@ -17,13 +17,14 @@ class CreateJobsTable extends Migration
             $table->id();
             $table->string("title",80);
             $table->smallInteger("vacancy")->default(0);
-            $table->int("deadline");
+            $table->integer("deadline");
             $table->text("description");
             $table->string("responsibilities",2000)->nullable();
             $table->string("education_experience",2000)->nullable();
             $table->string("other_benefits",2000)->nullable();
             $table->smallInteger("employment_status");
             $table->smallInteger("seniority");
+            $table->integer("statistics")->default(0);
             $table->foreignId("city_id")->constrained("cities")->cascadeOnDelete();
             $table->foreignId("company_id")->constrained("companies")->cascadeOnDelete();
             $table->foreignId("area_id")->nullable()->constrained("areas")->nullOnDelete();

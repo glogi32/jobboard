@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\EmploymentStatus;
 use App\Http\Requests\Companies\CommentRequest;
+use App\Http\Requests\Companies\CompanyVoteRequest;
 use App\Models\Comment;
 use App\Models\Company;
 use App\Models\Job;
 use App\Models\User;
+use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -24,8 +26,18 @@ class CompanyDetailsController extends FrontController
 
     public function index($id)
     {
+        Company::find($id)->increment("statistics");
         $this->data["company"] = Company::with("logoImage","companyImages","user","city","user.role","user.image","comments","comments.user.image","jobs","jobs.technologies","jobs.city")->where("id",$id)->first();
         $this->data["company_comments"] = $this->data["company"]->comments->slice(0,$this->take);
+        if(session()->has("user")){
+            $this->data["user_vote"] = Vote::where([
+                ["user_id","=",session("user")->id],
+                ["company_id","=",$id]
+            ])->first();
+        }else{
+            $this->data["user_vote"] = null;
+        }
+        
         $this->data["emp_status"] = EmploymentStatus::asSelectArray();
         
         return view("pages.company-details",$this->data);
@@ -72,5 +84,49 @@ class CompanyDetailsController extends FrontController
         }
 
         return response(["comments" => $paginateComments,"commentsCount" => $commentsCount],200);
+    }
+
+    public function vote(CompanyVoteRequest $request)
+    {
+        $userId = $request->input("userId");
+        $companyId = $request->input("companyId");
+        $vote = $request->input("vote");
+        $message = "";
+
+        // $userVote = Vote::updateOrInsert([
+        //     ["user_id" => $userId, "company_id" => $companyId],
+        //     ["vote" => $vote]
+        // ])->first();
+
+        // if($userVote){
+        //     $this->updateVote($request,$userVote);
+        // }
+
+        // $newVote = new Vote();
+        // $newVote->vote = $vote;
+        // $newVote->user_id = $userId;
+        // $newVote->company_id = $companyId;
+
+        $userVote = Vote::firstOrNew(["user_id" => $userId, "company_id" => $companyId]);
+        if(!$userVote->vote){
+            $userVote->vote = $vote;
+            $message = "You successfully voted.";
+        }else{
+            $userVote->vote = $vote;
+            $message = "You successfully changed vote.";
+        }
+
+        $company = Company::find($companyId);
+        
+
+        try {
+            $userVote->save();
+            $company->vote = Vote::where("company_id",$companyId)->avg("vote");
+            $company->save();
+            return response(["message" => $message],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response(["message" => "Server error, try again later."],500);
+        }
     }
 }
