@@ -96,10 +96,10 @@
                         </div>
                       </div>
                       <hr>
-                      @if($user->user_cvs)
+                      @if($user->user_main_cv)
                         <div class="row">
                             <div class="col-sm-12">
-                            <a class="btn btn-info" href="{{url($user->user_cvs->src)}}" download>Download CV</a>
+                            <a class="btn btn-info" href="{{url($user->user_main_cv->src)}}" download>Download CV</a>
                             </div>
                         </div>
                       @endif

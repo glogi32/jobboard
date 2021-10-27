@@ -21,29 +21,68 @@ class CompanyController extends FrontController
      */
     public function index(Request $request)
     {
-        // $this->data["companies"] = Company::with("logoImage")->where("user_id",session("user")->id)->get();
-        // $this->data["page"] = "companies";
-        // return view("pages.options",$this->data);
-
         $userId = $request->input("userId");
-         try {
-             $companies = Company::with("logoImage")->where("user_id",$userId)->get();
+        $orderBy = $request->input("orderBy","created_at");
+        $order = $request->input("order","ASC");
+        $keyword = $request->input("keyword");
 
-             if($companies){
-                foreach ($companies as $c) {
-                   
-                    $c->company_details = route("company-details",$c->id);
-                    $c->company_edit = route("companies.edit", $c->id);
-                    $c->logo_image_src = url($c->logoImage[0]->src);
-                    $c->logo_image_alt = $c->logoImage[0]->alt;
-                }
-             }
+        $cities = $request->input("city");
+        $rating = $request->input("rating");
 
-             return response(["data" => $companies],200);
-         } catch (\Throwable $th) {
-             Log::error($th->getMessage());
-             return response(["message" => "Server error, try again later."],500);
-         }
+        $perPage = $request->input("perPage",5);
+        $page = $request->input("page",1);
+
+        $query = Company::with("logoImage","city")->withCount("comments");
+        $response = [];
+
+        if($userId){
+            $query = $query->where("user_id",$userId);
+        }
+
+        if(!empty($keyword)){
+            $query = $query->where("name","like","%".$keyword."%")
+            ->orWhereHas("city",function($query) use($keyword){
+                return $query->where("name","like","%".$keyword."%");
+            });
+        }
+
+        if($cities){
+            $query = $query->whereHas("city",function($query) use($cities){
+                return $query->whereIn("id",$cities);
+            });
+        }
+
+        if($rating){
+            $query = $query->where("vote",">=",$rating);
+        }
+
+        if($order || $orderBy){
+            $query = $query->orderBy($orderBy,$order);
+        }
+
+        try {
+            if(!$userId){
+                $skip = $perPage * ($page - 1); 
+                $response["totalCompanies"] = $query->count();
+                $response["totalPages"] = ceil($response["totalCompanies"]/$perPage);
+                $response["curentPage"] = (int)$page;
+                $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
+                $response["prevPage"] = $page <= 1 ? false : true;
+                $response["skip"] = $skip+1;
+                $response["companies"] = $query->skip($skip)->take($perPage)->get();
+                $this->printStars($response["companies"]);
+            }
+            else{
+                $response["companies"] = $query->get();
+            }
+            
+
+            $this->formatCompanies($response["companies"]);
+            return response(["data" => $response],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response(["message" => "Server error, try again later."],500);
+        }
         
     }
 
@@ -68,7 +107,7 @@ class CompanyController extends FrontController
     public function store(CompanyAddRequest $request)
     {
         $userCompanies = Company::where("user_id",session("user")->id)->get();
-        if(count($userCompanies) >= 2){
+        if(count($userCompanies) >= 5){
             return redirect()->back()->with("error",["title" => "Error: ", "message" => "You can have maximum 5 companies per account."]);
         }
 
@@ -288,6 +327,31 @@ class CompanyController extends FrontController
         foreach ($companies as $c) {
             $c->company_details = route("company-details",$c->id);
             $c->company_edit = route("companies.edit", $c->id);
+            $c->logo_image_src = url($c->logoImage[0]->src);
+            $c->logo_image_alt = $c->logoImage[0]->alt;
+        }
+    }
+    public function printStars($companies)
+    {
+        foreach ($companies as $c) {
+            $html = "";
+            $vote = $c->vote;
+            for ($i=1; $i <= 5; $i++) { 
+                if($vote >= 1){
+                    $html .= '<i class="fas fa-star star-color" ></i>';
+                    $vote--;
+                }
+                else{
+                    if($vote >= 0.5){
+                        $html .= '<i class="fas fa-star-half-alt star-color" ></i>';
+                        $vote -= 0.5;
+                    }
+                    else{
+                        $html .= '<i class="far fa-star star-color" ></i>';
+                    }
+                }
+            }
+            $c->printed_stars = $html;
         }
     }
 }

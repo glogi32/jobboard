@@ -17,7 +17,17 @@ class User extends Model
 
     public function user_cvs()
     {
-        return $this->belongsTo(User_cv::class);
+        return $this->hasMany(User_cv::class);
+    }
+
+    public function user_main_cv()
+    {
+        return $this->hasOne(User_cv::class)->where("main",true);
+    }
+
+    public function user_other_docs()
+    {
+        return $this->hasMany(User_cv::class)->where("main",false);
     }
 
     public function image(){

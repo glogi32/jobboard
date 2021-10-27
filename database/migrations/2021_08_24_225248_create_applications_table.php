@@ -15,18 +15,12 @@ class CreateApplicationsTable extends Migration
     {
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
-            $table->string("first_name", 60);
-            $table->string("last_name", 60);
-            $table->string("email",120);
-            $table->string("phone", 25);
-            $table->string("github",255)->nullable();
-            $table->string("linkedin",255)->nullable();
-            $table->string("portfolio_website",255)->nullable();
             $table->text("message")->nullable();
             $table->smallInteger("status");
-            $table->foreignId("user_cvs_id")->nullable()->constrained("user_cvs")->nullOnDelete();
+            $table->foreignId("user_cv_id")->nullable()->constrained("user_cvs")->nullOnDelete();
             $table->foreignId("user_id")->nullable()->constrained("users")->nullOnDelete();
             $table->foreignId("job_id")->constrained("jobs")->cascadeOnDelete();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

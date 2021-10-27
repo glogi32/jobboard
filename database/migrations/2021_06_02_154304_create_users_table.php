@@ -28,7 +28,6 @@ class CreateUsersTable extends Migration
             $table->integer("verified")->nullable();
             $table->bigInteger("verification_number")->nullable();
             $table->foreignId("role_id")->constrained("roles")->restrictedOnDelete();
-            $table->foreignId("user_cvs_id")->nullable()->constrained("user_cvs")->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

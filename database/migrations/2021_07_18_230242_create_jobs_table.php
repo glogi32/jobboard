@@ -24,6 +24,7 @@ class CreateJobsTable extends Migration
             $table->string("other_benefits",2000)->nullable();
             $table->smallInteger("employment_status");
             $table->smallInteger("seniority");
+            $table->integer("statistics")->default(0);
             $table->foreignId("city_id")->constrained("cities")->cascadeOnDelete();
             $table->foreignId("company_id")->constrained("companies")->cascadeOnDelete();
             $table->foreignId("area_id")->nullable()->constrained("areas")->nullOnDelete();

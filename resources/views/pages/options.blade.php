@@ -34,28 +34,28 @@
 
             @switch($page)
                 @case("user-edit")
-                    @include('components.options.user-edit')
+                    @include('partials.options.user-edit')
                     @break
                 @case("companies")
-                    @include('components.options.companies.companies')
+                    @include('partials.options.companies.companies')
                     @break
                 @case("companyAdd")
-                    @include('components.options.companies.companyAdd')
+                    @include('partials.options.companies.companyAdd')
                     @break
                 @case("companyEdit")
-                    @include('components.options.companies.companyEdit')
+                    @include('partials.options.companies.companyEdit')
                     @break
                 @case("jobAdd")
-                    @include('components.options.jobs.jobAdd')
+                    @include('partials.options.jobs.jobAdd')
                     @break
                 @case("jobs")
-                    @include('components.options.jobs.jobs')
+                    @include('partials.options.jobs.jobs')
                     @break
                 @case("saved-jobs")
-                    @include('components.options.jobs.saved-jobs')
+                    @include('partials.options.jobs.saved-jobs')
                     @break
                 @case("applications")
-                    @include("components.options.applications")
+                    @include("partials.options.applications")
                     @break
                 @default
                 

@@ -6,8 +6,10 @@ use App\Enums\EmploymentStatus;
 use App\Mail\VerificationMail;
 use App\Models\Company;
 use App\Models\Job;
+use App\Models\User_cv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class OptionController extends FrontController
@@ -15,8 +17,14 @@ class OptionController extends FrontController
     public function index()
     {
         $this->data["page"] = "user-edit";
-
-        
+        $this->data["user_other_docs"] = User_cv::where([
+            ["user_id","=",session("user")->id],
+            ["main","=",false]
+        ])->get();
+        $this->data["user_main_cv"] = User_cv::where([
+            ["user_id","=",session("user")->id],
+            ["main","=",true]
+        ])->first();
         return view("pages.options",$this->data);
     }
 
@@ -60,5 +68,44 @@ class OptionController extends FrontController
         return view("pages.options",$this->data);
     }
 
-    
+    public function removeUserCV($id){
+        $user_cv = User_cv::find($id);
+
+        if(!$user_cv){
+            return redirect()->back()->with("error",["title" => "Error","message" => "User doesn't have uploaded main CV." ]);
+        }
+        //  $proba = session("user")->user_other_docs->reject(function($value,$key) use($docs){
+        //      return $value["id"] == $docs->id;
+        //  });
+        // dd($proba);
+        try {
+            $user_cv->delete();
+
+            session("user")->user_main_cv = null;
+            return redirect()->back()->with("success",["title" => "Success","message" => "You successfuly removed main CV from your profile."]);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return redirect()->back()->with("error",["title" => "Error","message" => "Server error, try again later." ]);
+        }
+
+    }
+
+    public function removeUserDocs(Request $request){
+        
+        $docs = User_cv::find($request->input("id"));
+        
+        if(!$docs){
+            return response()->json(["message" => "User doesn't have uploaded document."],404);
+        }
+
+        try {
+            $docs->delete();
+
+            return response()->json(["message" => "You successfuly removed document from your profile."],200);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(["message" => "Server error, try again later"],500);
+        }
+
+    }
 }

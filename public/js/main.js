@@ -11,7 +11,7 @@ $(document).ready(function(){
   
   
   if(window.location.pathname == "/options/user-companies"){
-    refreshCompanies();
+    refreshUserCompanies();
   }
 
   if(window.location.pathname == "/options/user-jobs"){
@@ -28,6 +28,18 @@ $(document).ready(function(){
     }
 
     $("#cv-apply").on("click",manageCvInput);
+  }
+
+  if(window.location.pathname.includes("/company-details")){
+    var star = '.star',
+    selected = '.selected';
+
+    $(star).on('click', function(){
+      $(selected).each(function(){
+        $(this).removeClass('selected');
+      });
+      $(this).addClass('selected');
+    });
   }
 
   if(window.location.pathname == "/options/user-applications"){
@@ -47,8 +59,18 @@ $(document).ready(function(){
     $("#ddlSort").on("change",refreshJobs);
     $("#ddlPerPage").on("change",refreshJobs);
   }
+
+  if(window.location.pathname == "/companies"){
+    refreshCompanies();
+    $("#ddlSort").on("change",refreshCompanies);
+    $("#ddlCity").on("change",refreshCompanies);
+    $("#btnSearch").on("click",refreshCompanies);
+    $("#ddlRating").on("change",refreshCompanies);
+    $("#ddlPerPage").on("change",refreshCompanies);
+  }
   
   $("#chbShowPass").on("click",togglePasswordVisibility);
+
   $("#btnComment").on("click",function () {
     let message = $("#message").val();
     let userId = $("#userId").val();
@@ -87,6 +109,43 @@ $(document).ready(function(){
       }
     })
   })
+
+  $(".vote").on("click",function(){
+    let vote = $(this).data("id");
+    let companyId = $("#companyId").val();
+    let userId = $("#userId").val();
+
+
+    $.ajax({
+      url : "/company-details/"+companyId+"/vote",
+      method : "POST",
+      data : {
+        _token : token,
+        vote : vote,
+        companyId : companyId,
+        userId : userId
+      },
+      success : function(data){
+        makeNotification(0,"Success: ",data.message);
+      },
+      error : function(xhr){
+        switch(xhr.status){
+          case 422:
+            let errorsArray = Object.entries(xhr.responseJSON.errors);
+            console.log(errorsArray)
+
+            for(let error of errorsArray){
+              makeNotification(1,error[0],error[1]);
+            }
+            break;
+          case 500,404: 
+            makeNotification(1,"Error: ",xhr.responseJSON.message);
+            break;
+        }
+      }
+    })
+  })
+
   $("#loadMore").on("click",function(e) {
     e.preventDefault();
 
@@ -182,13 +241,42 @@ $(document).ready(function(){
     }
     
   })
-  
+
+  $(".btn-remove-docs").on("click",function(){
+    
+    let id = $(this).data("id");
+
+    $.ajax({
+      url : "/remove-user-docs",
+      method : "DELETE",
+      data : {
+        _token : token,
+        id : id
+      },
+      success : function(){
+        window.location.reload();
+        makeNotification(0,"Success: ","Document successfully deleted.");
+      },
+      error : function(xhr){
+        switch(xhr.status){
+          case 500:
+            makeNotification(1,"Error",xhr.responseJSON.message);
+            break;
+          case 404:
+            makeNotification(1,"Error",xhr.responseJSON.message);
+            break;
+        }
+      }
+    })
+  })
 })
 
 function manageCvInput() {
   if($("#cv-apply").is(":checked")){
     $("#cv").attr("disabled","disabled");
+    $("#user-cvs").removeAttr("disabled");
   }else{
+    $("#user-cvs").attr("disabled","disabled");
     $("#cv").removeAttr("disabled");
   }
 }
@@ -274,7 +362,7 @@ function printComments(data) {
 }
 
 
-function refreshCompanies() {
+function refreshUserCompanies() {
   let userId = $("#userId").val();
 
   $.ajax({
@@ -285,8 +373,8 @@ function refreshCompanies() {
       userId : userId
     },
     success : function(data) {
-      if(data.data.length){
-        printCompanies(data.data);
+      if(data.data.companies.length){
+        printUserCompanies(data.data.companies);
       }else{
         $("#companies").html("<h2>You don't have any companies assigned.</h2>");
       }
@@ -301,7 +389,7 @@ function refreshCompanies() {
     }
   })
 }
-function printCompanies(data) {
+function printUserCompanies(data) {
   let html = ``;
   for(let c of data){
     html += `<div class="card col-md-5 col-lg-5 col-sm-12 mt-4" style="width: 18rem;">
@@ -534,7 +622,7 @@ function printSingleApplication(app){
                             <h6 class="mb-0">Full Name</h6>
                           </div>
                           <div class="col-sm-9 text-secondary">
-                            ${app.first_name} ${app.last_name}
+                            ${app.user.first_name} ${app.user.last_name}
                           </div>
                         </div>
                         <hr>
@@ -543,7 +631,7 @@ function printSingleApplication(app){
                             <h6 class="mb-0">Email</h6>
                           </div>
                           <div class="col-sm-9 text-secondary">
-                            ${app.email}
+                            ${app.user.email}
                           </div>
                         </div>
                         <hr>
@@ -552,39 +640,39 @@ function printSingleApplication(app){
                             <h6 class="mb-0">Phone</h6>
                           </div>
                           <div class="col-sm-9 text-secondary">
-                            ${app.phone}
+                            ${app.user.phone}
                           </div>
                         </div>
                         <hr>`;
-                        if(app.linkedin){
+                        if(app.user.linkedin){
                           html += `<div class="row">
                                     <div class="col-sm-3">
                                       <h6 class="mb-0">Linkedin</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                      <a href="${app.linkedin}" class="text-secondary">${app.linkedin}</a>
+                                      <a href="${app.user.linkedin}" class="text-secondary">${app.user.linkedin}</a>
                                     </div>
                                   </div>
                                   <hr>`;
                         }
-                        if(app.github){
+                        if(app.user.github){
                           html +=`<div class="row">
                                     <div class="col-sm-3">
                                       <h6 class="mb-0">Github</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                      <a href="${app.github}" class="text-secondary">${app.github}</a>
+                                      <a href="${app.user.github}" class="text-secondary">${app.user.github}</a>
                                     </div>
                                   </div>
                                   <hr>`;
                         }
-                        if(app.portfolio_link){
+                        if(app.user.portfolio_link){
                           html += `<div class="row">
                                     <div class="col-sm-3">
                                       <h6 class="mb-0">Portfolio website</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                      <a href="${app.portfolio_link}" class="text-secondary">${app.portfolio_link}</a>
+                                      <a href="${app.user.portfolio_link}" class="text-secondary">${app.user.portfolio_link}</a>
                                     </div>
                                   </div>
                                   <hr>`
@@ -871,4 +959,106 @@ function deleteCompany() {
       makeNotification(1,"Error: ",xhr.responseJSON.message);
     }
   })
+}
+
+function refreshCompanies(e,page = 1) {
+  let sort = $("#ddlSort").val();
+  let keyword = $("#keyword").val();
+  let city = $("#ddlCity").val();
+  let rating = $("#ddlRating").val();
+  let perPage = $("#ddlPerPage").val();
+
+ 
+  data = {
+    perPage : perPage,
+    page : page
+  };
+
+  if(keyword){
+    data.keyword = keyword;
+  }
+  if(city){
+    data.city = city;
+  }
+  if(rating){
+    data.rating = rating;
+  }
+  if(sort){
+    let sortValues = sort.split("-");
+    data.orderBy = sortValues[0];
+    data.order = sortValues[1];
+  }
+
+  $.ajax({
+    url : "/options/companies",
+    method : "GET",
+    data : data,
+    success : function(data){
+      console.log(data);
+      printCompanies(data.data.companies)
+      printCompaniesPagination(data.data);
+    },
+    error : function(xhr){
+      switch(xhr.status){
+        case 500:
+          makeNotification(1,"Error","Server error loading companies, please try again later.");
+          break;
+      }
+    }
+  })
+}
+function printCompanies(data) {
+  let html = ``;
+  for(let c of data){
+    html += `<div class="col-md-4 p-2">
+          
+                <div class="card col-md-12">
+
+                  <div class="card-body p-1">
+                    <div class="d-flex justify-content-around">
+                      <div class="col-md-3 p-0">
+                        <img class="card-img-top img-fluid" src="${c.logo_image_src}" alt="${c.logo_image_alt}">
+                      </div>
+                      <div class="col-md-9 d-flex align-items-center justify-content-center">
+                        <h5 class="card-title ">${c.name}</h5>
+                      </div>
+                      
+                    </div>
+                    <p class="card-text">
+                      ${c.about_us.length >= 430 ? c.about_us.substring(0,427)+"..." : c.about_us}
+                    </p>
+                  </div>
+                  <ul class="list-group list-group-flush company-info">
+                    <li class="list-group-item d-flex justify-content-between">
+                      <p class="m-0">
+                        Rating: ${c.printed_stars} (${c.vote})
+                      </p>
+                      <p class="m-0">Comments: ${c.comments_count}</p> 
+                    </li>
+                    <li class="list-group-item">Head office: ${c.city.name}</li>
+                    <li class="list-group-item">Web: <a href="${c.website}" target="_blank" rel="noopener noreferrer" class="text-secondary">${c.website ? c.website : "-"}</a></li>
+                  </ul>
+                  <div class="my-2 text-center">
+                    <a href="${c.company_details}" target="_blank" class="btn btn-info my-2 text-white">See details</a>
+                  </div>
+
+                </div>
+              </div>`;
+  }
+  $("#companies").html(html);
+}
+function printCompaniesPagination(data){
+  let html = `<a href="#" id="prevPage" class="prev companyPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage-1}">Prev</a>`;
+  for(let p=1; p<=data.totalPages; p++){
+    html+= `<a href="#" class="companyPage ${p == data.curentPage ? 'active' : ''}" data-id="${p}">${p}</a>`;
+  }
+  html += `<a href="#" id="nextPage" class="next companyPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage+1}">Next</a>`
+  $("#companiesPagination").html(html);
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip+data.companies.length-1} Of ${data.totalCompanies} Companies`);
+  $(".companyPage").on("click",function(e){
+    e.preventDefault();
+    let page = $(this).data("id");
+    refreshCompanies(e,page);
+  })
+  $("#totalJobsTitle").html(`${data.totalJobs} Job Found`)
 }

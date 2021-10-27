@@ -39,7 +39,9 @@ class SignUpRequest extends FormRequest
             "portfolio-website" => ["bail","nullable","url"],
             "about-u" => ["bail","required","max:1500","min:10"],
             "cv" => ["bail","nullable","mimes:pdf,docx,doc","max:3000"],
-            "image" => ["bail","required","mimes:jpeg,jpg,png","max:5000"]
+            "otherDocs" => ["bail","nullable","max:5"],
+            "otherDocs.*" => ["bail","nullable","mimes:pdf,docx,doc","max:3000"],
+            "image" => ["bail","nullable","mimes:jpeg,jpg,png","max:5000"]
         ];
     }
 }

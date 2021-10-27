@@ -28,9 +28,12 @@
                     <option value="created_at-DESC">Date created descending</option>
                 </select>
            </div>
-           <div class="col-md-4">
+           <div class="col-md-3">
                <label for="keyword">Search</label>
                <input type="text" id="keyword" placeholder="Search by title or area" class="form-control">
+           </div>
+           <div class="col-md-3">
+            <a href="{{route("jobs.create")}}" class="btn btn-danger float-right mt-5">Add new job</a>
            </div>
        </div>
        <hr />
@@ -79,7 +82,6 @@
                 @endforeach
             @endif --}}
         </div>
-        <a href="{{route("jobs.create")}}" class="btn btn-danger float-right mt-5">Add new job</a>
     </div>
   
 </div>
