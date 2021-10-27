@@ -17,7 +17,7 @@ class CreateJobsTable extends Migration
             $table->id();
             $table->string("title",80);
             $table->smallInteger("vacancy")->default(0);
-            $table->int("deadline");
+            $table->integer("deadline");
             $table->text("description");
             $table->string("responsibilities",2000)->nullable();
             $table->string("education_experience",2000)->nullable();
