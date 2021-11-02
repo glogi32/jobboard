@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EmploymentStatus;
+use App\Enums\Seniority;
 use App\Http\Requests\Companies\CommentRequest;
 use App\Http\Requests\Companies\CompanyVoteRequest;
 use App\Models\Comment;
@@ -39,7 +40,6 @@ class CompanyDetailsController extends FrontController
         }
         
         $this->data["emp_status"] = EmploymentStatus::asSelectArray();
-        
         return view("pages.company-details",$this->data);
     }
 

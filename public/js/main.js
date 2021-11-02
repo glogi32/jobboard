@@ -373,6 +373,7 @@ function refreshUserCompanies() {
       userId : userId
     },
     success : function(data) {
+     
       if(data.data.companies.length){
         printUserCompanies(data.data.companies);
       }else{
@@ -399,12 +400,14 @@ function printUserCompanies(data) {
                   <p class="card-text mb-0">Email: ${c.email}</p>`;
 
                   if(c.website){
-                    html += `<a href="${c.website}" target="_blank" class="card-link mb-5">Website: ${c.website.split("//")[1]}</a>`;
+                    html += `<a href="${c.website}" target="_blank" class="card-link mb-5 text-secondary">Website: ${c.website.split(".")[1]}</a>`;
                   }
 
-                  html += `<a href="${c.company_details}" class="btn btn-info mt-3 text-white">See details</a>
-                  <a href="${c.company_edit}"  class="btn btn-info mt-3 text-white">Edit</a>
-                  <button  data-id="${c.id}" class="btn btn-danger mt-3 btn-companyDelete">Delete</button>
+                  html += `<div class="row d-flex justify-content-around">
+                    <a href="${c.company_details}" class="btn btn-info mt-3 text-white">See details</a>
+                    <a href="${c.company_edit}"  class="btn btn-info mt-3 text-white">Edit</a>
+                    <button  data-id="${c.id}" class="btn btn-danger mt-3 btn-companyDelete">Delete</button>
+                  </div>
               </div>
           </div>`;
   }
