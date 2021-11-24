@@ -53,7 +53,7 @@ class JobController extends Controller
         if($companyId){
             $query->where("company_id",$companyId);
         }else if(!$companyId && $pageType == "user-jobs"){
-            
+
             $userCompanies = Company::where("user_id",$userId)->get();
             $userCompaniesIds = Arr::pluck($userCompanies,"id");
             $query->whereIn("company_id",$userCompaniesIds);
@@ -91,21 +91,21 @@ class JobController extends Controller
             $query = $query->orderBy($orderBy,$order);
         }
 
+        if($pageType == "jobs"){
+            $query = $query->where("deadline",">",time());
+        }
         try {
-
-            if($pageType == "jobs"){
-                $query = $query->where("deadline",">",time());
-                $skip = $perPage * ($page - 1);
-                $response["totalJobs"] = $query->count();
-                $response["totalPages"] = ceil($response["totalJobs"]/$perPage);
-                $response["curentPage"] = (int)$page;
-                $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
-                $response["prevPage"] = $page <= 1 ? false : true;
-                $response["skip"] = $skip+1;
-                $response["jobs"] = $query->skip($skip)->take($perPage)->get();
-            }else{
-                $response["jobs"] = $query->get();
-            }
+            $skip = $perPage * ($page - 1);
+            $response["totalJobs"] = $query->count();
+            $response["totalPages"] = ceil($response["totalJobs"]/$perPage);
+            $response["curentPage"] = (int)$page;
+            $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
+            $response["prevPage"] = $page <= 1 ? false : true;
+            $response["skip"] = $skip+1;
+            $response["jobs"] = $query->skip($skip)->take($perPage)->get();
+            // }else{
+            //     $response["jobs"] = $query->get();
+            // }
 
             $this->formatJobs($response["jobs"]);
             return response($response,200);

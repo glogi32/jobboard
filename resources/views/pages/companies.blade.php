@@ -35,7 +35,7 @@
         
         <div class="col-md-3 p-2">
           <label for="ddlCity">City:</label>
-          <select class="my-select form-control" id="ddlCity"  multiple>
+          <select class="my-select w-100 " id="ddlCity"  multiple>
             @foreach ($cities as $c)
               <option value="{{$c->id}}">{{$c->name}}</option>
             @endforeach

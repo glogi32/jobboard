@@ -74,7 +74,7 @@ class CompanyDetailsController extends FrontController
         $comments = Comment::query();
         $comments = $comments->with("user","user.image")->where("company_id",$company->id)->orderBy("created_at","desc");
 
-        $commentsCount = $comments->count();
+        $totalCommentsCount = $comments->count();
         $paginateComments = $comments->skip((int)$skip)->take((int)$take)->get();
         
 
@@ -83,7 +83,10 @@ class CompanyDetailsController extends FrontController
             $c->image = url($c->user->image->src);
         }
 
-        return response(["comments" => $paginateComments,"commentsCount" => $commentsCount],200);
+        $totalPages = ceil($totalCommentsCount/$take);
+       
+        $nextPage = $totalPages <= 1 ? false : true;
+        return response(["comments" => $paginateComments,"totalCommentsCount" => $totalCommentsCount,"nextPage" => $nextPage],200);
     }
 
     public function vote(CompanyVoteRequest $request)

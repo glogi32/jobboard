@@ -54,7 +54,7 @@
     box-shadow: none!important;
 }
 
-#loadMore {
+.loadMore {
     padding: 10px;
     text-align: center;
     background-color: #33739E;
@@ -68,7 +68,7 @@
     -moz-transition: all 600ms ease-in-out;
     -o-transition: all 600ms ease-in-out;
 }
-#loadMore:hover {
+.loadMore:hover {
     background-color: #3faef8;
     color: #fff;
 }

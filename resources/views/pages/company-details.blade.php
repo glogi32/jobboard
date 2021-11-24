@@ -56,7 +56,7 @@
                           @foreach ($company_comments as $c)
                             <li class="comment">
                               <div class="vcard bio">
-                                <img src="{{url($c->user->image->src)}}" alt="{{$c->user->image->src}}">
+                                <img src="{{url($c->user->image->src)}}" alt="{{$c->user->image->src}}" />
                               </div>
                               <div class="comment-body">
                                 <h3><a class="text-black" href="{{route("user-profile",$c->user->id)}}">{{$c->user->first_name}} {{$c->user->last_name}}</a></h3>
@@ -71,7 +71,7 @@
                         
                         <div id="load-more">
                           
-                            <a href="#" id="loadMore" class="text-center @if(!(count($company->comments) > count($company_comments))) d-none @endif" data-skip="{{session("skip")}}" data-take="{{session("take")}}">Load More</a>
+                            <a href="#" id="loadMore" class="text-center loadMore @if(!(count($company->comments) > count($company_comments))) d-none @endif" data-skip="{{session("skip")}}" data-take="{{session("take")}}">Load More</a>
                            
                         </div>
                         

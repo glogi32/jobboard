@@ -82,6 +82,11 @@
                 @endforeach
             @endif --}}
         </div>
+        <div id="load-more" class="text-center mt-4 w-100">
+                          
+            <a href="#" id="loadMoreUserJobs" class="text-center loadMore"  data-take="5">Load More</a>
+           
+        </div>
     </div>
   
 </div>

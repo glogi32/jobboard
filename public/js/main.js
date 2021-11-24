@@ -154,10 +154,19 @@ $(document).ready(function(){
     
     let take = parseInt($(this).data("take"));
     
-    $(this).data("take", take+take ); 
+    $(this).data("take", take+5 ); 
 
     refreshCompanyComments(companyId);
   })
+  $("#loadMoreUserJobs").on("click",function(e){
+    e.preventDefault();
+
+    let take = parseInt($(this).data("take"));
+    
+    $(this).data("take",take+5);
+
+    refreshUserJobs();
+  });
   
   $("#saveJob").on("click",function() {
     let span = $("#saveJob span");
@@ -345,6 +354,9 @@ function refreshCompanyComments(id) {
 }
 function printComments(data) {
   let html = "";
+  if(!data.nextPage){
+    $("#loadMore").addClass("sr-only");
+  }
   for(let c of data.comments){
     html += `<li class="comment">
               <div class="vcard bio">
@@ -358,7 +370,7 @@ function printComments(data) {
             </li>`
   }
   $("#comment-list").html(html);
-  $("#comment-count").html(data.commentsCount + " Comments")
+  $("#comment-count").html(data.totalCommentsCount + " Comments")
 }
 
 
@@ -423,11 +435,14 @@ function refreshUserJobs() {
   let keyword = $("#keyword").val();
   let pageType = $("#pageType").val();
 
+  let loadMore = $("#loadMoreUserJobs");
+  let take = loadMore.data("take");
  
-  
+  console.log(take);
   let data = {
     "userId" : userId,
     "pageType" : pageType,
+    "perPage" : take,
     "_token" : token
   };
 
@@ -451,7 +466,7 @@ function refreshUserJobs() {
     success : function(data) {
       console.log(data.jobs)
       if(data.jobs.length){
-        printUserJobs(data.jobs);
+        printUserJobs(data);
       }else{
         $("#jobs").html("<h2>You don't have any jobs.</h2>");
       }
@@ -467,7 +482,10 @@ function refreshUserJobs() {
 }
 function printUserJobs(data) {
   let html = ``;
-  for(let j of data){
+  if(!data.nextPage){
+    $("#load-more").addClass("sr-only");
+  }
+  for(let j of data.jobs){
     html += `<div class="col-lg-12 col-md-12 job-listing d-block d-sm-flex pb-3 pb-sm-0 p-4 align-items-center">
 
               <div class="row w-100 bg-white">
