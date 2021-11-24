@@ -79,7 +79,7 @@ class UserController extends FrontController
      */
     public function update(UserRequest $request, $id)
     {
-
+        
         $user = User::with("image","user_main_cv","user_other_docs")->find($id);
 
         if(!$user){

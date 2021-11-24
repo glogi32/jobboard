@@ -192,14 +192,23 @@
             <small id="other-docsHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
         </div>
         <div class="col-md-6 mb-md-0">
-          @if($errors->has("other-docs"))
-                <div class="alert alert-danger" role="alert">
-                  @foreach ($errors->get("other-docs") as $msg)
-                      {{$msg}}
-                  @endforeach
-                </div>
-              @endif
-          </div>
+            @if($errors->has("other-docs"))
+              <div class="alert alert-danger" role="alert">
+                @foreach ($errors->get("other-docs") as $msg)
+                    {{$msg}}
+                @endforeach
+              </div>
+            @endif
+        </div>
+        <div class="col-md-6 mb-md-0">
+          @if($errors->has("other-docs.*"))
+            <div class="alert alert-danger" role="alert">
+              @foreach ($errors->get("other-docs.*") as $msg)
+                  {{$msg[0]}}
+              @endforeach
+            </div>
+          @endif
+      </div>
       </div>
       
       <div class="row form-group md-2">

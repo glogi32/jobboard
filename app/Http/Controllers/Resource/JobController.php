@@ -44,8 +44,7 @@ class JobController extends Controller
         $pageType = $request->input("pageType");
         $response = [];
 
-        $userCompanies = Company::where("user_id",$userId)->get();
-        $userCompaniesIds = Arr::pluck($userCompanies,"id");
+        
         
         
 
@@ -54,6 +53,9 @@ class JobController extends Controller
         if($companyId){
             $query->where("company_id",$companyId);
         }else if(!$companyId && $pageType == "user-jobs"){
+            
+            $userCompanies = Company::where("user_id",$userId)->get();
+            $userCompaniesIds = Arr::pluck($userCompanies,"id");
             $query->whereIn("company_id",$userCompaniesIds);
         }
 

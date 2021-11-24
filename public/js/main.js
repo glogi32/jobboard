@@ -1027,9 +1027,6 @@ function printCompanies(data) {
                       </div>
                       
                     </div>
-                    <p class="card-text">
-                      ${c.about_us.length >= 430 ? c.about_us.substring(0,427)+"..." : c.about_us}
-                    </p>
                   </div>
                   <ul class="list-group list-group-flush company-info">
                     <li class="list-group-item d-flex justify-content-between">
@@ -1039,7 +1036,7 @@ function printCompanies(data) {
                       <p class="m-0">Comments: ${c.comments_count}</p> 
                     </li>
                     <li class="list-group-item">Head office: ${c.city.name}</li>
-                    <li class="list-group-item">Web: <a href="${c.website}" target="_blank" rel="noopener noreferrer" class="text-secondary">${c.website ? c.website : "-"}</a></li>
+                    <li class="list-group-item">Web: <a href="${c.website}" target="_blank" rel="noopener noreferrer" class="text-secondary">${c.website ? c.website.split("//")[1] : "-"}</a></li>
                   </ul>
                   <div class="my-2 text-center">
                     <a href="${c.company_details}" target="_blank" class="btn btn-info my-2 text-white">See details</a>

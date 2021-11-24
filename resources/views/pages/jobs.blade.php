@@ -34,7 +34,7 @@
       <div class="row d-flex justify-content-around">
         <div class="col-md-2 p-2">
           <label for="ddlTech">Technologies:</label>
-          <select class="my-select form-control " id="ddlTech"  multiple>
+          <select class="my-select  w-100" id="ddlTech"  multiple>
             @foreach ($tech as $t)
               <option value="{{$t->id}}">{{$t->name}}</option>
             @endforeach            
@@ -42,7 +42,7 @@
         </div>
         <div class="col-md-2 p-2">
           <label for="ddlArea">Areas:</label>
-          <select class="my-select form-control" id="ddlArea"  multiple>
+          <select class="my-select w-100" id="ddlArea"  multiple>
             @foreach ($areas as $a)
               <option value="{{$a->id}}">{{$a->name}}</option>
             @endforeach
@@ -51,7 +51,7 @@
         </div>
         <div class="col-md-2 p-2">
           <label for="ddlCity">City:</label>
-          <select class="my-select form-control" id="ddlCity"  multiple>
+          <select class="my-select w-100" id="ddlCity"  multiple>
             @foreach ($cities as $c)
               <option value="{{$c->id}}">{{$c->name}}</option>
             @endforeach
@@ -59,7 +59,7 @@
         </div>
         <div class="col-md-2 p-2">
           <label for="ddlSeniority">Seniority:</label>
-          <select class="my-select form-control" id="ddlSeniority"  multiple>
+          <select class="my-select w-100" id="ddlSeniority"  multiple>
             @foreach ($seniorities as $key => $value)
               <option value="{{$key}}">{{$value}}</option>
             @endforeach
