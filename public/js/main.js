@@ -167,6 +167,15 @@ $(document).ready(function(){
 
     refreshUserJobs();
   });
+  $("#loadMoreApplications").on("click",function(e){
+    e.preventDefault();
+
+    let take = parseInt($(this).data("take"));
+    
+    $(this).data("take",take+15);
+
+    refreshApplications();
+  });
   
   $("#saveJob").on("click",function() {
     let span = $("#saveJob span");
@@ -529,9 +538,13 @@ function refreshApplications(){
   let companyId = $("#ddlCompanies").val();
   let keyword = $("#keyword").val();
 
+  
+  let take = $("#loadMoreApplications").data("take");
+
   let data = {
     role : $("#role").val(),
     userId : $("#userId").val(),
+    perPage : take,
     _token : token
   };
 
@@ -557,7 +570,7 @@ function refreshApplications(){
     datatype : "json",
     success : function(data){
       console.log(data.data);
-      printApplications(data.data);
+      printApplications(data);
     },
     error : function(xhr){
       switch(xhr.status){
@@ -571,7 +584,11 @@ function refreshApplications(){
 function printApplications(data){
   let html = ``;
   let br = 1;
-  for(let a of data){
+  console.log(data)
+  if(data.nextPage == false){
+    $("#load-more-app").addClass("sr-only");
+  }
+  for(let a of data.applications){
     html += `<tr>
               <th scope="row">${br}</th>
               <td><a href="${a.job_url}" class="text-secondary">${a.job.title}</a></td>
@@ -807,7 +824,6 @@ function printSingleApplication(app){
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
               </div>
             </div>`;
   $("#application-dialog").html(html);
@@ -1038,10 +1054,12 @@ function printCompanies(data) {
                   <div class="card-body p-1">
                     <div class="d-flex justify-content-around">
                       <div class="col-md-3 p-0">
-                        <img class="card-img-top img-fluid" src="${c.logo_image_src}" alt="${c.logo_image_alt}">
+                        <a href="${c.company_details}" class="text-reset text-decoration-none" target="_blank">
+                          <img class="card-img-top img-fluid" src="${c.logo_image_src}" alt="${c.logo_image_alt}">
+                        </a>
                       </div>
                       <div class="col-md-9 d-flex align-items-center justify-content-center">
-                        <h5 class="card-title ">${c.name}</h5>
+                        <a href="${c.company_details}" class="text-reset text-decoration-none" target="_blank"><h5 class="card-title ">${c.name}</h5></a>
                       </div>
                       
                     </div>
@@ -1054,7 +1072,7 @@ function printCompanies(data) {
                       <p class="m-0">Comments: ${c.comments_count}</p> 
                     </li>
                     <li class="list-group-item">Head office: ${c.city.name}</li>
-                    <li class="list-group-item">Web: <a href="${c.website}" target="_blank" rel="noopener noreferrer" class="text-secondary">${c.website ? c.website.split("//")[1] : "-"}</a></li>
+                    <li class="list-group-item company-web">Web: <a href="${c.website}" target="_blank" rel="noopener noreferrer" class="text-secondary">${c.website ? c.website.split("//")[1] : "-"}</a></li>
                   </ul>
                   <div class="my-2 text-center">
                     <a href="${c.company_details}" target="_blank" class="btn btn-info my-2 text-white">See details</a>

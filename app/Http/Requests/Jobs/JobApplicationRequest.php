@@ -27,7 +27,7 @@ class JobApplicationRequest extends FormRequest
         return [
             "message" => ["nullable","max:8000"],
             "user-cvs" => ["exclude_if:cv-apply,false","exists:user_cvs,id"],
-            "cv" => ["sometimes","bail","required","mimes:pdf,docx,doc","max:3000"],
+            "cv" => ["bail","required_without:cv-apply","mimes:pdf,docx,doc","max:3000"],
             "userId" => ["bail","required","exists:users,id"],
             "jobId" => ["bail","required","exists:jobs,id"]
         ];

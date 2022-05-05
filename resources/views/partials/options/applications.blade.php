@@ -1,4 +1,4 @@
-<div class="col-md-9 site-section services-section bg-light block__62849 p-5">
+<div class="col-md-9 site-section services-section bg-light block__62849 p-5 ">
 
     <div class="container">
         @csrf
@@ -6,7 +6,7 @@
             <input type="hidden" id="role" name="role" value="{{session("user")->role->name}}">   
             <input type="hidden" id="userId" name="userId" value="{{session("user")->id}}">          
         @endif
-       <div class="row">
+       <div class="row position-sticky " style="top: 0px;">
           @if(session("user")->role->name == "Employer")
            <div class="col-md-3">
                <label for="ddlCompanies">Filter by companies</label>
@@ -37,7 +37,7 @@
        <hr />
         <div id="table-applications" class="row d-flex ">
             <table class="table table-hover mt-4 text-center">
-                <thead class="thead-light">
+                <thead class="thead-light position-sticky" style="top: 5rem;">
                   <tr>
                     <th scope="col" >#</th>
                     <th scope="col" class="w-25">Job title</th>
@@ -51,6 +51,11 @@
 
                 </tbody>
               </table>
+              <div id="load-more-app" class="text-center mt-4 w-100">
+                          
+                <a href="#" id="loadMoreApplications" class="text-center loadMore"  data-take="15">Load More</a>
+               
+              </div>
         </div>
     </div>
 </div>
@@ -259,7 +264,9 @@
           <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div> --}}
+     
     </div>
+    
 </div>
 @endsection
 

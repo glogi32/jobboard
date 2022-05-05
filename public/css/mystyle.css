@@ -142,3 +142,6 @@
 .company-info li{
     padding: 4% 2%;
 }
+.company-web{
+   min-height: 115px;
+  }

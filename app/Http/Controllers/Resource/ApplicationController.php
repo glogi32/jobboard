@@ -29,6 +29,8 @@ class ApplicationController extends Controller
         $order = $request->input("order","ASC");
         $keyword = $request->input("keyword");
 
+        $perPage = $request->input("perPage",5);
+        $page = $request->input("page",1);
         
        DB::enableQueryLog();
         $query = Application::with("user","user_cv","job","job.company");
@@ -65,10 +67,19 @@ class ApplicationController extends Controller
         
         try {
 
-            $applications = $query->get();
-            $this->formatApplications($applications);
+            $skip = $perPage * ($page - 1);
+            $response["totalApplications"] = $query->count();
+            $response["totalPages"] = ceil($response["totalApplications"]/$perPage);
+            $response["curentPage"] = (int)$page;
+            $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
+            $response["prevPage"] = $page <= 1 ? false : true;
+            $response["skip"] = $skip+1;
+            $response["applications"] = $query->skip($skip)->take($perPage)->get();
+
             
-            return response()->json(["data" => $applications],200);
+            $this->formatApplications($response["applications"]);
+            
+            return response($response,200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return response()->json(["message" => "Server error on getting applications, try again later"],500);
