@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController as ResourceCompanyController;
 use App\Http\Controllers\CompanyDetailsController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\JobController as ResourceJobController;
 use App\Http\Controllers\JobDetailsController;
 use App\Http\Controllers\OptionController;
@@ -24,24 +26,21 @@ use App\Http\Controllers\UserProfileController;
 |
 */
 
-Route::get('/', function () {
-    return view('pages.home');
-})->name("/");
-Route::get('/home', function () {
-    return view('pages.home');
-});
+Route::get('/', [IndexController::class,"index"])->name("/");
+
+Route::get('/home', [IndexController::class,"index"])->name("home");
 
 Route::get('/contact', function () {
     return view('pages.contact');
-});
+})->name("contact");
 
 Route::get('/sign-up', function () {
     return view('pages.sign-up');
-});
+})->name("sign-up");
 
 Route::get('/login', function () {
     return view('pages.login');
-});
+})->name("login");
 
 
 Route::get("/jobs",[ResourceJobController::class,"index"])->name("jobs");

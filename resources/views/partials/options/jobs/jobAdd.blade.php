@@ -82,6 +82,7 @@
                 @endforeach
               </select>
 
+
               <div class="invalid-feedback">
                 @if($errors->has("city"))
                 

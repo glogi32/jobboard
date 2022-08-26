@@ -17,7 +17,7 @@
   @endcomponent
   
   <section class="site-section">
-    <div class="container">
+    <div class="container ">
 
       <div class="row mb-5 justify-content-center">
         <div class="col-md-7 text-center">
@@ -33,20 +33,20 @@
       </div>
       <div class="row d-flex justify-content-around">
         <div class="col-md-2 p-2">
-          <label for="ddlTech">Technologies:</label>
-          <select class="my-select  w-100" id="ddlTech"  multiple>
-            @foreach ($tech as $t)
-              <option value="{{$t->id}}">{{$t->name}}</option>
-            @endforeach            
-          </select>
-        </div>
-        <div class="col-md-2 p-2">
           <label for="ddlArea">Areas:</label>
           <select class="my-select w-100" id="ddlArea"  multiple>
             @foreach ($areas as $a)
               <option value="{{$a->id}}">{{$a->name}}</option>
             @endforeach
             
+          </select>
+        </div>
+        <div class="col-md-2 p-2">
+          <label for="ddlTech">Technologies:</label>
+          <select class="my-select  w-100" id="ddlTech"  multiple>
+            @foreach ($tech as $t)
+              <option value="{{$t->id}}">{{$t->name}}</option>
+            @endforeach            
           </select>
         </div>
         <div class="col-md-2 p-2">

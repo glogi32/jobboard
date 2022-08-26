@@ -53,6 +53,7 @@ class CompanyController extends FrontController
         }
 
         if($rating){
+            $rating = (int) $rating;
             $query = $query->where("vote",">=",$rating);
         }
 

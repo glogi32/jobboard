@@ -896,7 +896,7 @@ function refreshJobs(e,page = 1){
     data.orderBy = sortValues[0];
     data.order = sortValues[1];
   }
-console.log(data)
+
   $.ajax({
     url : "/options/jobs",
     method : "GET",
@@ -921,8 +921,11 @@ function printJobs(jobs){
   for(let j of jobs){
     html += `<li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center row">
               <a href="job-single.html"></a>
+
               <div class="job-listing-logo col-md-3">
-                <img src="${j.companyLogo}" alt="${j.company.logo_image.alt}" class="img-fluid">
+                <a href="${j.company_details}" target="_blank" rel="noopener noreferrer">
+                  <img src="${j.companyLogo}" alt="${j.company.logo_image.alt}" class="img-fluid">
+                </a>
               </div>
 
               <div class="col-md-9">

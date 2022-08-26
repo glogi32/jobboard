@@ -16,6 +16,7 @@ class JobController extends FrontController
         $this->data["areas"] = Area::all();
         $this->data["cities"] = City::all();
         $this->data["tech"] = Technology::all();
+        
         return view("pages.jobs",$this->data);
     }
 }
