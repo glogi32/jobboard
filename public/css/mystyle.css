@@ -5,6 +5,11 @@
     z-index: 999;
 }
 
+.cursor-disabled {
+    cursor: not-allowed !important;
+}
+
+
 /********************************/
 .main-body {
     padding: 15px;

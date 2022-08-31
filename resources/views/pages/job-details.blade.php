@@ -4,6 +4,8 @@
      {{$job->title}} 
 @endsection
 
+
+
 @section('content')
     @component('fixed.header-section')
         @slot('headerTitle')
@@ -57,7 +59,7 @@
                   @if (($job->deadline-time()) > 0)
                     @if(session()->has("user"))
                       <div class="col-6">
-                        <a href="#" class="btn btn-block btn-primary btn-md" data-toggle="modal" data-target="#application-form" >Apply Now</a>
+                        <a href="#" class="btn btn-block btn-primary btn-md {{($job_applied) ? 'disabled' : ''}}" data-toggle="modal" data-target="#application-form" >Apply Now</a>
                       </div>
                     @else
                     <div class="alert alert-info" role="alert">
@@ -130,7 +132,7 @@
               <div class="row mb-5">
                 @if (session()->has("user"))
                 <div class="col-6">
-                  <button  class="btn btn-block btn-primary btn-md" data-toggle="modal" data-target="#application-form" >Apply Now</button>
+                  <button  class="btn btn-block btn-primary btn-md {{($job_applied) ? 'disabled ' : ''}}" data-toggle="modal" data-target="{{($job_applied) ? '' : '#application-form'}} " >Apply Now</button>
                 </div>
                 @else
                   <div class="alert alert-info" role="alert">

@@ -59,7 +59,19 @@
                                 <img src="{{url($c->user->image->src)}}" alt="{{$c->user->image->src}}" />
                               </div>
                               <div class="comment-body">
-                                <h3><a class="text-black" href="{{route("user-profile",$c->user->id)}}">{{$c->user->first_name}} {{$c->user->last_name}}</a></h3>
+                                <div class="comment-wrapper d-flex justify-content-between">
+                                  <h3><a class="text-black" href="{{route("user-profile",$c->user->id)}}">{{$c->user->first_name}} {{$c->user->last_name}}</a></h3>
+                                  <div class="btn-group action-list">
+                                    <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fas fa-chevron-circle-down h5 m-0"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                      <a class="dropdown-item" href="#">Action</a>
+                                      <a class="dropdown-item" href="#">Another action</a>
+                                      <a class="dropdown-item" href="#">Something else here</a>
+                                    </div>
+                                  </div>
+                                </div>
                                 <div class="meta">{{date("F j, Y \a\\t H:m",strtotime($c->created_at))}}</div>
                                 <p>{{$c->text}}</p>
                               </div>
