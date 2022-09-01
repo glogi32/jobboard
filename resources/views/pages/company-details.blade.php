@@ -61,16 +61,16 @@
                               <div class="comment-body">
                                 <div class="comment-wrapper d-flex justify-content-between">
                                   <h3><a class="text-black" href="{{route("user-profile",$c->user->id)}}">{{$c->user->first_name}} {{$c->user->last_name}}</a></h3>
-                                  <div class="btn-group action-list">
-                                    <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                      <i class="fas fa-chevron-circle-down h5 m-0"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                      <a class="dropdown-item" href="#">Action</a>
-                                      <a class="dropdown-item" href="#">Another action</a>
-                                      <a class="dropdown-item" href="#">Something else here</a>
+                                  @if (session("user")->role_id == 3)
+                                    <div class="btn-group action-list">
+                                      <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-chevron-circle-down h5 m-0"></i>
+                                      </button>
+                                      <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#confirm-delete" data-id="{{$c->id}}">Delete comment</a>
+                                      </div>
                                     </div>
-                                  </div>
+                                  @endif
                                 </div>
                                 <div class="meta">{{date("F j, Y \a\\t H:m",strtotime($c->created_at))}}</div>
                                 <p>{{$c->text}}</p>
@@ -96,6 +96,7 @@
                             <form action="#" class="comment-form">
                               @csrf
                               <input type="hidden" id="userId" name="user" value="@if(session()->has("user")){{session("user")->id}}@endif">
+                              <input type="hidden" id="userRole" name="userRole" value="@if(session()->has("user")){{session("user")->role->id}}@endif">
                               
                               <div class="form-group">
                                 <label for="message">Message</label>
@@ -277,4 +278,23 @@
           </div>
         </div>
       </section>
+      <div class="modal fade " id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="h-100 d-flex">
+          <div class="modal-dialog " style="margin: auto;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Delete comment  
+                </div>
+                <div class="modal-body text-bold text-center">
+                  Are you sure you want to delete selected comment?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Delete comment</button>
+                    {{-- <a class="btn btn-danger ">Delete</a> --}}
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
 @endsection

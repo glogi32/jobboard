@@ -49,6 +49,7 @@ Route::get("/companies",[ResourceCompanyController::class,"index"])->name("compa
 
 Route::get("/company-details/{id}",[CompanyDetailsController::class,"index"])->name("company-details");
 Route::post("/company-details/insert-comment",[CompanyDetailsController::class,"insertComment"]);
+Route::delete("/company-details/delete-comment/{id}",[CompanyDetailsController::class,"deleteComment"]);
 Route::post("/company-details/{id}/vote",[CompanyDetailsController::class,"vote"]);
 Route::patch("/company-details/updateVote",[CompanyDetailsController::class,"updateVote"])->name("update-vote");
 

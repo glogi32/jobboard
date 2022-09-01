@@ -132,4 +132,22 @@ class CompanyDetailsController extends FrontController
             return response(["message" => "Server error, try again later."],500);
         }
     }
+
+    public function deleteComment(Request $request)
+    {
+        $commentId = $request->input("commentId");
+        $comment = Comment::find($commentId);
+
+        if(!$comment){
+            return response(["message" => "Comment not found." ],404);
+        }
+
+        try {
+            $comment->delete();
+            return response(["message" => "Comment successfully deleted!"],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response(["message" => "Server error, try again later"],500);
+        }
+    }
 }

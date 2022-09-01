@@ -31,6 +31,46 @@ $(document).ready(function(){
   }
 
   if(window.location.pathname.includes("/company-details")){
+    $(document).on("click" , "#btn-confirm-delete" ,function(e){
+      let id = $(this).data("id");
+      let companyId = $("#companyId").val();
+
+      $.ajax({
+        url: "/company-details/delete-comment/"+id,
+        datatype : "json",
+        method: "DELETE",
+        data: {
+          commentId : id,
+          companyId : companyId,
+          _token : token
+        },
+        success: function(data){
+          refreshCompanyComments(companyId);
+          makeNotification(0,"Success: ",data.message)
+        },
+        error : function (xhr) {
+          switch(xhr.status){
+            case 422:
+              let errorsArray = Object.entries(xhr.responseJSON.errors);
+              console.log(errorsArray)
+  
+              for(let error of errorsArray){
+                makeNotification(1,error[0],error[1]);
+              }
+              break;
+            case 500: 
+              makeNotification(1,"Error: ",xhr.responseJSON.message);
+              break;
+          }
+  
+          
+        }
+      }).done(function(){
+        $('#confirm-delete').modal("hide");
+      })
+    })
+    
+
     var star = '.star',
     selected = '.selected';
 
@@ -287,6 +327,12 @@ $(document).ready(function(){
       }
     })
   })
+
+  $('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('data-id', $(e.relatedTarget).data('id'));
+  });
+
+  
 })
 
 function manageCvInput() {
@@ -363,6 +409,8 @@ function refreshCompanyComments(id) {
 }
 function printComments(data) {
   let html = "";
+  let userRole = $("#userRole").val();
+  
   if(!data.nextPage){
     $("#loadMore").addClass("sr-only");
   }
@@ -372,9 +420,20 @@ function printComments(data) {
                 <img src="${c.image}" alt="${c.user.image.src}">
               </div>
               <div class="comment-body">
-                <h3>${c.user.first_name} ${c.user.last_name}</h3>
-                <div class="meta">${c.createdAt}</div>
-                <p>${c.text}</p>
+                <div class="comment-wrapper d-flex justify-content-between">
+                  <h3>${c.user.first_name} ${c.user.last_name}</h3>
+                  ${userRole != 3 ? "" : `<div class="btn-group action-list">
+                                            <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                              <i class="fas fa-chevron-circle-down h5 m-0"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#confirm-delete" data-id="${c.id}">Delete comment</a>
+                                            </div>
+                                          </div>`}
+                  </div>
+                  <div class="meta">${c.createdAt}</div>
+                  <p>${c.text}</p>
+                </div>
               </div>
             </li>`
   }
