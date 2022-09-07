@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Image;
 use App\Models\User;
+use App\Models\User_cv;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,7 @@ class UsersSeeder extends Seeder
     public function run()
     {
         $faker = Factory::create();
+        $user_cvs = ["1631975806_Nemanja Glogovac- CV.docx","1631975950_Nemanja Glogovac- CV.pdf","1631975950_Nemanja_Glogovac_cv_sr.pdf"];
 
         foreach (Range(1,30) as $key => $value) {
             $user = new User();
@@ -41,6 +43,14 @@ class UsersSeeder extends Seeder
             $userImage->imageable_id = $user->id;
             $userImage->imageable_type = "App\Models\User";
             $userImage->save();
+
+            $userCV = new User_cv();
+            $fileName = $user_cvs[array_rand($user_cvs)];
+            $userCV->name = $fileName;
+            $userCV->src = "user_cv-s/".$fileName;
+            $userCV->main = 1;
+            $userCV->user_id = $user->id;
+            $userCV->save();
         }
     }
 }

@@ -1158,5 +1158,5 @@ function printCompaniesPagination(data){
     let page = $(this).data("id");
     refreshCompanies(e,page);
   })
-  $("#totalJobsTitle").html(`${data.totalJobs} Job Found`)
+  $("#totalCompaniesTitle").html(`${data.totalCompanies} Comapnies Found`)
 }

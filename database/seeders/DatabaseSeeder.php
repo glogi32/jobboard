@@ -14,7 +14,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        
+        $this->call([
+            RolesSeeder::class,
+            UsersSeeder::class,
+            CitySeeder::class,
+            CompaniesSeeder::class,
+            TechnologiesAndAreasSeeder::class,
+            JobsSeeder::class,
+            JobTechSeeder::class,
+            ApplicationsSeeder::class,
+            
+            
+        ]);
 
     }
 }
