@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\FrontController;
 use App\Http\Requests\SignUpRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\Company;
 use App\Models\Image;
 use App\Models\Role;
 use App\Models\User;
@@ -22,9 +23,94 @@ class UserController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $userId = $request->input("userId");
+        $companyId = $request->input("companyId");
+        $orderBy = $request->input("orderBy","created_at");
+        $order = $request->input("order","ASC");
+        $keyword = $request->input("keyword");
+
+        $seniorites = $request->input("seniorites");
+        $areas = $request->input("areas");
+        $cities = $request->input("cities");
+        $techs = $request->input("techs");
+
+        $perPage = $request->input("perPage",5);
+        $page = $request->input("page",1);
+
+        $pageType = $request->input("pageType");
+        $response = [];
+
+
+        $query = User::with("role:id,name");
+
+        if($companyId){
+            $query->where("company_id",$companyId);
+        }else if(!$companyId && $pageType == "user-jobs"){
+
+            $userCompanies = Company::where("user_id",$userId)->get();
+            $userCompaniesIds = Arr::pluck($userCompanies,"id");
+            $query->whereIn("company_id",$userCompaniesIds);
+        }
+
+        if(!empty($keyword)){
+           $query = $query->where("title","like","%".$keyword."%")
+                ->orWhereHas("area",function($query) use($keyword){
+                    $query->where("name","like","%".$keyword."%");
+                })
+                ->orWhereHas("company",function($query) use($keyword){
+                    $query->where("name","like","%".$keyword."%");
+                });
+        }
+
+        
+        if($seniorites){
+            $query = $query->whereIn("seniority",$seniorites);
+        }
+        if($techs){
+            $query = $query->whereHas("technologies", function($query) use($techs){
+                return $query->whereIn("technology_id",$techs);
+            });
+        }
+        if($cities){
+            $query = $query->whereHas("city",function($query) use($cities){
+                return $query->whereIn("id",$cities);
+            });
+        }
+        if($areas){
+            $query = $query->whereIn("area_id",$areas);
+        }
+
+        if($order || $orderBy){
+            $query = $query->orderBy($orderBy,$order);
+        }
+
+        if($pageType == "jobs"){
+            $query = $query->where("deadline",">",time());
+        }
+        try {
+            $skip = $perPage * ($page - 1);
+            $response["totalUsers"] = $query->count();
+            $response["totalPages"] = ceil($response["totalUsers"]/$perPage);
+            $response["curentPage"] = (int)$page;
+            $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
+            $response["prevPage"] = $page <= 1 ? false : true;
+            $response["skip"] = $skip+1;
+            $response["users"] = $query->skip($skip)->take($perPage)->get();
+            // }else{
+            //     $response["jobs"] = $query->get();
+            // }
+            
+
+            $this->formatUsers($response["users"]);
+            return response($response,200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response(["message" => "Server error, try again later."],500);
+        }
+
+        
     }
 
     /**
@@ -193,6 +279,31 @@ class UserController extends FrontController
     public function destroy($id)
     {
         //
+    }
+
+    public function formatUsers($users)
+    {
+        foreach ($users as $key => $user) {
+            if($user->verified){
+                $user->verified = date("d-m-Y H:i", $user->verified);
+            }
+
+            if($user->deleted_at){
+                $user->deleted_at = date("d-m-Y H:i", strtotime($user->deleted_at));
+            }
+
+            $user->created_at = date("d-m-Y H:i", strtotime($user->created_at));
+
+            if($user->created_at == $user->updated_at){
+                $user->updated_at = null;
+            }
+            else{
+                $user->updated_at = date("d-m-Y H:i", strtotime($user->updated_at));
+            }
+
+            $user->user_url = route("user-profile", $user->id);
+                    
+        }
     }
 
     

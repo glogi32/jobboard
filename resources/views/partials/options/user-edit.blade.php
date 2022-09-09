@@ -14,7 +14,7 @@
   </div>
   
   <div class="col-md-12 order-lg-1 mt-5 personal-info">
-    <form role="form" method="POST" action="{{route("users.update",session("user")->id)}}" enctype="multipart/form-data">
+    <form role="form" method="POST" action="{{route("users-api.update",session("user")->id)}}" enctype="multipart/form-data">
       @csrf
       {{ method_field('PUT') }}
       <div class="row form-group">

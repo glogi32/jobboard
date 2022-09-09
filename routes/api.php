@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\CompanyDetailsController;
 use App\Http\Controllers\JobDetailsController;
 use App\Http\Controllers\Resource\CompanyController;
+use App\Http\Controllers\Resource\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get("/company-details/get-comments",[CompanyDetailsController::class,"getAllCommentsForCompany"]);
 
-Route::prefix("options")->group(function(){
-    Route::resource("companies",CompanyController::class);
-    Route::resource("jobs",JobController::class);
-});
+
+
+// Route::prefix("options")->group(function(){
+//     Route::resource("companies",CompanyController::class);
+//     Route::resource("jobs",JobController::class);
+// });
+
+// Route::prefix("admin")->group(function(){
+//     Route::resource("users",UserController::class);
+// });

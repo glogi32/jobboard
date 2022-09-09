@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UsersController as UsersAdminController;
 use App\Http\Controllers\Resource\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -28,6 +29,10 @@ use App\Http\Controllers\UserProfileController;
 
 Route::get('/', [IndexController::class,"index"])->name("/");
 
+Route::get("/test",function(){
+    return view("admin.layout.admin-template");
+});
+
 Route::get('/home', [IndexController::class,"index"])->name("home");
 
 Route::get('/contact', function () {
@@ -36,11 +41,11 @@ Route::get('/contact', function () {
 
 Route::get('/sign-up', function () {
     return view('pages.sign-up');
-})->name("sign-up");
+})->name("sign-up-page");
 
 Route::get('/login', function () {
     return view('pages.login');
-})->name("login");
+})->name("login-page");
 
 
 Route::get("/jobs",[ResourceJobController::class,"index"])->name("jobs");
@@ -84,5 +89,7 @@ Route::delete("/remove-user-cv",[OptionController::class,"removeUserCV"])->name(
 Route::delete("/remove-user-docs",[OptionController::class,"removeUserDocs"])->name("remove-docs");
 
 Route::prefix("admin")->group(function(){
-    Route::resource("users",UserController::class);
+    Route::get("users",[UsersAdminController::class,"usersPage"])->name("users-page");
+
+    Route::resource("users-api",UserController::class);
 });

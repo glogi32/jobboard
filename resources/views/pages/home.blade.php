@@ -175,7 +175,7 @@
           <p class="mb-0 text-white lead">JobBoard is place for you, join us.</p>
         </div>
         <div class="col-md-3 ml-auto">
-          <a href="{{route('sign-up')}}" class="btn btn-warning btn-block btn-lg">Sign Up</a>
+          <a href="{{route('sign-up-page')}}" class="btn btn-warning btn-block btn-lg">Sign Up</a>
         </div>
       </div>
     </div>
