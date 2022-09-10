@@ -11,7 +11,7 @@
   * sidebar-collapse
   * sidebar-mini
 -->
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-navbar-fixed">
 <div class="wrapper">
   <!-- Navbar -->
     @include("admin.fixed.nav")

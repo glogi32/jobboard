@@ -25,70 +25,69 @@ class UserController extends FrontController
      */
     public function index(Request $request)
     {
-        $userId = $request->input("userId");
-        $companyId = $request->input("companyId");
         $orderBy = $request->input("orderBy","created_at");
-        $order = $request->input("order","ASC");
+        $order = $request->input("order","DESC");
         $keyword = $request->input("keyword");
 
-        $seniorites = $request->input("seniorites");
-        $areas = $request->input("areas");
-        $cities = $request->input("cities");
-        $techs = $request->input("techs");
-
+        $status = $request->input("status");
+        $role = $request->input("role");
+        $verificationRangeFrom = $request->input("verificationRangeFrom");
+        $verificationRangeTo = $request->input("verificationRangeTo");
+        $createRangeFrom = $request->input("createRangeFrom");
+        $createRangeTo = $request->input("createRangeTo");
+        $updateRangeFrom = $request->input("updateRangeFrom");
+        $updateRangeTo = $request->input("updateRangeTo");
+        
         $perPage = $request->input("perPage",5);
         $page = $request->input("page",1);
 
-        $pageType = $request->input("pageType");
         $response = [];
-
 
         $query = User::with("role:id,name");
 
-        if($companyId){
-            $query->where("company_id",$companyId);
-        }else if(!$companyId && $pageType == "user-jobs"){
+        if($role){
+            $query = $query->where("role_id",$role);
+        }
 
-            $userCompanies = Company::where("user_id",$userId)->get();
-            $userCompaniesIds = Arr::pluck($userCompanies,"id");
-            $query->whereIn("company_id",$userCompaniesIds);
+        if($verificationRangeFrom && $verificationRangeTo){
+            
+            $query = $query->where("verified",">",strtotime(str_replace("/","-",$verificationRangeFrom)));
+            $query = $query->where("verified","<",strtotime(str_replace("/","-",$verificationRangeTo)));
+        }
+
+
+        if($createRangeFrom && $createRangeTo){
+            
+            $createRangeFromTimestamp = strtotime(str_replace("/","-",$createRangeFrom));
+            $createRangeToTimestamp = strtotime(str_replace("/","-",$createRangeTo));
+
+            $query = $query->where("created_at",">",date("Y-m-d",$createRangeFromTimestamp));
+            $query = $query->where("created_at","<",date("Y-m-d",$createRangeToTimestamp));
+        }
+
+        if($updateRangeFrom && $updateRangeTo){
+            
+            $updateRangeFromTimestamp = strtotime(str_replace("/","-",$updateRangeFrom));
+            $updateRangeToTimestamp = strtotime(str_replace("/","-",$updateRangeTo));
+
+            $query = $query->where("created_at",">",date("Y-m-d",$updateRangeFromTimestamp));
+            $query = $query->where("created_at","<",date("Y-m-d",$updateRangeToTimestamp));
         }
 
         if(!empty($keyword)){
-           $query = $query->where("title","like","%".$keyword."%")
-                ->orWhereHas("area",function($query) use($keyword){
-                    $query->where("name","like","%".$keyword."%");
+           $query = $query->where("first_name","like","%".$keyword."%")
+                ->orWhere(function($query) use($keyword){
+                    $query->where("last_name","like","%".$keyword."%");
                 })
-                ->orWhereHas("company",function($query) use($keyword){
-                    $query->where("name","like","%".$keyword."%");
+                ->orWhere(function($query) use($keyword){
+                    $query->where("email","like","%".$keyword."%");
                 });
-        }
-
-        
-        if($seniorites){
-            $query = $query->whereIn("seniority",$seniorites);
-        }
-        if($techs){
-            $query = $query->whereHas("technologies", function($query) use($techs){
-                return $query->whereIn("technology_id",$techs);
-            });
-        }
-        if($cities){
-            $query = $query->whereHas("city",function($query) use($cities){
-                return $query->whereIn("id",$cities);
-            });
-        }
-        if($areas){
-            $query = $query->whereIn("area_id",$areas);
         }
 
         if($order || $orderBy){
             $query = $query->orderBy($orderBy,$order);
         }
 
-        if($pageType == "jobs"){
-            $query = $query->where("deadline",">",time());
-        }
         try {
             $skip = $perPage * ($page - 1);
             $response["totalUsers"] = $query->count();
@@ -103,7 +102,7 @@ class UserController extends FrontController
             // }
             
 
-            $this->formatUsers($response["users"]);
+            $this->formatUsers($response["users"],$response["skip"]);
             return response($response,200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
@@ -281,29 +280,50 @@ class UserController extends FrontController
         //
     }
 
-    public function formatUsers($users)
+    public function formatUsers($users, $skip = 1)
     {
         foreach ($users as $key => $user) {
+
+            $user->listNumber = $skip;
+            $skip++;
             if($user->verified){
                 $user->verified = date("d-m-Y H:i", $user->verified);
             }
 
             if($user->deleted_at){
-                $user->deleted_at = date("d-m-Y H:i", strtotime($user->deleted_at));
-            }
-
-            $user->created_at = date("d-m-Y H:i", strtotime($user->created_at));
-
-            if($user->created_at == $user->updated_at){
-                $user->updated_at = null;
+                $user->deleted_at_formated = date("d-m-Y H:i", strtotime($user->deleted_at));
             }
             else{
-                $user->updated_at = date("d-m-Y H:i", strtotime($user->updated_at));
+                $user->deleted_at_formated = null;
             }
 
-            $user->user_url = route("user-profile", $user->id);
+            $user->created_at_formated = date("d-m-Y H:i", $user->created_at->timestamp);
+            
+            if($user->created_at->timestamp == $user->updated_at->timestamp){
+                $user->updated_at_formated = null;
+            }
+            else{
+                $user->updated_at_formated = date("d-m-Y H:i", $user->updated_at->timestamp);
+            }
+
+            // $user->user_url = route("user-profile", $user->id);
+            $user->user_url = url("user-profile/".$user->id);
+
+            if($user->verified && !$user->deleted_at){
+                $user->status = '<span class="badge bg-success">Active</span>';
+            }
+
+            if(!$user->verified){
+                $user->status = '<span class="badge bg-warning">Pending</span>';
+            }
+
+            if($user->deleted_at){
+                $user->status = '<span class="badge bg-danger">Deleted</span>';
+            }
+
                     
         }
+
     }
 
     
