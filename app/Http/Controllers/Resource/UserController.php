@@ -48,6 +48,18 @@ class UserController extends FrontController
         if($role){
             $query = $query->where("role_id",$role);
         }
+        if($status){
+            if($status == "Deleted"){
+                $query = $query->whereNotNull("deleted_at");
+            }
+            else if($status == "Pending"){
+                $query = $query->where("verified",null);
+            }
+            else{
+                $query = $query->where("deleted_at",null)
+                                ->whereNotNull("verified");
+            }
+        }
 
         if($verificationRangeFrom && $verificationRangeTo){
             
@@ -96,7 +108,7 @@ class UserController extends FrontController
             $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
             $response["prevPage"] = $page <= 1 ? false : true;
             $response["skip"] = $skip+1;
-            $response["users"] = $query->skip($skip)->take($perPage)->get();
+            $response["users"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
             // }else{
             //     $response["jobs"] = $query->get();
             // }

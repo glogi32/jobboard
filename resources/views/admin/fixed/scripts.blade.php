@@ -4,6 +4,8 @@
 <script src="{{asset('js/jquery.min.js')}}"></script>
 <!-- Bootstrap -->
 <script src="{{asset('js/admin/bootstrap/bootstrap.bundle.min.js')}}"></script>
+
+<script src="{{asset("js/bootstrap-notify.min.js")}}"></script>
 <!-- AdminLTE -->
 {{-- <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script> --}}
 

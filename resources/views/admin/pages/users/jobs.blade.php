@@ -1,7 +1,7 @@
 @extends("admin.layout.admin-template")
 
 @section("title")
-  Admin | Users
+  Admin | Jobs
 @endsection
 
 @section("styles")
@@ -33,12 +33,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                  <h1 class="m-0">Users</h1>
+                  <h1 class="m-0">Jobs</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Users</li>
+                    <li class="breadcrumb-item active">Jobs</li>
                 </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -49,17 +49,15 @@
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
-      
       <div class="row">
         <div class="col-md-12">
           <div class="card">
-            
             <div class="card-header">
-              <h3 class="card-title">List of users</h3>
+              <h3 class="card-title">List of jobs</h3>
               <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 100%;">
                   <input type="text" id="keyword" name="table_search" class="form-control float-right" placeholder="Search">
-
+                  <input type="hidden" id="pageType" value="adminJobs">
                   <div class="input-group-append">
                     <button type="button" class="btn btn-default">
                       <i class="fas fa-search"></i>
@@ -95,10 +93,10 @@
                     <div class="form-group">
                         <label>Role</label>
                         <select class="select2" id="ddlRole" style="width: 100%;">
-                            <option value="">Choose...</option>
+                            {{-- <option value="">Choose...</option>
                             @foreach ($roles as $role)
                               <option value="{{$role->id}}">{{$role->name}}</option>    
-                            @endforeach
+                            @endforeach --}}
                         </select>
                     </div>
                   </div>
@@ -144,17 +142,21 @@
                 <thead>
                   <tr>
                     <th style="width: 3%">#</th>
-                    <th>Full name</th>
-                    <th style="width: 15%">Email</th>
-                    <th>Role</th>
-                    <th>Verified at</th>
+                    <th>Title</th>
+                    <th>Company name</th>
+                    <th style="width: 15%">Deadline</th>
+                    {{-- <th>Employment status</th>
+                    <th>Seniority</th>
+                    <th>City</th>
+                    <th>Area</th> --}}
+                    <th>Statistics</th>
                     <th style="text-align: center;">Status</th>
-                    <th>Created at</th>
-                    <th>Updated at</th>
+                    <th style="width: 15%">Created at</th>
+                    <th style="width: 15%">Updated at</th>
                     <th>Actions</th>
                   </tr> 
                 </thead>
-                <tbody id="table-users">
+                <tbody id="table-jobs">
                   
                 </tbody>
               </table>
@@ -174,7 +176,7 @@
                 </select>
               </div>
 
-              <ul id="usersPagination" class="pagination pagination-sm m-0 float-right">
+              <ul id="jobsPagination" class="pagination pagination-sm m-0 float-right">
 
               </ul>
             </div>

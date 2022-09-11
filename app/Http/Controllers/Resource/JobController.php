@@ -103,11 +103,14 @@ class JobController extends Controller
             $response["prevPage"] = $page <= 1 ? false : true;
             $response["skip"] = $skip+1;
             $response["jobs"] = $query->skip($skip)->take($perPage)->get();
-            // }else{
-            //     $response["jobs"] = $query->get();
-            // }
+            
+            if($pageType == "adminJobs"){
+                $this->formatAdminJobs($response["jobs"],$response["skip"]);
+            }
+            else{
+                $this->formatJobs($response["jobs"]);
+            }
 
-            $this->formatJobs($response["jobs"]);
             return response($response,200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
@@ -235,8 +238,42 @@ class JobController extends Controller
             $j->job_details = route("job-details",$j->id);
             $j->company_details = route("company-details",$j->company->id);
             $j->emp_status = $empStatus[$j->employment_status];
-            $j->deadline_formated = ceil(($j->deadline-time())/60/60/24) <= 0 ? "Expired" : ceil(($j->deadline-time())/60/60/24);
+            $j->deadline_formated = ceil(($j->deadline - time())/60/60/24) <= 0 ? "Expired" : ceil(($j->deadline - time())/60/60/24);
             $j->companyLogo = url($j->company->logoImage[0]->src);
+        }
+    }
+
+    public function formatAdminJobs($jobs, $skip = 1)
+    {
+        $empStatus = EmploymentStatus::asSelectArray();
+        $seniority = Seniority::asSelectArray();
+        foreach ($jobs as $j) {
+            $j->listNumber = $skip;
+            $skip++;
+            $j->job_details = route("job-details",$j->id);
+            $j->company_details = route("company-details",$j->company->id);
+            $j->emp_status = $empStatus[$j->employment_status];
+            $j->seniority = $seniority[$j->seniority];
+            $j->deadline_formated = date("d-m-Y H:i", $j->deadline);
+
+            if(ceil(($j->deadline - time())/60/60/24) <= 0){
+                $j->status = '<span class="badge bg-warning">Expired</span>';
+            }
+            else if($j->deleted_at){
+                $j->status = '<span class="badge bg-danger">Deleted</span>';
+            }
+            else{
+                $j->status = '<span class="badge bg-success">Active</span>';
+            }
+
+            $j->created_at_formated = date("d-m-Y H:i", $j->created_at->timestamp);
+            
+            if($j->created_at->timestamp == $j->updated_at->timestamp){
+                $j->updated_at_formated = null;
+            }
+            else{
+                $j->updated_at_formated = date("d-m-Y H:i", $j->updated_at->timestamp);
+            }
         }
     }
 }

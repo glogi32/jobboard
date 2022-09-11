@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\JobsController as JobsAdminController;
 use App\Http\Controllers\Admin\UsersController as UsersAdminController;
 use App\Http\Controllers\Resource\UserController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,8 @@ Route::delete("/remove-user-docs",[OptionController::class,"removeUserDocs"])->n
 
 Route::prefix("admin")->group(function(){
     Route::get("users",[UsersAdminController::class,"usersPage"])->name("users-page");
+    Route::get("jobs",[JobsAdminController::class,"jobsPage"])->name("jobs-page");
 
     Route::resource("users-api",UserController::class);
+    Route::resource("jobs-api",JobController::class);
 });

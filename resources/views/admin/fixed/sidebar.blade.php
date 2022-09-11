@@ -73,10 +73,18 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{url("/admin/users")}}" class="nav-link active">
+            <a href="{{url("/admin/users")}}" class="nav-link {{ (request()->is('admin/users') ) ? 'active' : '' }}">
               <i class="nav-icon fas fa-users"></i>
               <p>
                 Users
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{url("/admin/jobs")}}" class="nav-link {{ (request()->is('admin/jobs') ) ? 'active' : '' }}">
+              <i class="nav-icon fas fa-copy"></i>
+              <p>
+                Jobs
               </p>
             </a>
           </li>
