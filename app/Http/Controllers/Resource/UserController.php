@@ -41,6 +41,7 @@ class UserController extends FrontController
         $perPage = $request->input("perPage",5);
         $page = $request->input("page",1);
 
+        $pageType = $request->input("pageType");
         $response = [];
 
         $query = User::with("role:id,name");
@@ -108,7 +109,13 @@ class UserController extends FrontController
             $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
             $response["prevPage"] = $page <= 1 ? false : true;
             $response["skip"] = $skip+1;
-            $response["users"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
+            if($pageType == "adminUsers"){
+                $response["users"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
+            }
+            else{
+                $response["users"] = $query->skip($skip)->take($perPage)->get();
+            }
+            
             // }else{
             //     $response["jobs"] = $query->get();
             // }
@@ -299,23 +306,23 @@ class UserController extends FrontController
             $user->listNumber = $skip;
             $skip++;
             if($user->verified){
-                $user->verified = date("d-m-Y H:i", $user->verified);
+                $user->verified = date("d.m.Y H:i", $user->verified);
             }
 
             if($user->deleted_at){
-                $user->deleted_at_formated = date("d-m-Y H:i", strtotime($user->deleted_at));
+                $user->deleted_at_formated = date("d.m.Y H:i", strtotime($user->deleted_at));
             }
             else{
                 $user->deleted_at_formated = null;
             }
 
-            $user->created_at_formated = date("d-m-Y H:i", $user->created_at->timestamp);
+            $user->created_at_formated = date("d.m.Y H:i", $user->created_at->timestamp);
             
             if($user->created_at->timestamp == $user->updated_at->timestamp){
                 $user->updated_at_formated = null;
             }
             else{
-                $user->updated_at_formated = date("d-m-Y H:i", $user->updated_at->timestamp);
+                $user->updated_at_formated = date("d.m.Y H:i", $user->updated_at->timestamp);
             }
 
             // $user->user_url = route("user-profile", $user->id);

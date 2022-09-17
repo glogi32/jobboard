@@ -11,7 +11,6 @@ $(document).ready(function(){
           format: 'DD/MM/YYYY'
         },
         autoApply: true,
-        
       })
       $("#verification-range").val("")
       $("#create-range").val("")
@@ -39,21 +38,59 @@ $(document).ready(function(){
         autoApply: true,
         
       })
-      $("#verification-range").val("")
+      $("#deadline-range").val("")
       $("#create-range").val("")
       $("#update-range").val("")
 
-      $(document).on("click","#cancelFilters",cancelUsersFilters)
+      $(document).on("click","#cancelFilters",cancelJobsFilters)
 
       refreshJobs();
       $("#keyword").on("keyup",refreshJobs);
       $("#ddlPerPage").on("change",refreshJobs);
+
+      $("#pageType").on("change",refreshJobs);
+      $("#keyword").on("keyup",refreshJobs);
+      $("#ddlSort").on("change",refreshJobs);
+      $("#ddlArea").on("change",refreshJobs);
+      $("#ddlTechnologies").on("change",refreshJobs);
+      $("#ddlCity").on("change",refreshJobs);
+      $("#ddlSeniority").on("change",refreshJobs);
+      $("#ddlStatus").on("change",refreshJobs);
+      $("#deadline-range").on("change",refreshJobs);
+      $("#create-range").on("change",refreshJobs);
+      $("#update-range").on("change",refreshJobs);
+    }
+
+    if(window.location.pathname == "/admin/companies"){
+      $('.rangedatetime').daterangepicker({
+        locale: {
+          format: 'DD/MM/YYYY'
+        },
+        autoApply: true,
+      })
+
+      $("#create-range").val("")
+      $("#update-range").val("")
+
+      $(document).on("click","#cancelFilters",cancelCompaniesFilters);
+
+      refreshCompanies();
+      $("#keyword").on("keyup", refreshCompanies);
+      $("#ddlPerPage").on("change", refreshCompanies);
+
+      $("#keyword").on("keyup", refreshCompanies);
+      $("#ddlSort").on("change", refreshCompanies);
+      $("#ddlCity").on("change", refreshCompanies);
+      $("#ddlStatus").on("change", refreshCompanies);
+      $("#create-range").on("change", refreshCompanies);
+      $("#update-range").on("change", refreshCompanies);
     }
 })
 
 function refreshUsers(e,page = 1) {
     
   let perPage = $("#ddlPerPage").val()
+  let pageType = $("#pageType").val()
   let keyword = $("#keyword").val();
   let sort = $("#ddlSort").val();
   let role = $("#ddlRole").val();
@@ -72,6 +109,9 @@ function refreshUsers(e,page = 1) {
   }
   if(perPage){
     data.perPage = perPage
+  }
+  if(pageType){
+    data.pageType = pageType
   }
   if(role){
     data.role = role
@@ -205,14 +245,17 @@ function refreshJobs(e,page = 1) {
   let pageType = $("#pageType").val();
   let keyword = $("#keyword").val();
   let sort = $("#ddlSort").val();
-  let role = $("#ddlRole").val();
+  let area = $("#ddlArea").val();
+  let technologies = $("#ddlTechnologies").val();
+  let city = $("#ddlCity").val();
+  let seniority = $("#ddlSeniority").val();
   let status = $("#ddlStatus").val();
-  let verificationRange = $("#verification-range").val();
+  let deadlineRange = $("#deadline-range").val();
   let createRange = $("#create-range").val();
   let updateRange = $("#update-range").val();
   
   
-  data = {
+  var data = {
     page : page,
   };
 
@@ -225,18 +268,29 @@ function refreshJobs(e,page = 1) {
   if(pageType){
     data.pageType = pageType
   }
-  if(role){
-    data.role = role
+  if(area){
+    data.areas = area
   }
+  if(technologies){
+    data.techs = technologies
+  }
+  if(city){
+    data.cities = city
+  }
+  if(seniority){
+    data.seniorites = seniority
+  }
+
   if(status){
     data.status = status
   }
-  if(verificationRange){
-    let verificationRangeFrom = verificationRange.split("-")[0];
-    let verificationRangeTo = verificationRange.split("-")[1];
 
-    data.verificationRangeFrom = verificationRangeFrom,
-    data.verificationRangeTo = verificationRangeTo
+  if(deadlineRange){
+    let deadlineRangeFrom = deadlineRange.split("-")[0];
+    let deadlineRangeTo = deadlineRange.split("-")[1];
+
+    data.deadlineRangeFrom = deadlineRangeFrom,
+    data.deadlineRangeTo = deadlineRangeTo
   }
   if(createRange){
     let createRangeFrom = createRange.split("-")[0];
@@ -252,8 +306,6 @@ function refreshJobs(e,page = 1) {
     data.updateRangeFrom = updateRangeFrom,
     data.updateRangeTo = updateRangeTo
   }
-
-
 
   if(sort){
     let sortValues = sort.split("-");
@@ -322,13 +374,141 @@ function printJobsPagination(data){
 
 }
 
-function cancelUsersFilters() {
-  $("#verification-range").val("");
+function cancelJobsFilters() {
+  $("#deadline-range").val("");
   $("#create-range").val("");
   $("#update-range").val("");
   $("#keyword").val("");
   $("#ddlSort").val("").trigger('change');
-  $("#ddlRole").val("").trigger('change');
+  $("#ddlArea").val("").trigger('change');
+  $("#ddlTechnologies").val("").trigger('change');
+  $("#ddlCity").val("").trigger('change');
+  $("#ddlSeniority").val("").trigger('change');
   $("#ddlStatus").val("").trigger('change');
   refreshUsers();
+}
+
+function refreshCompanies(e,page = 1) {
+    
+  let perPage = $("#ddlPerPage").val();
+  let pageType = $("#pageType").val();
+  let keyword = $("#keyword").val();
+  let sort = $("#ddlSort").val();
+  let city = $("#ddlCity").val();
+  let status = $("#ddlStatus").val();
+  let createRange = $("#create-range").val();
+  let updateRange = $("#update-range").val();
+  
+  
+  var data = {
+    page : page,
+  };
+
+  if(keyword){
+    data.keyword = keyword
+  }
+  if(perPage){
+    data.perPage = perPage
+  }
+  if(pageType){
+    data.pageType = pageType
+  }
+  if(city){
+    data.city = city
+  }
+
+  if(status){
+    data.status = status
+  }
+
+  if(createRange){
+    let createRangeFrom = createRange.split("-")[0];
+    let createRangeTo = createRange.split("-")[1];
+
+    data.createRangeFrom = createRangeFrom,
+    data.createRangeTo = createRangeTo
+  }
+  if(updateRange){
+    let updateRangeFrom = updateRange.split("-")[0];
+    let updateRangeTo = updateRange.split("-")[1];
+
+    data.updateRangeFrom = updateRangeFrom,
+    data.updateRangeTo = updateRangeTo
+  }
+
+  if(sort){
+    let sortValues = sort.split("-");
+    data.orderBy = sortValues[0];
+    data.order = sortValues[1];
+  }
+
+  $.ajax({
+    url : "/admin/companies-api",
+    method : "GET",
+    datatype : "json",
+    data : data,
+    success : function(data) {
+      console.log(data);
+      printCompanies(data.data);
+      printCompaniesPagination(data.data);
+    },
+    error : function(xhr) {
+      
+      switch(xhr.status){
+        case 404:
+          makeNotification(1,xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1,"Error","Server error, please try again later.");
+          break;
+      }
+    }
+  })
+}
+
+function printCompanies(data){
+
+  let html = ``;
+  for (const company of data.companies) {
+    html += `<tr>
+              <td>${company.listNumber}</td>
+              <td><a href="${company.company_details}" target="_blank" >${company.name}</a></td>
+              <td>${company.email}</td>
+              <td style="width: 15%;"><a href="${company.user_details}" target="_blank" >${company.user.first_name} ${company.user.last_name}</a></td>
+              <td class="text-center" style="width: 10%;">${company.printed_stars}<br/>(${company.vote})</td>
+              <td class="text-center" style="width: 7%;" >${company.status}</td>
+              <td style="width: 15%;" >${company.created_at_formated}</td>
+              <td>${company.updated_at_formated != null ? company.updated_at_formated : "/"}</td>
+              <td><i class="fas fa-ellipsis-v"></i></td>
+            </tr>`;
+  }
+
+  $("#table-companies").html(html);
+
+}
+
+function printCompaniesPagination(data){
+  html = `<li class="page-item"><a href="#" id="prevPage" class="page-link prev companyPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage-1}">«</a></li>`;
+  for(let p=1; p<=data.totalPages; p++){
+    html+= `<li class="page-item ${p == data.curentPage ? 'active' : ''}"><a class="page-link companyPage " data-id="${p}" href="#">${p}</a></li>`;
+  }
+  html += `<li class="page-item"><a href="#" id="nextPage" class="next page-link companyPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage+1}">»</a></li>`
+  $("#companiesPagination").html(html);
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip+data.companies.length-1} Of ${data.totalCompanies} Companies`);
+  $(".companyPage").on("click",function(e){
+    e.preventDefault();
+    let page = $(this).data("id");
+    refreshCompanies(e,page);
+  })
+
+}
+
+function cancelCompaniesFilters() {
+  $("#create-range").val("");
+  $("#update-range").val("");
+  $("#keyword").val("");
+  $("#ddlSort").val("").trigger('change');
+  $("#ddlCity").val("").trigger('change');
+  $("#ddlStatus").val("").trigger('change');
+  refreshCompanies();
 }

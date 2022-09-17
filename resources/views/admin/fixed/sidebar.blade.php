@@ -89,6 +89,14 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{url("/admin/companies")}}" class="nav-link {{ (request()->is('admin/companies') ) ? 'active' : '' }}">
+              <i class="nav-icon fas fa-building"></i>
+              <p>
+                Companies
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-copy"></i>
               <p>

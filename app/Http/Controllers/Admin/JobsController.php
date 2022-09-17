@@ -2,14 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Seniority;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\FrontController;
+use App\Models\Area;
+use App\Models\City;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 
 class JobsController extends FrontController
 {
     public function jobsPage(Request $request)
     {
-        return view("admin.pages.users.jobs",$this->data);
+        $this->data["seniorities"] = Seniority::asSelectArray();
+        $this->data["areas"] = Area::all();
+        $this->data["cities"] = City::all();
+        $this->data["tech"] = Technology::all();
+
+        return view("admin.pages.jobs.jobs",$this->data);
     }
 }

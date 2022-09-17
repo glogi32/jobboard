@@ -29,20 +29,45 @@ class CompanyController extends FrontController
         $cities = $request->input("city");
         $rating = $request->input("rating");
 
+        $createRangeFrom = $request->input("createRangeFrom");
+        $createRangeTo = $request->input("createRangeTo");
+        $updateRangeFrom = $request->input("updateRangeFrom");
+        $updateRangeTo = $request->input("updateRangeTo");
+
+        $status = $request->input("status");
+
         $perPage = $request->input("perPage",5);
         $page = $request->input("page",1);
 
-        $query = Company::with("logoImage","city")->withCount("comments");
         $response = [];
+        $pageType = $request->input("pageType");
+
+        $query = Company::with("logoImage","city")->withCount("comments");
+
+        if($pageType == "adminCompanies"){
+            $query = $query->with("user");
+        }
 
         if($userId){
             $query = $query->where("user_id",$userId);
+        }
+
+        if($status){
+            if($status == "Deleted"){
+                $query = $query->whereNotNull("deleted_at");
+            }
+            else{
+                $query = $query->where("deleted_at",null);
+            }
         }
 
         if(!empty($keyword)){
             $query = $query->where("name","like","%".$keyword."%")
             ->orWhereHas("city",function($query) use($keyword){
                 return $query->where("name","like","%".$keyword."%");
+            })
+            ->orWhere(function($query) use($keyword){
+                $query->where("email","like","%".$keyword."%");
             });
         }
 
@@ -55,6 +80,24 @@ class CompanyController extends FrontController
         if($rating){
             $rating = (int) $rating;
             $query = $query->where("vote",">=",$rating);
+        }
+
+        if($createRangeFrom && $createRangeTo){
+            
+            $createRangeFromTimestamp = strtotime(str_replace("/","-",$createRangeFrom));
+            $createRangeToTimestamp = strtotime(str_replace("/","-",$createRangeTo));
+
+            $query = $query->where("created_at",">",date("Y-m-d",$createRangeFromTimestamp));
+            $query = $query->where("created_at","<",date("Y-m-d",$createRangeToTimestamp));
+        }
+
+        if($updateRangeFrom && $updateRangeTo){
+            
+            $updateRangeFromTimestamp = strtotime(str_replace("/","-",$updateRangeFrom));
+            $updateRangeToTimestamp = strtotime(str_replace("/","-",$updateRangeTo));
+
+            $query = $query->where("created_at",">",date("Y-m-d",$updateRangeFromTimestamp));
+            $query = $query->where("created_at","<",date("Y-m-d",$updateRangeToTimestamp));
         }
 
         if($order || $orderBy){
@@ -70,15 +113,25 @@ class CompanyController extends FrontController
                 $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
                 $response["prevPage"] = $page <= 1 ? false : true;
                 $response["skip"] = $skip+1;
-                $response["companies"] = $query->skip($skip)->take($perPage)->get();
+                
+                if($pageType == "adminCompanies"){
+                    $response["companies"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
+                }else{
+                    $response["companies"] = $query->skip($skip)->take($perPage)->get();
+                }
                 $this->printStars($response["companies"]);
             }
             else{
                 $response["companies"] = $query->get();
             }
             
+            if($pageType == "adminCompanies"){
+                $this->formatAdminCompanies($response["companies"], $response["skip"]);
+            }   
+            else{
+                $this->formatCompanies($response["companies"]);
+            }
             
-            $this->formatCompanies($response["companies"]);
             return response(["data" => $response],200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
@@ -333,6 +386,35 @@ class CompanyController extends FrontController
             $c->logo_image_alt = $c->logoImage[0]->alt;
         }
     }
+
+    function formatAdminCompanies($companies,$skip = 1){
+        foreach ($companies as $c) {
+            $c->listNumber = $skip;
+            $skip++;
+            $c->company_details = route("company-details",$c->id);
+            $c->user_details = route("user-profile",$c->user_id);
+            $c->company_edit = route("companies.edit", $c->id);
+            $c->logo_image_src = url($c->logoImage[0]->src);
+            $c->logo_image_alt = $c->logoImage[0]->alt;
+
+            $c->created_at_formated = date("d.m.Y H:i", $c->created_at->timestamp);
+            
+            if($c->created_at->timestamp == $c->updated_at->timestamp){
+                $c->updated_at_formated = null;
+            }
+            else{
+                $c->updated_at_formated = date("d.m.Y H:i", $c->updated_at->timestamp);
+            }
+
+            if($c->deleted_at){
+                $c->status = '<span class="badge bg-danger">Deleted</span>';
+            }
+            else{
+                $c->status = '<span class="badge bg-success">Active</span>';
+            }
+        }
+    }
+
     public function printStars($companies)
     {
         foreach ($companies as $c) {

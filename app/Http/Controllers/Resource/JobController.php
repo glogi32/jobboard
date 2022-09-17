@@ -32,11 +32,19 @@ class JobController extends Controller
         $orderBy = $request->input("orderBy","deadline");
         $order = $request->input("order","ASC");
         $keyword = $request->input("keyword");
+        $status = $request->input("status");
 
         $seniorites = $request->input("seniorites");
         $areas = $request->input("areas");
         $cities = $request->input("cities");
         $techs = $request->input("techs");
+
+        $deadlineRangeFrom = $request->input("deadlineRangeFrom");
+        $deadlineRangeTo = $request->input("deadlineRangeTo");
+        $createRangeFrom = $request->input("createRangeFrom");
+        $createRangeTo = $request->input("createRangeTo");
+        $updateRangeFrom = $request->input("updateRangeFrom");
+        $updateRangeTo = $request->input("updateRangeTo");
 
         $perPage = $request->input("perPage",5);
         $page = $request->input("page",1);
@@ -69,6 +77,43 @@ class JobController extends Controller
                 });
         }
 
+        if($status){
+            if($status == "Deleted"){
+                $query = $query->whereNotNull("deleted_at");
+            }
+            else if($status == "Expired"){
+                $query = $query->where("deadline","<",time());
+            }
+            else{
+                $query = $query->where("deleted_at",null)
+                        ->where("deadline",">=",time());
+            }
+        }
+
+        if($deadlineRangeFrom && $deadlineRangeTo){
+            
+            $query = $query->where("deadline",">",strtotime(str_replace("/","-",$deadlineRangeFrom)));
+            $query = $query->where("deadline","<",strtotime(str_replace("/","-",$deadlineRangeTo)));
+        }
+
+
+        if($createRangeFrom && $createRangeTo){
+            
+            $createRangeFromTimestamp = strtotime(str_replace("/","-",$createRangeFrom));
+            $createRangeToTimestamp = strtotime(str_replace("/","-",$createRangeTo));
+
+            $query = $query->where("created_at",">",date("Y-m-d",$createRangeFromTimestamp));
+            $query = $query->where("created_at","<",date("Y-m-d",$createRangeToTimestamp));
+        }
+
+        if($updateRangeFrom && $updateRangeTo){
+            
+            $updateRangeFromTimestamp = strtotime(str_replace("/","-",$updateRangeFrom));
+            $updateRangeToTimestamp = strtotime(str_replace("/","-",$updateRangeTo));
+
+            $query = $query->where("created_at",">",date("Y-m-d",$updateRangeFromTimestamp));
+            $query = $query->where("created_at","<",date("Y-m-d",$updateRangeToTimestamp));
+        }
         
         if($seniorites){
             $query = $query->whereIn("seniority",$seniorites);
@@ -254,7 +299,7 @@ class JobController extends Controller
             $j->company_details = route("company-details",$j->company->id);
             $j->emp_status = $empStatus[$j->employment_status];
             $j->seniority = $seniority[$j->seniority];
-            $j->deadline_formated = date("d-m-Y H:i", $j->deadline);
+            $j->deadline_formated = date("d.m.Y H:i", $j->deadline);
 
             if(ceil(($j->deadline - time())/60/60/24) <= 0){
                 $j->status = '<span class="badge bg-warning">Expired</span>';
@@ -266,13 +311,13 @@ class JobController extends Controller
                 $j->status = '<span class="badge bg-success">Active</span>';
             }
 
-            $j->created_at_formated = date("d-m-Y H:i", $j->created_at->timestamp);
+            $j->created_at_formated = date("d.m.Y H:i", $j->created_at->timestamp);
             
             if($j->created_at->timestamp == $j->updated_at->timestamp){
                 $j->updated_at_formated = null;
             }
             else{
-                $j->updated_at_formated = date("d-m-Y H:i", $j->updated_at->timestamp);
+                $j->updated_at_formated = date("d.m.Y H:i", $j->updated_at->timestamp);
             }
         }
     }
