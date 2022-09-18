@@ -21,6 +21,7 @@
   <script src="{{asset('js/admin/select2/select2.full.min.js')}}"></script>
   <script src="{{asset('js/admin/moment/moment.min.js')}}"></script>
   <script src="{{asset('js/admin/daterangepicker/daterangepicker.js')}}"></script>
+  <script src="{{asset('js/admin/charts/Chart.min.js')}}"></script>
   <script>
     $(function () {
       $('.select2').select2();
@@ -144,6 +145,7 @@
                     <th>Employer</th>
                     <th class="text-center">Rating</th>
                     <th style="text-align: center;">Status</th>
+                    <th>Statistics</th>
                     <th>Created at</th>
                     <th>Updated at</th>
                     <th>Actions</th>
@@ -161,11 +163,11 @@
                 <span id="paginationInfo" class="mr-4"></span>
                 <label>Per page:</label>
                 <select id="ddlPerPage" class="select2" data-placeholder="Any" style="width: 6%;">
-                    <option>5</option>
-                    <option selected>7</option>
-                    <option>10</option>
-                    <option>15</option>
-                    <option>All</option>
+                    <option value="5">5</option>
+                    <option value="7" selected>7</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="">All</option>
                 </select>
               </div>
 
@@ -181,6 +183,48 @@
       </div>
       <!-- /.row -->
       
+      <div class="row">
+        <div class="col-6">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Companies Visits Statistics</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="companyStatisticsPaginated" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <!-- /.card-body -->
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Donut Chart</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <!-- /.card-body -->
+          </div>
+        </div>
+      </div>
     </div><!-- /.container-fluid -->
   </section>
   <!-- /.content -->

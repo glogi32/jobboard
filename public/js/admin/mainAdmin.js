@@ -322,6 +322,7 @@ function refreshJobs(e,page = 1) {
       console.log(data);
       printJobs(data);
       printJobsPagination(data);
+      refreshJobStatistics(data.jobs)
     },
     error : function(xhr) {
       
@@ -388,6 +389,40 @@ function cancelJobsFilters() {
   refreshUsers();
 }
 
+function refreshJobStatistics(data){
+
+  let dataLabels = data.map(function(c){
+    return c.title;
+  });
+
+  let dataVisits = data.map(function(c){
+    return c.statistics;
+  });
+  console.log(dataVisits,dataLabels);
+
+  var donutChartCanvas = $('#jobStatisticsPaginated').get(0).getContext('2d')
+    var donutData        = {
+      labels: dataLabels,
+      datasets: [
+        {
+          data: dataVisits,
+          backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',"navy", "red", "orange"],
+        }
+      ]
+    }
+    var donutOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(donutChartCanvas, {
+      type: 'doughnut',
+      data: donutData,
+      options: donutOptions
+    })
+}
+
 function refreshCompanies(e,page = 1) {
     
   let perPage = $("#ddlPerPage").val();
@@ -451,6 +486,7 @@ function refreshCompanies(e,page = 1) {
       console.log(data);
       printCompanies(data.data);
       printCompaniesPagination(data.data);
+      refreshCompanyStatistics(data.data.companies);
     },
     error : function(xhr) {
       
@@ -477,8 +513,9 @@ function printCompanies(data){
               <td style="width: 15%;"><a href="${company.user_details}" target="_blank" >${company.user.first_name} ${company.user.last_name}</a></td>
               <td class="text-center" style="width: 10%;">${company.printed_stars}<br/>(${company.vote})</td>
               <td class="text-center" style="width: 7%;" >${company.status}</td>
-              <td style="width: 15%;" >${company.created_at_formated}</td>
-              <td>${company.updated_at_formated != null ? company.updated_at_formated : "/"}</td>
+              <td class="text-center" style="width: 7%;" >${company.statistics}</td>
+              <td style="width: 12%;" >${company.created_at_formated}</td>
+              <td style="width: 12%;">${company.updated_at_formated != null ? company.updated_at_formated : "/"}</td>
               <td><i class="fas fa-ellipsis-v"></i></td>
             </tr>`;
   }
@@ -511,4 +548,38 @@ function cancelCompaniesFilters() {
   $("#ddlCity").val("").trigger('change');
   $("#ddlStatus").val("").trigger('change');
   refreshCompanies();
+}
+
+function refreshCompanyStatistics(data){
+
+  let dataLabels = data.map(function(c){
+    return c.name;
+  });
+
+  let dataVisits = data.map(function(c){
+    return c.statistics;
+  });
+  console.log(dataVisits,dataLabels);
+
+  var donutChartCanvas = $('#companyStatisticsPaginated').get(0).getContext('2d')
+    var donutData        = {
+      labels: dataLabels,
+      datasets: [
+        {
+          data: dataVisits,
+          backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',"navy", "red", "orange"],
+        }
+      ]
+    }
+    var donutOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(donutChartCanvas, {
+      type: 'doughnut',
+      data: donutData,
+      options: donutOptions
+    })
 }
