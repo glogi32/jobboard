@@ -323,6 +323,7 @@ function refreshJobs(e,page = 1) {
       printJobs(data);
       printJobsPagination(data);
       refreshJobStatistics(data.jobs)
+      refreshTopJobsStatistics()
     },
     error : function(xhr) {
       
@@ -423,6 +424,64 @@ function refreshJobStatistics(data){
     })
 }
 
+function refreshTopJobsStatistics() {
+  
+  var dataLabels = [];
+  var dataVisits = [];
+
+  $.ajax({
+    url : "/admin/jobs-stats",
+    method : "GET",
+    async: false,
+    datatype : "json",
+    success : function(data) {
+      dataLabels = data.data.map(function(c){
+        return c.title;
+      });
+    
+      dataVisits = data.data.map(function(c){
+        return c.statistics;
+      });
+      
+    
+    },
+    error : function(xhr) {
+      switch(xhr.status){
+        case 404:
+          makeNotification(1,xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1,"Error","Server error, please try again later.");
+          break;
+      }
+    }
+  })
+
+  console.log(dataVisits,dataLabels);
+  var donutChartCanvas = $('#topJobsStatistics').get(0).getContext('2d')
+    var donutData        = {
+      labels: dataLabels,
+      datasets: [
+        {
+          data: dataVisits,
+          backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',"navy", "red", "orange"],
+        }
+      ]
+    }
+    var donutOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(donutChartCanvas, {
+      type: 'doughnut',
+      data: donutData,
+      options: donutOptions
+    })
+}
+
+
 function refreshCompanies(e,page = 1) {
     
   let perPage = $("#ddlPerPage").val();
@@ -487,6 +546,7 @@ function refreshCompanies(e,page = 1) {
       printCompanies(data.data);
       printCompaniesPagination(data.data);
       refreshCompanyStatistics(data.data.companies);
+      refreshTopCompaniesStatistics();
     },
     error : function(xhr) {
       
@@ -562,6 +622,62 @@ function refreshCompanyStatistics(data){
   console.log(dataVisits,dataLabels);
 
   var donutChartCanvas = $('#companyStatisticsPaginated').get(0).getContext('2d')
+    var donutData        = {
+      labels: dataLabels,
+      datasets: [
+        {
+          data: dataVisits,
+          backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',"navy", "red", "orange"],
+        }
+      ]
+    }
+    var donutOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(donutChartCanvas, {
+      type: 'doughnut',
+      data: donutData,
+      options: donutOptions
+    })
+}
+
+function refreshTopCompaniesStatistics(){
+  var dataLabels = [];
+  var dataVisits = [];
+
+  $.ajax({
+    url : "/admin/companies-stats",
+    method : "GET",
+    async: false,
+    datatype : "json",
+    success : function(data) {
+      dataLabels = data.data.map(function(c){
+        return c.name;
+      });
+    
+      dataVisits = data.data.map(function(c){
+        return c.statistics;
+      });
+      
+    
+    },
+    error : function(xhr) {
+      switch(xhr.status){
+        case 404:
+          makeNotification(1,xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1,"Error","Server error, please try again later.");
+          break;
+      }
+    }
+  })
+
+  console.log(dataVisits,dataLabels);
+  var donutChartCanvas = $('#companyStatisticsTop').get(0).getContext('2d')
     var donutData        = {
       labels: dataLabels,
       datasets: [

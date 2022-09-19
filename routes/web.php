@@ -95,6 +95,9 @@ Route::prefix("admin")->group(function(){
     Route::get("jobs",[JobsAdminController::class,"jobsPage"])->name("jobs-page");
     Route::get("companies",[CompaniesAdminController::class,"companiesPage"])->name("companies-page");
 
+    Route::get("companies-stats",[CompaniesAdminController::class, "topCompaniesStatistics"]);
+    Route::get("jobs-stats",[JobsAdminController::class, "topJobsStatistics"]);
+
     Route::resource("users-api",UserController::class);
     Route::resource("jobs-api",JobController::class);
     Route::resource("companies-api",CompanyController::class);
