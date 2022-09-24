@@ -5,6 +5,13 @@ const base_url = window.location.origin;
 $(document).ready(function(){
 
 
+    $('#confirm-delete').on('show.bs.modal', function(e) {
+      // $(this).find('.btn-ok').attr('data-id', $(e.relatedTarget).data('id'));
+      // console.log($(this).find('.btn-ok'))
+      let id = $(e.relatedTarget).data('id')
+      $("#id").val(id);
+    });
+    
     if(window.location.pathname == "/admin/users"){
       $('.rangedatetime').daterangepicker({
         locale: {
@@ -27,6 +34,7 @@ $(document).ready(function(){
       $("#ddlStatus").on("change",refreshUsers);
       $("#keyword").on("keyup",refreshUsers);
       $("#ddlPerPage").on("change",refreshUsers);
+      $("#btn-confirm-delete").on("click",deleteUser);
     }
 
 
@@ -59,6 +67,7 @@ $(document).ready(function(){
       $("#deadline-range").on("change",refreshJobs);
       $("#create-range").on("change",refreshJobs);
       $("#update-range").on("change",refreshJobs);
+      $("#btn-confirm-delete").on("click",deleteJob);
     }
 
     if(window.location.pathname == "/admin/companies"){
@@ -84,6 +93,7 @@ $(document).ready(function(){
       $("#ddlStatus").on("change", refreshCompanies);
       $("#create-range").on("change", refreshCompanies);
       $("#update-range").on("change", refreshCompanies);
+      $("#btn-confirm-delete").on("click",deleteCompany);
     }
 })
 
@@ -176,7 +186,7 @@ function refreshUsers(e,page = 1) {
 function printUsers(data){
 
   let html = ``;
-  for (const user of data.users) {
+  for (let user of data.users) {
     html += `<tr>
               <td>${user.listNumber}</td>
               <td><a href="${user.user_url}" target="_blank" >${user.first_name} ${user.last_name}</a></td>
@@ -186,7 +196,15 @@ function printUsers(data){
               <td class="text-center" style="width: 7%;" >${user.status}</td>
               <td style="width: 13%;" >${user.created_at_formated}</td>
               <td>${user.updated_at_formated != null ? user.updated_at_formated : "/"}</td>
-              <td><i class="fas fa-ellipsis-v"></i></td>
+              <td>
+                <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" target="_blank"  href="${user.userAdminEditUrl}" data-id="${user.id}">Edit</a>
+                  <a class="dropdown-item  ${user.deleted_at ? "disabled" : ""}" data-toggle="modal" data-target="#confirm-delete" href="#" data-id="${user.id}">Delete</a>
+                </div>
+              </td>
             </tr>`;
   }
 
@@ -236,6 +254,36 @@ function cancelUsersFilters() {
   $("#ddlRole").val("").trigger('change');
   $("#ddlStatus").val("").trigger('change');
   refreshUsers();
+}
+
+function deleteUser(){
+  let id = $("#id").val();
+  
+  $.ajax({
+    url: "/admin/users-api/"+id,
+    method: "DELETE",
+    datatype: "json",
+    data: {
+      _token: token
+    },
+    success : function(data) {
+      console.log(data)
+      refreshUsers();
+      makeNotification(0,"Success: ",data.message)
+    },
+    error : function(xhr) {
+      switch(xhr.status){
+        case 404:
+          makeNotification(1,xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1,"Error","Server error, please try again later.");
+          break;
+      }
+    }
+  }).done(function(){
+    $('#confirm-delete').modal("hide");
+  })
 }
 
 
@@ -352,7 +400,15 @@ function printJobs(data){
               <td class="text-center" style="width: 7%;" >${job.status}</td>
               <td style="width: 15%;" >${job.created_at_formated}</td>
               <td>${job.updated_at_formated != null ? job.updated_at_formated : "/"}</td>
-              <td><i class="fas fa-ellipsis-v"></i></td>
+              <td>
+                <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="#" data-id="${job.id}">Edit</a>
+                  <a class="dropdown-item  ${job.deleted_at ? "disabled" : ""}" data-toggle="modal" data-target="#confirm-delete" href="#" data-id="${job.id}">Delete</a>
+                </div>
+              </td>
             </tr>`;
   }
 
@@ -481,6 +537,37 @@ function refreshTopJobsStatistics() {
     })
 }
 
+function deleteJob(){
+  let id = $("#id").val();
+  
+  $.ajax({
+    url: "/admin/jobs-api/"+id,
+    method: "DELETE",
+    datatype: "json",
+    data: {
+      id: id,
+      _token: token
+    },
+    success : function(data) {
+      console.log(data)
+      refreshJobs();
+      makeNotification(0,"Success: ",data.message)
+    },
+    error : function(xhr) {
+      switch(xhr.status){
+        case 404:
+          makeNotification(1,xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1,"Error","Server error, please try again later.");
+          break;
+      }
+    }
+  }).done(function(){
+    $('#confirm-delete').modal("hide");
+  })
+}
+
 
 function refreshCompanies(e,page = 1) {
     
@@ -565,7 +652,7 @@ function refreshCompanies(e,page = 1) {
 function printCompanies(data){
 
   let html = ``;
-  for (const company of data.companies) {
+  for (let company of data.companies) {
     html += `<tr>
               <td>${company.listNumber}</td>
               <td><a href="${company.company_details}" target="_blank" >${company.name}</a></td>
@@ -576,7 +663,15 @@ function printCompanies(data){
               <td class="text-center" style="width: 7%;" >${company.statistics}</td>
               <td style="width: 12%;" >${company.created_at_formated}</td>
               <td style="width: 12%;">${company.updated_at_formated != null ? company.updated_at_formated : "/"}</td>
-              <td><i class="fas fa-ellipsis-v"></i></td>
+              <td>
+                <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="#" data-id="${company.id}">Edit</a>
+                  <a class="dropdown-item  ${company.deleted_at ? "disabled" : ""}" data-toggle="modal" data-target="#confirm-delete" href="#" data-id="${company.id}">Delete</a>
+                </div>
+              </td>
             </tr>`;
   }
 
@@ -698,4 +793,34 @@ function refreshTopCompaniesStatistics(){
       data: donutData,
       options: donutOptions
     })
+}
+
+function deleteCompany(){
+  let id = $("#id").val();
+  
+  $.ajax({
+    url: "/admin/companies-api/"+id,
+    method: "DELETE",
+    datatype: "json",
+    data: {
+      _token: token
+    },
+    success : function(data) {
+      console.log(data)
+      refreshCompanies();
+      makeNotification(0,"Success: ",data.message)
+    },
+    error : function(xhr) {
+      switch(xhr.status){
+        case 404:
+          makeNotification(1,xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1,"Error","Server error, please try again later.");
+          break;
+      }
+    }
+  }).done(function(){
+    $('#confirm-delete').modal("hide");
+  })
 }

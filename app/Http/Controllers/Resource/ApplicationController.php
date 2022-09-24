@@ -81,6 +81,7 @@ class ApplicationController extends Controller
             
             return response($response,200);
         } catch (\Throwable $th) {
+            // dd($th);
             Log::error($th->getMessage());
             return response()->json(["message" => "Server error on getting applications, try again later"],500);
         }
@@ -118,7 +119,6 @@ class ApplicationController extends Controller
     {
         try {
             $application = Application::with("user","user.image","user_cv","job","job.company","job.city")->find($id);
-            
             $application->job_url = route("job-details",$application->user->id);
             $application->company_url = route("company-details",$application->job->company->id);
             $application->app_status = ApplicationStatus::asSelectArray();
@@ -127,7 +127,7 @@ class ApplicationController extends Controller
             $application->user_image = url($application->user->image->src);
             $application->user_profile = route("user-profile",$application->user->id);
             $application->userCV = url($application->user_cv->src);
-            
+
             return response()->json(["data" => $application],200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());

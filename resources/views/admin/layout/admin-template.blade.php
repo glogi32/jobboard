@@ -39,6 +39,30 @@
 
 @include("admin.fixed.scripts")
 
+  @if(session()->has("success"))
+  
+    <script>
+        window.onload = function () {
+          makeNotification(0,'{{session("success")["title"]}}', '{{session("success")["message"]}}' );
+        }
+    </script>
+  @endif
+
+  @if(session()->has("error"))
+    <script>
+        window.onload = function () {
+          makeNotification(1,'{{session("error")["title"]}}','{{session("error")["message"]}}');
+        }
+    </script>
+  @endif
+
+  @if ($errors->any())
+    <script>
+      window.onload = function () {
+        makeNotification(1,"Error:","Invalid form inputs.");
+      }
+    </script>
+  @endif
 
 </body>
 </html>

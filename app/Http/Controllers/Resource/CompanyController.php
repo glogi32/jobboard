@@ -365,13 +365,14 @@ class CompanyController extends FrontController
      */
     public function destroy($id)
     {
+        
         $company = Company::find($id);
         try {
             if(!$company){
                 return response(["message" => "Company not found"],404);
             }
             $company->delete();
-            return response(["message" => "Company successfully deleted"],204);
+            return response(["message" => "Company successfully deleted"],200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return response(["message" => "Server error on deleteing company"],500);

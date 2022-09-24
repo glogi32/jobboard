@@ -267,4 +267,25 @@
     </div><!-- /.container-fluid -->
   </section>
   <!-- /.content -->
+  <div class="modal fade " id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="h-100 d-flex">
+      <div class="modal-dialog " style="margin: auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                Delete job  
+            </div>
+            <div class="modal-body text-bold text-center">
+              Are you sure you want to delete selected job?
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" name="id" id="id" value="" >
+                @csrf
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Delete comment</button>
+                {{-- <a class="btn btn-danger ">Delete</a> --}}
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection

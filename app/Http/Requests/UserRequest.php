@@ -25,15 +25,17 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
+        $userId = explode("/",\request()->requestUri)[3];
+
         return [
             "first-name" => ["bail","required","max:60","regex:/^[A-Z][a-zA-Z]*[\sa-zA-Z]*$/"],
             "last-name" => ["bail","required","max:60","regex:/^[A-Z][a-zA-Z]*[\sa-zA-Z]*$/"],
-            "email" => ["bail","required","email","max:120",Rule::unique('users')->ignore($this->user)],
+            "email" => ["bail","required","email","max:120",Rule::unique('users',"email")->ignore($userId)],
             "password" => ["bail","required",Password::min(8)
                                                     ->letters()
                                                     ->mixedCase()
                                                     ->numbers()],
-            "phone" => ["bail","required","regex:/^[0-9]{3}[\s-]?[0-9]{3}[\s-]?[0-9]{0,7}$/"],
+            "phone" => ["bail","required","regex:/^[0-9]{3}[\s-]?[0-9]{1,3}[\s-]?[0-9]{0,7}$/"],
             "linkedin" => ["bail","nullable","url"],
             "github" => ["bail","nullable","url"],
             "portfolio-website" => ["bail","nullable","url"],

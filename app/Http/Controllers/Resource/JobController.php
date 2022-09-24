@@ -150,9 +150,11 @@ class JobController extends Controller
             $response["jobs"] = $query->skip($skip)->take($perPage)->get();
             
             if($pageType == "adminJobs"){
+                $response["jobs"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
                 $this->formatAdminJobs($response["jobs"],$response["skip"]);
             }
             else{
+                $response["jobs"] = $query->skip($skip)->take($perPage)->get();
                 $this->formatJobs($response["jobs"]);
             }
 
@@ -273,7 +275,18 @@ class JobController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $job = Job::find($id);
+        if(!$job){
+            return response()->json(["message" => "Job not found!"], 404);
+        }
+
+        try {
+            $job->delete();
+            return response(["message" => "Job successfully deleted"],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response(["message" => "Server error on deleteing job"],500);
+        }
     }
 
     public function formatJobs($jobs)

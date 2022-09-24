@@ -183,7 +183,6 @@ class UserController extends FrontController
      */
     public function update(UserRequest $request, $id)
     {
-        
         $user = User::with("image","user_main_cv","user_other_docs")->find($id);
 
         if(!$user){
@@ -191,6 +190,7 @@ class UserController extends FrontController
         }
 
         $role_id = $request->input("role");
+        
         if(!$role_id){
             $role_id = $user->role_id;
         }
@@ -296,7 +296,18 @@ class UserController extends FrontController
      */
     public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        if(!$user){
+            return response()->json(["message" => "User not found!"], 404);
+        }
+
+        try {
+            $user->delete();
+            return response(["message" => "User successfully deleted"],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response(["message" => "Server error on deleteing user"],500);
+        }
     }
 
     public function formatUsers($users, $skip = 1)
@@ -305,6 +316,7 @@ class UserController extends FrontController
 
             $user->listNumber = $skip;
             $skip++;
+            $user->userAdminEditUrl = route("user-edit-admin",$user->id);
             if($user->verified){
                 $user->verified = date("d.m.Y H:i", $user->verified);
             }

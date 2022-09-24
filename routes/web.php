@@ -95,6 +95,8 @@ Route::prefix("admin")->group(function(){
     Route::get("jobs",[JobsAdminController::class,"jobsPage"])->name("jobs-page");
     Route::get("companies",[CompaniesAdminController::class,"companiesPage"])->name("companies-page");
 
+    Route::get("user-edit/{id}",[UsersAdminController::class,"usersEditPage"])->name("user-edit-admin");
+
     Route::get("companies-stats",[CompaniesAdminController::class, "topCompaniesStatistics"]);
     Route::get("jobs-stats",[JobsAdminController::class, "topJobsStatistics"]);
 

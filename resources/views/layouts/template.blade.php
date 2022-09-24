@@ -48,7 +48,7 @@
       window.onload = function () {
         makeNotification(1,"Error:","Invalid form inputs.");
       }
-  </script>
+    </script>
     @endif
   </body>
 </html>

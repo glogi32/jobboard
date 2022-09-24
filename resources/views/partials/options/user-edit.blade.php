@@ -208,7 +208,7 @@
               @endforeach
             </div>
           @endif
-      </div>
+        </div>
       </div>
       
       <div class="row form-group md-2">
@@ -233,5 +233,5 @@
             </div>
         </div>
     </form>
-</div>
+  </div>
 </div>
