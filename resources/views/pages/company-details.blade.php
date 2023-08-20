@@ -134,11 +134,6 @@
                     @component('components.star-rating',["companyVote" => $company->vote])
                         
                     @endcomponent
-                    {{-- <li class="fa fa-star star-color" ></li>
-                    <li class="fa fa-star star-color" ></li>
-                    <li class="fa fa-star-half-alt star-color" ></li>
-                    <li class="star-small " ></li>
-                    <li class="star-small  " ></li> --}}
                     ({{$company->vote}})
                   </ul>
                 </div>
@@ -200,9 +195,6 @@
               @endif
   
               <div class="block__87154 mb-0">
-                <blockquote>
-                  <p>{{strlen($company->user->about_me) > 257 ? substr($company->user->about_me,0,257)."..." : $company->user->about_me,0,257 }}</p>
-                </blockquote>
                 <div class="block__91147 d-flex align-items-center">
                   <figure class="mr-4"><img src="{{url($company->user->image->src)}}" alt="{{$company->user->image->alt}}" class="img-fluid"></figure>
                   <div>
@@ -210,6 +202,9 @@
                     <span class="position">{{$company->user->role->name}}</span>
                   </div>
                 </div>
+                <blockquote class="mt-2 ">
+                  <p>{{strlen($company->user->about_me) > 257 ? substr($company->user->about_me,0,257)."..." : $company->user->about_me,0,257 }}</p>
+                </blockquote>
               </div>
   
             </div>

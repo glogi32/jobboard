@@ -25,8 +25,8 @@ class UserController extends FrontController
      */
     public function index(Request $request)
     {
-        $orderBy = $request->input("orderBy","created_at");
-        $order = $request->input("order","DESC");
+        $orderBy = $request->input("orderBy", "created_at");
+        $order = $request->input("order", "DESC");
         $keyword = $request->input("keyword");
 
         $status = $request->input("status");
@@ -37,98 +37,90 @@ class UserController extends FrontController
         $createRangeTo = $request->input("createRangeTo");
         $updateRangeFrom = $request->input("updateRangeFrom");
         $updateRangeTo = $request->input("updateRangeTo");
-        
-        $perPage = $request->input("perPage",5);
-        $page = $request->input("page",1);
+
+        $perPage = $request->input("perPage", 5);
+        $page = $request->input("page", 1);
 
         $pageType = $request->input("pageType");
         $response = [];
 
         $query = User::with("role:id,name");
 
-        if($role){
-            $query = $query->where("role_id",$role);
+        if ($role) {
+            $query = $query->where("role_id", $role);
         }
-        if($status){
-            if($status == "Deleted"){
+        if ($status) {
+            if ($status == "Deleted") {
                 $query = $query->whereNotNull("deleted_at");
-            }
-            else if($status == "Pending"){
-                $query = $query->where("verified",null);
-            }
-            else{
-                $query = $query->where("deleted_at",null)
-                                ->whereNotNull("verified");
+            } else if ($status == "Pending") {
+                $query = $query->where("verified", null);
+            } else {
+                $query = $query->where("deleted_at", null)
+                    ->whereNotNull("verified");
             }
         }
 
-        if($verificationRangeFrom && $verificationRangeTo){
-            
-            $query = $query->where("verified",">",strtotime(str_replace("/","-",$verificationRangeFrom)));
-            $query = $query->where("verified","<",strtotime(str_replace("/","-",$verificationRangeTo)));
+        if ($verificationRangeFrom && $verificationRangeTo) {
+
+            $query = $query->where("verified", ">", strtotime(str_replace("/", "-", $verificationRangeFrom)));
+            $query = $query->where("verified", "<", strtotime(str_replace("/", "-", $verificationRangeTo)));
         }
 
 
-        if($createRangeFrom && $createRangeTo){
-            
-            $createRangeFromTimestamp = strtotime(str_replace("/","-",$createRangeFrom));
-            $createRangeToTimestamp = strtotime(str_replace("/","-",$createRangeTo));
+        if ($createRangeFrom && $createRangeTo) {
 
-            $query = $query->where("created_at",">",date("Y-m-d",$createRangeFromTimestamp));
-            $query = $query->where("created_at","<",date("Y-m-d",$createRangeToTimestamp));
+            $createRangeFromTimestamp = strtotime(str_replace("/", "-", $createRangeFrom));
+            $createRangeToTimestamp = strtotime(str_replace("/", "-", $createRangeTo));
+
+            $query = $query->where("created_at", ">", date("Y-m-d", $createRangeFromTimestamp));
+            $query = $query->where("created_at", "<", date("Y-m-d", $createRangeToTimestamp));
         }
 
-        if($updateRangeFrom && $updateRangeTo){
-            
-            $updateRangeFromTimestamp = strtotime(str_replace("/","-",$updateRangeFrom));
-            $updateRangeToTimestamp = strtotime(str_replace("/","-",$updateRangeTo));
+        if ($updateRangeFrom && $updateRangeTo) {
 
-            $query = $query->where("created_at",">",date("Y-m-d",$updateRangeFromTimestamp));
-            $query = $query->where("created_at","<",date("Y-m-d",$updateRangeToTimestamp));
+            $updateRangeFromTimestamp = strtotime(str_replace("/", "-", $updateRangeFrom));
+            $updateRangeToTimestamp = strtotime(str_replace("/", "-", $updateRangeTo));
+
+            $query = $query->where("created_at", ">", date("Y-m-d", $updateRangeFromTimestamp));
+            $query = $query->where("created_at", "<", date("Y-m-d", $updateRangeToTimestamp));
         }
 
-        if(!empty($keyword)){
-           $query = $query->where("first_name","like","%".$keyword."%")
-                ->orWhere(function($query) use($keyword){
-                    $query->where("last_name","like","%".$keyword."%");
+        if (!empty($keyword)) {
+            $query = $query->where("first_name", "like", "%" . $keyword . "%")
+                ->orWhere(function ($query) use ($keyword) {
+                    $query->where("last_name", "like", "%" . $keyword . "%");
                 })
-                ->orWhere(function($query) use($keyword){
-                    $query->where("email","like","%".$keyword."%");
+                ->orWhere(function ($query) use ($keyword) {
+                    $query->where("email", "like", "%" . $keyword . "%");
                 });
         }
 
-        if($order || $orderBy){
-            $query = $query->orderBy($orderBy,$order);
+        if ($order || $orderBy) {
+            $query = $query->orderBy($orderBy, $order);
         }
 
         try {
             $skip = $perPage * ($page - 1);
             $response["totalUsers"] = $query->count();
-            $response["totalPages"] = ceil($response["totalUsers"]/$perPage);
+            $response["totalPages"] = ceil($response["totalUsers"] / $perPage);
             $response["curentPage"] = (int)$page;
             $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
             $response["prevPage"] = $page <= 1 ? false : true;
-            $response["skip"] = $skip+1;
-            if($pageType == "adminUsers"){
+            $response["skip"] = $skip + 1;
+            if ($pageType == "adminUsers") {
                 $response["users"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
-            }
-            else{
+            } else {
                 $response["users"] = $query->skip($skip)->take($perPage)->get();
             }
-            
-            // }else{
-            //     $response["jobs"] = $query->get();
-            // }
-            
 
-            $this->formatUsers($response["users"],$response["skip"]);
-            return response($response,200);
+
+
+            $this->formatUsers($response["users"], $response["skip"]);
+            return response($response, 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response(["message" => "Server error, try again later."],500);
+            return response(["message" => "Server error, try again later."], 500);
         }
-
-        
     }
 
     /**
@@ -183,15 +175,15 @@ class UserController extends FrontController
      */
     public function update(UserRequest $request, $id)
     {
-        $user = User::with("image","user_main_cv","user_other_docs")->find($id);
+        $user = User::with("image", "user_main_cv", "user_other_docs")->find($id);
 
-        if(!$user){
-            return redirect()->back()->with("error",["title" => "Error","message" => "User not found."]);
+        if (!$user) {
+            return redirect()->back()->with("error", ["title" => "Error", "message" => "User not found."]);
         }
 
         $role_id = $request->input("role");
-        
-        if(!$role_id){
+
+        if (!$role_id) {
             $role_id = $user->role_id;
         }
 
@@ -205,29 +197,29 @@ class UserController extends FrontController
         $user->portfolio_link = $request->input("portfolio-website");
         $user->about_me = $request->input("about-u");
         $user->role_id = $role_id;
-        
+
         DB::beginTransaction();
-        
+
         try {
             $fileCV = $request->file("cv");
             $fileDocs = $request->file("other-docs");
             $fileImage = $request->file("image");
 
-            if($fileCV){
-                $fileName = time()."_".$fileCV->getClientOriginalName();
-                $directory = \public_path()."/user_cv-s";
-                $path = "user_cv-s/".$fileName;
+            if ($fileCV) {
+                $fileName = time() . "_" . $fileCV->getClientOriginalName();
+                $directory = \public_path() . "/user_cv-s";
+                $path = "user_cv-s/" . $fileName;
 
-                $fileUpload = $fileCV->move($directory,$fileName);
+                $fileUpload = $fileCV->move($directory, $fileName);
 
-                if($user->user_main_cv){
+                if ($user->user_main_cv) {
                     $user_cv = User_cv::find($user->user_main_cv->id);
                     $user_cv->name = $fileCV->getClientOriginalName();
                     $user_cv->src = $path;
                     $user_cv->user_id = $user->id;
                     $user_cv->main = true;
                     $user_cv->save();
-                }else{
+                } else {
                     $user_cv = new User_cv();
                     $user_cv->name = $fileCV->getClientOriginalName();
                     $user_cv->src = $path;
@@ -237,16 +229,16 @@ class UserController extends FrontController
                 }
             }
 
-            if($fileDocs){
-                $directory = \public_path()."/user_cv-s";
-                $user_docs_ids = Arr::pluck($user->user_other_docs,"id");
-                User_cv::whereIn("id",$user_docs_ids)->delete();
+            if ($fileDocs) {
+                $directory = \public_path() . "/user_cv-s";
+                $user_docs_ids = Arr::pluck($user->user_other_docs, "id");
+                User_cv::whereIn("id", $user_docs_ids)->delete();
 
                 foreach ($fileDocs as $docs) {
-                    $fileName = time()."_".$docs->getClientOriginalName();
-                    $path = "user_cv-s/".$fileName;
+                    $fileName = time() . "_" . $docs->getClientOriginalName();
+                    $path = "user_cv-s/" . $fileName;
 
-                    $fileUpload = $docs->move($directory,$fileName);
+                    $fileUpload = $docs->move($directory, $fileName);
 
                     $user_cv = new User_cv();
                     $user_cv->name = $docs->getClientOriginalName();
@@ -258,16 +250,16 @@ class UserController extends FrontController
             }
             $updateUser = $user->save();
 
-            if($fileImage){
-                $imageName = time()."_".$fileImage->getClientOriginalName();
-                $image_directory = \public_path()."/img/users";
-                $path = "img/users/".$imageName;
+            if ($fileImage) {
+                $imageName = time() . "_" . $fileImage->getClientOriginalName();
+                $image_directory = \public_path() . "/img/users";
+                $path = "img/users/" . $imageName;
                 $imageable_type = "App\Models\User";
 
-                $imageUpload = $fileImage->move($image_directory,$imageName);
+                $imageUpload = $fileImage->move($image_directory, $imageName);
                 $this->deleteFile($user->image->src);
 
-                $image = Image::where("imageable_id",$user->id)->first();
+                $image = Image::where("imageable_id", $user->id)->first();
                 $image->src = $path;
                 $image->alt = $imageName;
                 $image->imageable_type = $imageable_type;
@@ -276,16 +268,14 @@ class UserController extends FrontController
             }
 
             DB::commit();
-            $user = User::with("role","image")->where("id",$id)->first();
-            session()->put("user",$user);
-            return redirect()->back()->with("success",["title" => "Success","message" => "User data successfully updated."]);
-            
+            $user = User::with("role", "image")->where("id", $id)->first();
+            session()->put("user", $user);
+            return redirect()->back()->with("success", ["title" => "Success", "message" => "User data successfully updated."]);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error($th);
-            return redirect()->back()->with("error",["title" => "Error","message" => "Server error, try again later."]);
+            return redirect()->back()->with("error", ["title" => "Error", "message" => "Server error, try again later."]);
         }
-
     }
 
     /**
@@ -297,16 +287,16 @@ class UserController extends FrontController
     public function destroy($id)
     {
         $user = User::find($id);
-        if(!$user){
+        if (!$user) {
             return response()->json(["message" => "User not found!"], 404);
         }
 
         try {
             $user->delete();
-            return response(["message" => "User successfully deleted"],200);
+            return response(["message" => "User successfully deleted"], 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response(["message" => "Server error on deleteing user"],500);
+            return response(["message" => "Server error on deleteing user"], 500);
         }
     }
 
@@ -316,46 +306,39 @@ class UserController extends FrontController
 
             $user->listNumber = $skip;
             $skip++;
-            $user->userAdminEditUrl = route("user-edit-admin",$user->id);
-            if($user->verified){
+            $user->userAdminEditUrl = route("user-edit-admin", $user->id);
+            if ($user->verified) {
                 $user->verified = date("d.m.Y H:i", $user->verified);
             }
 
-            if($user->deleted_at){
+            if ($user->deleted_at) {
                 $user->deleted_at_formated = date("d.m.Y H:i", strtotime($user->deleted_at));
-            }
-            else{
+            } else {
                 $user->deleted_at_formated = null;
             }
 
             $user->created_at_formated = date("d.m.Y H:i", $user->created_at->timestamp);
-            
-            if($user->created_at->timestamp == $user->updated_at->timestamp){
+
+            if ($user->created_at->timestamp == $user->updated_at->timestamp) {
                 $user->updated_at_formated = null;
-            }
-            else{
+            } else {
                 $user->updated_at_formated = date("d.m.Y H:i", $user->updated_at->timestamp);
             }
 
             // $user->user_url = route("user-profile", $user->id);
-            $user->user_url = url("user-profile/".$user->id);
+            $user->user_url = url("user-profile/" . $user->id);
 
-            if($user->verified && !$user->deleted_at){
+            if ($user->verified && !$user->deleted_at) {
                 $user->status = '<span class="badge bg-success">Active</span>';
             }
 
-            if(!$user->verified){
+            if (!$user->verified) {
                 $user->status = '<span class="badge bg-warning">Pending</span>';
             }
 
-            if($user->deleted_at){
+            if ($user->deleted_at) {
                 $user->status = '<span class="badge bg-danger">Deleted</span>';
             }
-
-                    
         }
-
     }
-
-    
 }
