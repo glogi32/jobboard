@@ -186,77 +186,6 @@
                           </div>
                       </div>
                   </div>
-            
-                  {{-- <div class="row form-group mb-2">
-                      <div class="col-md-12 my-3">
-                        <label class="d-inline">Main CV:
-                        @if ($user_main_cv)
-                           {{$user->user_main_cv->name}}</label> 
-                          <a class="btn btn-info mb-3 d-inline" href="{{url($user->user_main_cv->src)}}" download>Download CV</a>
-                          <a class="btn btn-info mb-3 d-inline btn-remove-docs text-white" data-id="{{$user_main_cv->id}}">Remove CV</a>
-                        @else
-                          There is no cv assigned.</label>
-                        @endif
-                      </div>
-                      <div class="col-md-6 mb-3 mb-md-0">
-                          <label class="text-black" for="CV">Change CV</label><br/>
-                          <input type="file" name="cv" id="CV" aria-describedby="CVHelp" class="">
-                          <small id="CVHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
-                      </div>
-                      <div class="col-md-6 mb-md-0">
-                        @if($errors->has("cv"))
-                              <div class="alert alert-danger" role="alert">
-                                @foreach ($errors->get("cv") as $msg)
-                                    {{$msg}}
-                                @endforeach
-                              </div>
-                            @endif
-                      </div>
-                  </div> --}}
-                  
-                  {{-- <div class="row form-group mb-2">
-                    <div class="col-md-12 my-3">
-                      <label class="d-inline">Other documents: </label> 
-            
-                        @if (!$user_other_docs->isEmpty())
-                          <ul>
-                            @foreach ($user_other_docs as $docs)
-                              <li class="my-2">
-                                <label>{{$docs->name}}</label>
-                                <a class="btn btn-info mb-3 d-inline" href="{{$docs->src}}" download>Download Document</a>
-                                <a class="btn btn-info mb-3 d-inline btn-remove-docs text-white" data-id="{{$docs->id}}">Remove Document</a>
-                              </li>
-                            @endforeach
-                          </ul>
-                        @else
-                          <p>There is no documents assigned.</p>
-                        @endif
-            
-                    </div>
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <label class="text-black" for="other-docs">Change Documents</label><br/>
-                        <input type="file" name="other-docs[]" id="other-docs" aria-describedby="other-docsHelp" multiple>
-                        <small id="other-docsHelp" class="form-text ">File must be in pdf,docx or doc format.</small>
-                    </div>
-                    <div class="col-md-6 mb-md-0">
-                        @if($errors->has("other-docs"))
-                          <div class="alert alert-danger" role="alert">
-                            @foreach ($errors->get("other-docs") as $msg)
-                                {{$msg}}
-                            @endforeach
-                          </div>
-                        @endif
-                    </div>
-                    <div class="col-md-6 mb-md-0">
-                      @if($errors->has("other-docs.*"))
-                        <div class="alert alert-danger" role="alert">
-                          @foreach ($errors->get("other-docs.*") as $msg)
-                              {{$msg[0]}}
-                          @endforeach
-                        </div>
-                      @endif
-                  </div>
-                  </div> --}}
                   
                   <div class="row form-group md-2">
                     <div class="col-md-6  mb-3 mb-md-0">
@@ -288,32 +217,6 @@
         <!-- /.card -->
       </div>
       <div class="col-md-4">
-        <div class="card card-secondary">
-          <div class="card-header">
-            <h3 class="card-title">Budget</h3>
-
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <label for="inputEstimatedBudget">Estimated budget</label>
-              <input type="number" id="inputEstimatedBudget" class="form-control" value="2300" step="1">
-            </div>
-            <div class="form-group">
-              <label for="inputSpentBudget">Total amount spent</label>
-              <input type="number" id="inputSpentBudget" class="form-control" value="2000" step="1">
-            </div>
-            <div class="form-group">
-              <label for="inputEstimatedDuration">Estimated project duration</label>
-              <input type="number" id="inputEstimatedDuration" class="form-control" value="20" step="0.1">
-            </div>
-          </div>
-          <!-- /.card-body -->
-        </div>
         <!-- /.card -->
         <div class="card card-info">
           <div class="card-header">
@@ -330,58 +233,34 @@
               <thead>
                 <tr>
                   <th>File Name</th>
-                  <th>File Size</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-
-                <tr>
-                  <td>Functional-requirements.docx</td>
-                  <td>49.8005 kb</td>
-                  <td class="text-right py-0 align-middle">
-                    <div class="btn-group btn-group-sm">
-                      <a href="#" class="btn btn-info"><i class="fas fa-eye"></i></a>
-                      <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-                    </div>
-                  </td>
-                <tr>
-                  <td>UAT.pdf</td>
-                  <td>28.4883 kb</td>
-                  <td class="text-right py-0 align-middle">
-                    <div class="btn-group btn-group-sm">
-                      <a href="#" class="btn btn-info"><i class="fas fa-eye"></i></a>
-                      <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-                    </div>
-                  </td>
-                <tr>
-                  <td>Email-from-flatbal.mln</td>
-                  <td>57.9003 kb</td>
-                  <td class="text-right py-0 align-middle">
-                    <div class="btn-group btn-group-sm">
-                      <a href="#" class="btn btn-info"><i class="fas fa-eye"></i></a>
-                      <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-                    </div>
-                  </td>
-                <tr>
-                  <td>Logo.png</td>
-                  <td>50.5190 kb</td>
-                  <td class="text-right py-0 align-middle">
-                    <div class="btn-group btn-group-sm">
-                      <a href="#" class="btn btn-info"><i class="fas fa-eye"></i></a>
-                      <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-                    </div>
-                  </td>
-                <tr>
-                  <td>Contract-10_12_2014.docx</td>
-                  <td>44.9715 kb</td>
-                  <td class="text-right py-0 align-middle">
-                    <div class="btn-group btn-group-sm">
-                      <a href="#" class="btn btn-info"><i class="fas fa-eye"></i></a>
-                      <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-                    </div>
-                  </td>
-
+                @if ($user->user_main_cv)
+                  <tr id="{{$user->user_main_cv->id}}">
+                    <td>{{explode('.', $user->user_main_cv->name)[0]}}</td>
+                    <td class="text-right py-0 align-middle">
+                      <div class="btn-group btn-group-sm">
+                        <a href="{{url($user->user_main_cv->src)}}" target="_blank" class="btn btn-info"><i class="fas fa-eye"></i></a>
+                        <a href="#" class="btn btn-danger delete-docs" data-toggle="modal" data-target="#confirm-delete" data-id={{$user->user_main_cv->id}}><i class="fas fa-trash"></i></a>
+                      </div>
+                    </td>
+                  </tr>
+                @endif
+                @if(!empty($user->user_other_docs))
+                  @foreach ($user->user_other_docs as $userDocs)  
+                    <tr id="{{$userDocs->id}}">
+                      <td>{{explode('.',$userDocs->name)[0]}}</td>
+                      <td class="text-right py-0 align-middle">
+                        <div class="btn-group btn-group-sm">
+                          <a href="{{url($userDocs->src)}}" target="_blank" class="btn btn-info"><i class="fas fa-eye"></i></a>
+                          <a href="#" class="btn btn-danger delete-docs" data-toggle="modal" data-target="#confirm-delete" data-id={{$userDocs->id}}><i class="fas fa-trash"></i></a>
+                        </div>
+                      </td>
+                    </tr>
+                  @endforeach
+                @endif
               </tbody>
             </table>
           </div>
@@ -392,5 +271,25 @@
     </div>
   </section>
   <!-- /.content -->
+</div>
+<div class="modal fade " id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="h-100 d-flex">
+    <div class="modal-dialog " style="margin: auto;">
+      <div class="modal-content">
+          <div class="modal-header">
+              Delete document  
+          </div>
+          <div class="modal-body text-bold text-center">
+            Are you sure you want to delete selected document?
+          </div>
+          <div class="modal-footer">
+              <input type="hidden" name="id" id="id" value="" >
+              @csrf
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Delete</button>
+          </div>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection

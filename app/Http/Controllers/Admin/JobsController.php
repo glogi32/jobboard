@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Seniority;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\FrontController;
 use App\Models\Area;
 use App\Models\City;
@@ -20,15 +19,15 @@ class JobsController extends FrontController
         $this->data["cities"] = City::all();
         $this->data["tech"] = Technology::all();
 
-        return view("admin.pages.jobs.jobs",$this->data);
+        return view("admin.pages.jobs.jobs", $this->data);
     }
 
     public function topJobsStatistics()
     {
-        $jobsStats = Job::select("title","statistics")->orderBy("statistics","DESC")->limit(10)->get();
+        $jobsStats = Job::select("title", "statistics")->orderBy("statistics", "DESC")->limit(10)->get();
 
-        if(!$jobsStats){
-            return response()->json(["message" => "Jobs not found"],404);
+        if (!$jobsStats) {
+            return response()->json(["message" => "Jobs not found"], 404);
         }
         return response()->json(["data" => $jobsStats]);
     }

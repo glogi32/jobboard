@@ -184,49 +184,6 @@
        
       </div>
       <!-- /.row -->
-      
-      <div class="row">
-        <div class="col-6">
-          <div class="card card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Companies Statistics</h3>
-
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <canvas id="companyStatisticsPaginated" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-            </div>
-            <!-- /.card-body -->
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="card card-primary">
-            <div class="card-header">
-              <h3 class="card-title">Top Companies Statistics</h3>
-
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <canvas id="companyStatisticsTop" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-            </div>
-            <!-- /.card-body -->
-          </div>
-        </div>
-      </div>
     </div><!-- /.container-fluid -->
   </section>
   <!-- /.content -->
@@ -235,17 +192,16 @@
       <div class="modal-dialog " style="margin: auto;">
         <div class="modal-content">
             <div class="modal-header">
-                Delete company  
+                Delete city  
             </div>
             <div class="modal-body text-bold text-center">
-              Are you sure you want to delete selected company?
+              Are you sure you want to delete selected city?
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="id" id="id" value="" >
                 @csrf
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Delete comment</button>
-                {{-- <a class="btn btn-danger ">Delete</a> --}}
+                <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Save</button>
             </div>
         </div>
       </div>

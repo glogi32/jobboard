@@ -204,7 +204,6 @@
                 @csrf
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Delete comment</button>
-                {{-- <a class="btn btn-danger ">Delete</a> --}}
             </div>
         </div>
       </div>
