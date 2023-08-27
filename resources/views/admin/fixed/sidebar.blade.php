@@ -57,6 +57,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{url("/admin/cities")}}" class="nav-link {{ (request()->is('admin/cities') ) ? 'active' : '' }}">
+              <i class="nav-icon fas fa-city"></i>
+              <p>
+                Cities
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

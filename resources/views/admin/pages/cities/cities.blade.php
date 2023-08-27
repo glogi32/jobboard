@@ -1,12 +1,10 @@
 @extends("admin.layout.admin-template")
 
 @section("title")
-  Admin | Companies
+  Admin | Cities
 @endsection
 
 @section("styles")
-  <link rel="stylesheet" href="{{asset('css/admin/select2/select2.min.css')}}">
-  <link rel="stylesheet" href="{{asset('css/admin/daterangepicker/daterangepicker.css')}}">
   <style>
     .select2-selection__choice{
       background-color: #007bff !important;
@@ -18,18 +16,7 @@
 @endsection
 
 @section("scripts")
-  <script src="{{asset('js/admin/select2/select2.full.min.js')}}"></script>
-  <script src="{{asset('js/admin/moment/moment.min.js')}}"></script>
-  <script src="{{asset('js/admin/daterangepicker/daterangepicker.js')}}"></script>
-  <script src="{{asset('js/admin/charts/Chart.min.js')}}"></script>
-  <script>
-    $(function () {
-      $('.select2').select2();
-      
-    });
-  </script>
   <script src="{{asset('js/admin/mainAdmin.js')}}"></script>
-
 @endsection
 
 @section("content")
@@ -37,12 +24,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                  <h1 class="m-0">Companies</h1>
+                  <h1 class="m-0">Cities</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Companies</li>
+                    <li class="breadcrumb-item active">Cities</li>
                 </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -59,79 +46,16 @@
           <div class="card">
             
             <div class="card-header">
-              <h3 class="card-title">List of companies</h3>
+              <h3 class="card-title">List of cities</h3>
               <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 100%;">
+                  <button class="btn-primary btn mr-3 btn-sm"  data-toggle="modal" data-target="#city-add">Add</button>
                   <input type="text" id="keyword" name="table_search" class="form-control float-right" placeholder="Search">
-                  <input type="hidden" name="pageType" id="pageType" value="adminCompanies">
+                  <input type="hidden" name="pageType" id="pageType" value="adminCities">
                   <div class="input-group-append">
                     <button type="button" class="btn btn-default">
                       <i class="fas fa-search"></i>
                     </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-10 offset-md-1">
-                <div class="row">
-                  <div class="col-4">
-                    <div class="form-group">
-                      <label>Created at date</label>
-                      <input type="text" class="form-control float-right rangedatetime" id="create-range">
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="form-group">
-                      <label>Updated at date</label>
-                      <input type="text" class="form-control float-right rangedatetime" id="update-range">
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="form-group">
-                      <label>Sort By:</label>
-                      <select class="select2" id="ddlSort"  style="width: 100%;">
-                        <option value="">Choose...</option>
-                        <option value="created_at-ASC">Create date ascending</option>
-                        <option value="created_at-DESC">Create date descending</option>
-                        <option value="vote-ASC">Vote ascending</option>
-                        <option value="vote-DESC">Vote descending</option>
-                        <option value="name-ASC">Name ascending</option>
-                        <option value="name-DESC">Name descending</option>
-                        <option value="statistics-ASC">Statistics ascending</option>
-                        <option value="statistics-DESC">Statistics descending</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="row mt-3">
-                  <div class="col-3 ">
-                    <div class="form-group">
-                      <label>City</label>
-                      <select class="select2" multiple="multiple" id="ddlCity" style="width: 100%;">
-                          @foreach ($cities as $city)
-                            <option value="{{$city->id}}">{{$city->name}}</option>    
-                          @endforeach
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-3">
-                    <div class="form-group">
-                      <label>Status</label>
-                      <select class="select2" id="ddlStatus" style="width: 100%;">
-                        <option value="">Choose...</option>
-                        <option value="Active">Active</option>
-                        <option value="Deleted">Deleted</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-2 text-center">
-                    <div class="form-group">
-                      <label>Cancel all filters</label>
-                      <div class="text-center" id="cancelFilters" style="cursor: pointer;">
-                        <i class="far fa-times-circle h3 text-center text-danger" ></i>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -142,18 +66,13 @@
                 <thead>
                   <tr>
                     <th style="width: 3%">#</th>
-                    <th>Company Name</th>
-                    <th style="width: 15%">Email</th>
-                    <th>Employer</th>
-                    <th class="text-center">Rating</th>
-                    <th style="text-align: center;">Status</th>
-                    <th>Statistics</th>
+                    <th>Name</th>
                     <th>Created at</th>
                     <th>Updated at</th>
                     <th>Actions</th>
                   </tr> 
                 </thead>
-                <tbody id="table-companies">
+                <tbody id="table-cities">
                   
                 </tbody>
               </table>
@@ -173,7 +92,7 @@
                 </select>
               </div>
 
-              <ul id="companiesPagination" class="pagination pagination-sm m-0 float-right">
+              <ul id="citiesPagination" class="pagination pagination-sm m-0 float-right">
 
               </ul>
             </div>
@@ -204,6 +123,37 @@
                 <button id="btn-confirm-delete" type="button" class="btn btn-danger btn-ok" >Save</button>
             </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="city-add" tabindex="-1" role="dialog" aria-labelledby="city-add" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle"> Add city </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{{route("cities-api.store")}}" method="POST">
+          <div class="modal-body">
+            @csrf
+            <label for="cityName">City name</label>
+            <input type="text" name="cityName" id="cityName" class="form-control">
+            <div class="invalid-feedback">
+              @if($errors->has("cityName"))
+                @foreach ($errors->get("cityName") as $msg)
+                    {{$msg}}
+                @endforeach
+              @endif
+            </div>
+          </div>
+          <div class="modal-footer">
+            @csrf
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" id="btn-confirm-add" type="button" class="btn btn-primary btn-ok" >Save</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

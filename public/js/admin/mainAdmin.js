@@ -11,7 +11,6 @@ $(document).ready(function () {
   });
 
   if (window.location.pathname.includes("/admin/user-edit")) {
-    console.log('TEST')
     $("#btn-confirm-delete").on("click", deleteUserDocs);
   }
 
@@ -97,6 +96,13 @@ $(document).ready(function () {
     $("#create-range").on("change", refreshCompanies);
     $("#update-range").on("change", refreshCompanies);
     $("#btn-confirm-delete").on("click", deleteCompany);
+  }
+
+  if (window.location.pathname == "/admin/cities") {
+    refreshCities();
+    $("#keyword").on("keyup", refreshCities);
+    $("#ddlPerPage").on("change", refreshCities);
+    $("#btn-confirm-delete").on("click", deleteCity);
   }
 })
 
@@ -836,6 +842,118 @@ function deleteCompany() {
     success: function (data) {
       console.log(data)
       refreshCompanies();
+      makeNotification(0, "Success: ", data.message)
+    },
+    error: function (xhr) {
+      switch (xhr.status) {
+        case 404:
+          makeNotification(1, xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1, "Error", "Server error, please try again later.");
+          break;
+      }
+    }
+  }).done(function () {
+    $('#confirm-delete').modal("hide");
+  })
+}
+
+
+function refreshCities(e, page = 1) {
+  let perPage = $("#ddlPerPage").val();
+  let pageType = $("#pageType").val();
+  let keyword = $("#keyword").val();
+
+  var data = {
+    page: page,
+  };
+
+  if (keyword) {
+    data.keyword = keyword
+  }
+  if (perPage) {
+    data.perPage = perPage
+  }
+  if (pageType) {
+    data.pageType = pageType
+  }
+
+  $.ajax({
+    url: "/admin/cities-api",
+    method: "GET",
+    datatype: "json",
+    data: data,
+    success: function (data) {
+      console.log(data);
+      printCities(data.data);
+      printCitiesPagination(data.data);
+    },
+    error: function (xhr) {
+
+      switch (xhr.status) {
+        case 404:
+          makeNotification(1, xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1, "Error", "Server error, please try again later.");
+          break;
+      }
+    }
+  })
+}
+
+function printCities(data) {
+  let html = ``;
+  for (let city of data.cities) {
+    html += `<tr>
+              <td>${city.listNumber}</td>
+              <td><a href="${city.city_details}" target="_blank" >${city.name}</a></td>
+              <td style="width: 12%;" >${city.created_at_formated}</td>
+              <td style="width: 12%;">${city.updated_at_formated != null ? city.updated_at_formated : "/"}</td>
+              <td>
+                <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item"  data-toggle="modal" data-target="#confirm-delete" href="#" data-id="${city.id}">Delete</a>
+                </div>
+              </td>
+            </tr>`;
+  }
+
+  $("#table-cities").html(html);
+}
+
+function printCitiesPagination(data) {
+  html = `<li class="page-item"><a href="#" id="prevPage" class="page-link prev cityPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage - 1}">«</a></li>`;
+  for (let p = 1; p <= data.totalPages; p++) {
+    html += `<li class="page-item ${p == data.curentPage ? 'active' : ''}"><a class="page-link cityPage " data-id="${p}" href="#">${p}</a></li>`;
+  }
+  html += `<li class="page-item"><a href="#" id="nextPage" class="next page-link cityPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage + 1}">»</a></li>`
+  $("#citiesPagination").html(html);
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip + data.cities.length - 1} Of ${data.totalCities} Cities`);
+  $(".cityPage").on("click", function (e) {
+    e.preventDefault();
+    let page = $(this).data("id");
+    refreshCities(e, page);
+  })
+
+}
+
+function deleteCity() {
+  let id = $("#id").val();
+
+  $.ajax({
+    url: "/admin/cities-api/" + id,
+    method: "DELETE",
+    datatype: "json",
+    data: {
+      _token: token
+    },
+    success: function (data) {
+      console.log(data)
+      refreshCities();
       makeNotification(0, "Success: ", data.message)
     },
     error: function (xhr) {
