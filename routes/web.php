@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\CompaniesController as CompaniesAdminController;
 use App\Http\Controllers\Admin\JobsController as JobsAdminController;
+use App\Http\Controllers\Admin\TechnologiesController;
 use App\Http\Controllers\Admin\UsersController as UsersAdminController;
 use App\Http\Controllers\Resource\UserController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Resource\ApplicationController;
 use App\Http\Controllers\Resource\CityController;
 use App\Http\Controllers\Resource\CompanyController;
 use App\Http\Controllers\Resource\JobController;
+use App\Http\Controllers\Resource\TechnologyController;
 use App\Http\Controllers\UserProfileController;
 
 /*
@@ -97,6 +99,8 @@ Route::prefix("admin")->group(function () {
     Route::get("jobs", [JobsAdminController::class, "jobsPage"])->name("jobs-page");
     Route::get("companies", [CompaniesAdminController::class, "companiesPage"])->name("companies-page");
     Route::get("cities", [CitiesController::class, "citiesPage"])->name("cities-page");
+    Route::get("technologies", [TechnologiesController::class, "technologiesPage"])->name("tech-page");
+
 
     Route::get("user-edit/{id}", [UsersAdminController::class, "usersEditPage"])->name("user-edit-admin");
 
@@ -107,4 +111,5 @@ Route::prefix("admin")->group(function () {
     Route::resource("jobs-api", JobController::class);
     Route::resource("companies-api", CompanyController::class);
     Route::resource("cities-api", CityController::class);
+    Route::resource("technologies-api", TechnologyController::class);
 });

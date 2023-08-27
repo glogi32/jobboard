@@ -9,7 +9,6 @@ class CitiesController extends Controller
 {
     public function citiesPage()
     {
-
         return view("admin.pages.cities.cities");
     }
 }

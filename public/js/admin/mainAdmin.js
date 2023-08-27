@@ -104,6 +104,13 @@ $(document).ready(function () {
     $("#ddlPerPage").on("change", refreshCities);
     $("#btn-confirm-delete").on("click", deleteCity);
   }
+
+  if (window.location.pathname == "/admin/technologies") {
+    refreshTech();
+    $("#keyword").on("keyup", refreshTech);
+    $("#ddlPerPage").on("change", refreshTech);
+    $("#btn-confirm-delete").on("click", deleteCity);
+  }
 })
 
 function refreshUsers(e, page = 1) {
@@ -969,4 +976,85 @@ function deleteCity() {
   }).done(function () {
     $('#confirm-delete').modal("hide");
   })
+}
+
+
+function refreshTech(e, page = 1) {
+  let perPage = $("#ddlPerPage").val();
+  let pageType = $("#pageType").val();
+  let keyword = $("#keyword").val();
+
+  var data = {
+    page: page,
+  };
+
+  if (keyword) {
+    data.keyword = keyword
+  }
+  if (perPage) {
+    data.perPage = perPage
+  }
+  if (pageType) {
+    data.pageType = pageType
+  }
+
+  $.ajax({
+    url: "/admin/technologies-api",
+    method: "GET",
+    datatype: "json",
+    data: data,
+    success: function (data) {
+      printTechs(data.data);
+      printTechsPagination(data.data);
+    },
+    error: function (xhr) {
+
+      switch (xhr.status) {
+        case 404:
+          makeNotification(1, xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1, "Error", "Server error, please try again later.");
+          break;
+      }
+    }
+  })
+}
+
+function printTechs(data) {
+  let html = ``;
+  for (let tech of data.techs) {
+    html += `<tr>
+              <td>${tech.listNumber}</td>
+              <td><a href="${tech.tech_details}" target="_blank" >${tech.name}</a></td>
+              <td style="width: 12%;" >${tech.created_at_formated}</td>
+              <td style="width: 12%;">${tech.updated_at_formated != null ? tech.updated_at_formated : "/"}</td>
+              <td>
+                <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item"  data-toggle="modal" data-target="#confirm-delete" href="#" data-id="${tech.id}">Delete</a>
+                </div>
+              </td>
+            </tr>`;
+  }
+
+  $("#table-tech").html(html);
+}
+
+function printTechsPagination(data) {
+  html = `<li class="page-item"><a href="#" id="prevPage" class="page-link prev techPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage - 1}">«</a></li>`;
+  for (let p = 1; p <= data.totalPages; p++) {
+    html += `<li class="page-item ${p == data.curentPage ? 'active' : ''}"><a class="page-link techPage " data-id="${p}" href="#">${p}</a></li>`;
+  }
+  html += `<li class="page-item"><a href="#" id="nextPage" class="next page-link techPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage + 1}">»</a></li>`
+  $("#citiesPagination").html(html);
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip + data.techs.length - 1} Of ${data.totalTechs} Cities`);
+  $(".techPage").on("click", function (e) {
+    e.preventDefault();
+    let page = $(this).data("id");
+    refreshTech(e, page);
+  })
+
 }

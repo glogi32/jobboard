@@ -65,6 +65,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{url("/admin/technologies")}}" class="nav-link {{ (request()->is('admin/technologies') ) ? 'active' : '' }}">
+              <i class="nav-icon fa fa-code"></i>
+              <p>
+                Technologies
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
