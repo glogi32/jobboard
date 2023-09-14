@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AreasController;
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\CompaniesController as CompaniesAdminController;
 use App\Http\Controllers\Admin\JobsController as JobsAdminController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\JobController as ResourceJobController;
 use App\Http\Controllers\JobDetailsController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\Resource\ApplicationController;
+use App\Http\Controllers\Resource\AreaController;
 use App\Http\Controllers\Resource\CityController;
 use App\Http\Controllers\Resource\CompanyController;
 use App\Http\Controllers\Resource\JobController;
@@ -100,6 +102,7 @@ Route::prefix("admin")->group(function () {
     Route::get("companies", [CompaniesAdminController::class, "companiesPage"])->name("companies-page");
     Route::get("cities", [CitiesController::class, "citiesPage"])->name("cities-page");
     Route::get("technologies", [TechnologiesController::class, "technologiesPage"])->name("tech-page");
+    Route::get("areas", [AreasController::class, "areasPage"])->name("areas-page");
 
 
     Route::get("user-edit/{id}", [UsersAdminController::class, "usersEditPage"])->name("user-edit-admin");
@@ -112,4 +115,5 @@ Route::prefix("admin")->group(function () {
     Route::resource("companies-api", CompanyController::class);
     Route::resource("cities-api", CityController::class);
     Route::resource("technologies-api", TechnologyController::class);
+    Route::resource("areas-api", AreaController::class);
 });

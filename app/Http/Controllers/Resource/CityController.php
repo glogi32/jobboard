@@ -30,6 +30,7 @@ class CityController extends Controller
         if (!empty($keyword)) {
             $query = $query->where("name", "like", "%" . $keyword . "%");
         }
+        $query = $query->orderBy("created_at", "DESC");
         try {
             $skip = $perPage * ($page - 1);
             $response["totalCities"] = $query->count();
@@ -115,7 +116,7 @@ class CityController extends Controller
             return response(["message" => "City successfully deleted"], 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response(["message" => "Server error on deleteing company"], 500);
+            return response(["message" => "Server error on deleteing city"], 500);
         }
     }
 

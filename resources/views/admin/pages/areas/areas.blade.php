@@ -1,7 +1,7 @@
 @extends("admin.layout.admin-template")
 
 @section("title")
-  Admin | Technologies
+  Admin | Areas
 @endsection
 
 @section("styles")
@@ -24,12 +24,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                  <h1 class="m-0">Technologies</h1>
+                  <h1 class="m-0">Areas</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Technologies</li>
+                    <li class="breadcrumb-item active">Areas</li>
                 </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -46,12 +46,12 @@
           <div class="card">
             
             <div class="card-header">
-              <h3 class="card-title">List of technologies</h3>
+              <h3 class="card-title">List of areas</h3>
               <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 100%;">
-                  <button class="btn-primary btn mr-3 btn-sm"  data-toggle="modal" data-target="#tech-add">Add</button>
+                  <button class="btn-primary btn mr-3 btn-sm"  data-toggle="modal" data-target="#area-add">Add</button>
                   <input type="text" id="keyword" name="table_search" class="form-control float-right" placeholder="Search">
-                  <input type="hidden" name="pageType" id="pageType" value="adminTechs">
+                  <input type="hidden" name="pageType" id="pageType" value="adminAreas">
                   <div class="input-group-append">
                     <button type="button" class="btn btn-default">
                       <i class="fas fa-search"></i>
@@ -72,7 +72,7 @@
                     <th>Actions</th>
                   </tr> 
                 </thead>
-                <tbody id="table-tech">
+                <tbody id="table-areas">
                   
                 </tbody>
               </table>
@@ -92,7 +92,7 @@
                 </select>
               </div>
 
-              <ul id="techPagination" class="pagination pagination-sm m-0 float-right">
+              <ul id="areasPagination" class="pagination pagination-sm m-0 float-right">
 
               </ul>
             </div>
@@ -114,7 +114,7 @@
                 Delete city  
             </div>
             <div class="modal-body text-bold text-center">
-              Are you sure you want to delete selected tech?
+              Are you sure you want to delete selected city?
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="id" id="id" value="" >
@@ -126,23 +126,23 @@
       </div>
     </div>
   </div>
-  <div class="modal fade" id="tech-add" tabindex="-1" role="dialog" aria-labelledby="tech-add" aria-hidden="true">
+  {{-- <div class="modal fade" id="city-add" tabindex="-1" role="dialog" aria-labelledby="city-add" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle"> Add technologies </h5>
+          <h5 class="modal-title" id="exampleModalCenterTitle"> Add city </h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="{{route("technologies-api.store")}}" method="POST">
+        <form action="{{route("cities-api.store")}}" method="POST">
           <div class="modal-body">
             @csrf
-            <label for="name">Technology name</label>
-            <input type="text" name="name" id="name" class="form-control">
+            <label for="cityName">City name</label>
+            <input type="text" name="cityName" id="cityName" class="form-control">
             <div class="invalid-feedback">
-              @if($errors->has("name"))
-                @foreach ($errors->get("name") as $msg)
+              @if($errors->has("cityName"))
+                @foreach ($errors->get("cityName") as $msg)
                     {{$msg}}
                 @endforeach
               @endif
@@ -156,5 +156,5 @@
         </form>
       </div>
     </div>
-  </div>
+  </div> --}}
 @endsection

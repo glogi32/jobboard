@@ -109,7 +109,14 @@ $(document).ready(function () {
     refreshTech();
     $("#keyword").on("keyup", refreshTech);
     $("#ddlPerPage").on("change", refreshTech);
-    $("#btn-confirm-delete").on("click", deleteCity);
+    $("#btn-confirm-delete").on("click", deleteTech);
+  }
+
+  if (window.location.pathname == "/admin/areas") {
+    refreshAreas();
+    $("#keyword").on("keyup", refreshAreas);
+    $("#ddlPerPage").on("change", refreshAreas);
+    $("#btn-confirm-delete").on("click", deleteTech);
   }
 })
 
@@ -1055,6 +1062,116 @@ function printTechsPagination(data) {
     e.preventDefault();
     let page = $(this).data("id");
     refreshTech(e, page);
+  })
+
+}
+
+function deleteTech() {
+  let id = $("#id").val();
+
+  $.ajax({
+    url: "/admin/technologies-api/" + id,
+    method: "DELETE",
+    datatype: "json",
+    data: {
+      _token: token
+    },
+    success: function (data) {
+      refreshTech();
+      makeNotification(0, "Success: ", data.message)
+    },
+    error: function (xhr) {
+      switch (xhr.status) {
+        case 404:
+          makeNotification(1, xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1, "Error", "Server error, please try again later.");
+          break;
+      }
+    }
+  }).done(function () {
+    $('#confirm-delete').modal("hide");
+  })
+}
+
+
+function refreshAreas(e, page = 1) {
+  let perPage = $("#ddlPerPage").val();
+  let pageType = $("#pageType").val();
+  let keyword = $("#keyword").val();
+
+  var data = {
+    page: page,
+  };
+
+  if (keyword) {
+    data.keyword = keyword
+  }
+  if (perPage) {
+    data.perPage = perPage
+  }
+  if (pageType) {
+    data.pageType = pageType
+  }
+
+  $.ajax({
+    url: "/admin/areas-api",
+    method: "GET",
+    datatype: "json",
+    data: data,
+    success: function (data) {
+      printAreas(data.data);
+      printAreasPagination(data.data);
+    },
+    error: function (xhr) {
+
+      switch (xhr.status) {
+        case 404:
+          makeNotification(1, xhr.responseJSON.message);
+          break;
+        case 500:
+          makeNotification(1, "Error", "Server error, please try again later.");
+          break;
+      }
+    }
+  })
+}
+
+function printAreas(data) {
+  let html = ``;
+  for (let areas of data.areas) {
+    html += `<tr>
+              <td>${areas.listNumber}</td>
+              <td><a href="${areas.areas_details}" target="_blank" >${areas.name}</a></td>
+              <td style="width: 12%;" >${areas.created_at_formated}</td>
+              <td style="width: 12%;">${areas.updated_at_formated != null ? areas.updated_at_formated : "/"}</td>
+              <td>
+                <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item"  data-toggle="modal" data-target="#confirm-delete" href="#" data-id="${areas.id}">Delete</a>
+                </div>
+              </td>
+            </tr>`;
+  }
+
+  $("#table-areas").html(html);
+}
+
+function printAreasPagination(data) {
+  html = `<li class="page-item"><a href="#" id="prevPage" class="page-link prev areasPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage - 1}">«</a></li>`;
+  for (let p = 1; p <= data.totalPages; p++) {
+    html += `<li class="page-item ${p == data.curentPage ? 'active' : ''}"><a class="page-link areasPage " data-id="${p}" href="#">${p}</a></li>`;
+  }
+  html += `<li class="page-item"><a href="#" id="nextPage" class="next page-link areasPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage + 1}">»</a></li>`
+  $("#areasPagination").html(html);
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip + data.areas.length - 1} Of ${data.totalAreas} Areas`);
+  $(".areasPage").on("click", function (e) {
+    e.preventDefault();
+    let page = $(this).data("id");
+    refreshAreas(e, page);
   })
 
 }

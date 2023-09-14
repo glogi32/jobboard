@@ -73,6 +73,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{url("/admin/areas")}}" class="nav-link {{ (request()->is('admin/areas') ) ? 'active' : '' }}">
+              <i class="nav-icon fa fa-file"></i>
+              <p>
+                Areas
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

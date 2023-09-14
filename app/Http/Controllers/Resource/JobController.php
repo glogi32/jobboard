@@ -29,8 +29,8 @@ class JobController extends Controller
     {
         $userId = $request->input("userId");
         $companyId = $request->input("companyId");
-        $orderBy = $request->input("orderBy","deadline");
-        $order = $request->input("order","ASC");
+        $orderBy = $request->input("orderBy", "deadline");
+        $order = $request->input("order", "ASC");
         $keyword = $request->input("keyword");
         $status = $request->input("status");
 
@@ -46,122 +46,115 @@ class JobController extends Controller
         $updateRangeFrom = $request->input("updateRangeFrom");
         $updateRangeTo = $request->input("updateRangeTo");
 
-        $perPage = $request->input("perPage",5);
-        $page = $request->input("page",1);
+        $perPage = $request->input("perPage", 5);
+        $page = $request->input("page", 1);
 
         $pageType = $request->input("pageType");
         $response = [];
 
-        
-        
-        
+        $query = Job::with("city", "company", "company.logoImage", "technologies", "area");
 
-        $query = Job::with("city","company","company.logoImage","technologies","area");
+        if ($companyId) {
+            $query->where("company_id", $companyId);
+        } else if (!$companyId && $pageType == "user-jobs") {
 
-        if($companyId){
-            $query->where("company_id",$companyId);
-        }else if(!$companyId && $pageType == "user-jobs"){
-
-            $userCompanies = Company::where("user_id",$userId)->get();
-            $userCompaniesIds = Arr::pluck($userCompanies,"id");
-            $query->whereIn("company_id",$userCompaniesIds);
+            $userCompanies = Company::where("user_id", $userId)->get();
+            $userCompaniesIds = Arr::pluck($userCompanies, "id");
+            $query->whereIn("company_id", $userCompaniesIds);
         }
 
-        if(!empty($keyword)){
-           $query = $query->where("title","like","%".$keyword."%")
-                ->orWhereHas("area",function($query) use($keyword){
-                    $query->where("name","like","%".$keyword."%");
+        if (!empty($keyword)) {
+            $query = $query->where("title", "like", "%" . $keyword . "%")
+                ->orWhereHas("area", function ($query) use ($keyword) {
+                    $query->where("name", "like", "%" . $keyword . "%");
                 })
-                ->orWhereHas("company",function($query) use($keyword){
-                    $query->where("name","like","%".$keyword."%");
+                ->orWhereHas("company", function ($query) use ($keyword) {
+                    $query->where("name", "like", "%" . $keyword . "%");
                 });
         }
 
-        if($status){
-            if($status == "Deleted"){
+        if ($status) {
+            if ($status == "Deleted") {
                 $query = $query->whereNotNull("deleted_at");
-            }
-            else if($status == "Expired"){
-                $query = $query->where("deadline","<",time());
-            }
-            else{
-                $query = $query->where("deleted_at",null)
-                        ->where("deadline",">=",time());
+            } else if ($status == "Expired") {
+                $query = $query->where("deadline", "<", time());
+            } else {
+                $query = $query->where("deleted_at", null)
+                    ->where("deadline", ">=", time());
             }
         }
 
-        if($deadlineRangeFrom && $deadlineRangeTo){
-            
-            $query = $query->where("deadline",">",strtotime(str_replace("/","-",$deadlineRangeFrom)));
-            $query = $query->where("deadline","<",strtotime(str_replace("/","-",$deadlineRangeTo)));
+        if ($deadlineRangeFrom && $deadlineRangeTo) {
+
+            $query = $query->where("deadline", ">", strtotime(str_replace("/", "-", $deadlineRangeFrom)));
+            $query = $query->where("deadline", "<", strtotime(str_replace("/", "-", $deadlineRangeTo)));
         }
 
 
-        if($createRangeFrom && $createRangeTo){
-            
-            $createRangeFromTimestamp = strtotime(str_replace("/","-",$createRangeFrom));
-            $createRangeToTimestamp = strtotime(str_replace("/","-",$createRangeTo));
+        if ($createRangeFrom && $createRangeTo) {
 
-            $query = $query->where("created_at",">",date("Y-m-d",$createRangeFromTimestamp));
-            $query = $query->where("created_at","<",date("Y-m-d",$createRangeToTimestamp));
+            $createRangeFromTimestamp = strtotime(str_replace("/", "-", $createRangeFrom));
+            $createRangeToTimestamp = strtotime(str_replace("/", "-", $createRangeTo));
+
+            $query = $query->where("created_at", ">", date("Y-m-d", $createRangeFromTimestamp));
+            $query = $query->where("created_at", "<", date("Y-m-d", $createRangeToTimestamp));
         }
 
-        if($updateRangeFrom && $updateRangeTo){
-            
-            $updateRangeFromTimestamp = strtotime(str_replace("/","-",$updateRangeFrom));
-            $updateRangeToTimestamp = strtotime(str_replace("/","-",$updateRangeTo));
+        if ($updateRangeFrom && $updateRangeTo) {
 
-            $query = $query->where("created_at",">",date("Y-m-d",$updateRangeFromTimestamp));
-            $query = $query->where("created_at","<",date("Y-m-d",$updateRangeToTimestamp));
+            $updateRangeFromTimestamp = strtotime(str_replace("/", "-", $updateRangeFrom));
+            $updateRangeToTimestamp = strtotime(str_replace("/", "-", $updateRangeTo));
+
+            $query = $query->where("created_at", ">", date("Y-m-d", $updateRangeFromTimestamp));
+            $query = $query->where("created_at", "<", date("Y-m-d", $updateRangeToTimestamp));
         }
-        
-        if($seniorites){
-            $query = $query->whereIn("seniority",$seniorites);
+
+        if ($seniorites) {
+            $query = $query->whereIn("seniority", $seniorites);
         }
-        if($techs){
-            $query = $query->whereHas("technologies", function($query) use($techs){
-                return $query->whereIn("technology_id",$techs);
+        if ($techs) {
+            $query = $query->whereHas("technologies", function ($query) use ($techs) {
+                return $query->whereIn("technology_id", $techs);
             });
         }
-        if($cities){
-            $query = $query->whereHas("city",function($query) use($cities){
-                return $query->whereIn("id",$cities);
+        if ($cities) {
+            $query = $query->whereHas("city", function ($query) use ($cities) {
+                return $query->whereIn("id", $cities);
             });
         }
-        if($areas){
-            $query = $query->whereIn("area_id",$areas);
+        if ($areas) {
+            $query = $query->whereIn("area_id", $areas);
         }
 
-        if($order || $orderBy){
-            $query = $query->orderBy($orderBy,$order);
+        if ($order || $orderBy) {
+            $query = $query->orderBy($orderBy, $order);
         }
 
-        if($pageType == "jobs"){
-            $query = $query->where("deadline",">",time());
+        if ($pageType == "jobs") {
+            $query = $query->where("deadline", ">", time());
         }
         try {
             $skip = $perPage * ($page - 1);
             $response["totalJobs"] = $query->count();
-            $response["totalPages"] = ceil($response["totalJobs"]/$perPage);
+            $response["totalPages"] = ceil($response["totalJobs"] / $perPage);
             $response["curentPage"] = (int)$page;
             $response["nextPage"] = $response["totalPages"] - $page <= 0 ? false : true;
             $response["prevPage"] = $page <= 1 ? false : true;
-            $response["skip"] = $skip+1;
+            $response["skip"] = $skip + 1;
             $response["jobs"] = $query->skip($skip)->take($perPage)->get();
-            
-            if($pageType == "adminJobs"){
+
+            if ($pageType == "adminJobs") {
                 $response["jobs"] = $query->skip($skip)->take($perPage)->withTrashed()->get();
-                $this->formatAdminJobs($response["jobs"],$response["skip"]);
-            }
-            else{
+                $this->formatAdminJobs($response["jobs"], $response["skip"]);
+            } else {
                 $response["jobs"] = $query->skip($skip)->take($perPage)->get();
                 $this->formatJobs($response["jobs"]);
             }
 
-            return response($response,200);
+            return response($response, 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response(["message" => "Server error, try again later."],500);
+            return response(["message" => "Server error, try again later."], 500);
         }
     }
 
@@ -172,15 +165,15 @@ class JobController extends Controller
      */
     public function create()
     {
-        
+
         $this->data["cities"] =  City::all();
         $this->data["seniorities"] = Seniority::asArray();
         $this->data["emp_status"] = EmploymentStatus::asArray();
-        $this->data["companies"] = Company::where("user_id",session("user")->id)->get();
+        $this->data["companies"] = Company::where("user_id", session("user")->id)->get();
         $this->data["technologies"] = Technology::get();
         $this->data["areas"] = Area::all();
         $this->data["page"] = "jobAdd";
-        return view("pages.options",$this->data);
+        return view("pages.options", $this->data);
     }
 
     /**
@@ -191,12 +184,12 @@ class JobController extends Controller
      */
     public function store(JobAddRequest $request)
     {
-        $jobsFromCompany = Job::where("company_id",$request->input("company"))->get();
+        $jobsFromCompany = Job::where("company_id", $request->input("company"))->get();
 
-        if(count($jobsFromCompany) >= 10){
-            return redirect()->back()->with("error",["title" => "Error: ", "message" => "You can have maximum of 10 jobs per company."]);
+        if (count($jobsFromCompany) >= 10) {
+            return redirect()->back()->with("error", ["title" => "Error: ", "message" => "You can have maximum of 10 jobs per company."]);
         }
-        
+
 
         $jobTechs = $request->input("tech");
         $job = new Job();
@@ -225,11 +218,11 @@ class JobController extends Controller
 
         try {
             DB::commit();
-            return redirect()->back()->with("success",["title" => "Success: ", "message" => "Job successfully added."]);
+            return redirect()->back()->with("success", ["title" => "Success: ", "message" => "Job successfully added."]);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             DB::rollBack();
-            return redirect()->back()->with("error",["title" => "Error: ", "message" => "Server error, try again later"]);
+            return redirect()->back()->with("error", ["title" => "Error: ", "message" => "Server error, try again later"]);
         }
     }
 
@@ -276,16 +269,16 @@ class JobController extends Controller
     public function destroy($id)
     {
         $job = Job::find($id);
-        if(!$job){
+        if (!$job) {
             return response()->json(["message" => "Job not found!"], 404);
         }
 
         try {
             $job->delete();
-            return response(["message" => "Job successfully deleted"],200);
+            return response(["message" => "Job successfully deleted"], 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response(["message" => "Server error on deleteing job"],500);
+            return response(["message" => "Server error on deleteing job"], 500);
         }
     }
 
@@ -293,10 +286,10 @@ class JobController extends Controller
     {
         $empStatus = EmploymentStatus::asSelectArray();
         foreach ($jobs as $j) {
-            $j->job_details = route("job-details",$j->id);
-            $j->company_details = route("company-details",$j->company->id);
+            $j->job_details = route("job-details", $j->id);
+            $j->company_details = route("company-details", $j->company->id);
             $j->emp_status = $empStatus[$j->employment_status];
-            $j->deadline_formated = ceil(($j->deadline - time())/60/60/24) <= 0 ? "Expired" : ceil(($j->deadline - time())/60/60/24);
+            $j->deadline_formated = ceil(($j->deadline - time()) / 60 / 60 / 24) <= 0 ? "Expired" : ceil(($j->deadline - time()) / 60 / 60 / 24);
             $j->companyLogo = url($j->company->logoImage[0]->src);
         }
     }
@@ -308,28 +301,25 @@ class JobController extends Controller
         foreach ($jobs as $j) {
             $j->listNumber = $skip;
             $skip++;
-            $j->job_details = route("job-details",$j->id);
-            $j->company_details = route("company-details",$j->company->id);
+            $j->job_details = route("job-details", $j->id);
+            $j->company_details = route("company-details", $j->company->id);
             $j->emp_status = $empStatus[$j->employment_status];
             $j->seniority = $seniority[$j->seniority];
             $j->deadline_formated = date("d.m.Y H:i", $j->deadline);
 
-            if(ceil(($j->deadline - time())/60/60/24) <= 0){
+            if (ceil(($j->deadline - time()) / 60 / 60 / 24) <= 0) {
                 $j->status = '<span class="badge bg-warning">Expired</span>';
-            }
-            else if($j->deleted_at){
+            } else if ($j->deleted_at) {
                 $j->status = '<span class="badge bg-danger">Deleted</span>';
-            }
-            else{
+            } else {
                 $j->status = '<span class="badge bg-success">Active</span>';
             }
 
             $j->created_at_formated = date("d.m.Y H:i", $j->created_at->timestamp);
-            
-            if($j->created_at->timestamp == $j->updated_at->timestamp){
+
+            if ($j->created_at->timestamp == $j->updated_at->timestamp) {
                 $j->updated_at_formated = null;
-            }
-            else{
+            } else {
                 $j->updated_at_formated = date("d.m.Y H:i", $j->updated_at->timestamp);
             }
         }

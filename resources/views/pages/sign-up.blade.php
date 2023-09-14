@@ -23,7 +23,7 @@
                   @csrf
                 <div class="row form-group">
                   <div class="col-md-6 mb-3 mb-md-0">
-                    <label class="text-black" for="fname">First Name</label>
+                    <label class="text-black required" for="fname">First Name</label>
                     <input type="text" id="tbFname" name="first-name" class="form-control @if($errors->has("first-name")) is-invalid @endif" value="{{old("first-name")}}">
                     <div class="invalid-feedback">
 
@@ -36,7 +36,7 @@
                     </div>
                   </div>
                   <div class="col-md-6 mb-3 mb-md-0">
-                    <label class="text-black" for="lname">Last Name</label>
+                    <label class="text-black required" for="lname">Last Name</label>
                     <input type="text" id="tbLname" name="last-name" class="form-control @if($errors->has("last-name")) is-invalid @endif" value="{{old("last-name")}}">
                     <div class="invalid-feedback">
 
@@ -51,7 +51,7 @@
                 </div>
                 <div class="row form-group mb-4">
                   <div class="col-md-12 mb-3 mb-md-0">
-                    <label class="text-black" for="tbEmail">Email</label>
+                    <label class="text-black required" for="tbEmail">Email</label>
                     <input type="email" id="tbEmail" name="email" class="form-control @if($errors->has("email")) is-invalid @endif" value="{{old("email")}}">
                     <div class="invalid-feedback">
                       @if($errors->has("email"))
@@ -64,7 +64,7 @@
                 </div>
                 <div class="row form-group">
                   <div class="col-md-12 mb-3 mb-md-0">
-                    <label class="text-black" for="tbPass">Password</label>
+                    <label class="text-black required" for="tbPass">Password</label>
                     <input type="password" id="tbPass" name="password" aria-describedby="pass" class="form-control  @if($errors->has("password")) is-invalid @endif" value="{{old("password")}}">
                     <small id="pass" class="form-text ">The password must contain at least one uppercase, one lowercase letter, one number and must be min 8 characters.</small>
                     <div class="invalid-feedback">
@@ -82,7 +82,7 @@
                 </div>
                 <div class="row form-group mb-4">
                   <div class="col-md-12 mb-3 mb-md-0">
-                    <label class="text-black" for="tbPhone">Phone</label>
+                    <label class="text-black required" for="tbPhone">Phone</label>
                     <input type="text" id="tbPhone" name="phone" aria-describedby="phone" class="form-control @if($errors->has("phone")) is-invalid @endif" value="{{old("phone")}}">
                     <small id="phone" class="form-text ">Phone numbers can be seperated with - or space.</small>
                     <div class="invalid-feedback">
@@ -132,7 +132,7 @@
                 </div>
                 <div class="row form-group mb-4">
                     <div class="col-md-12 mb-3 mb-md-0">
-                        <label class="text-black" for="tbPhone">About you</label>
+                        <label class="text-black required" for="tbPhone">About you</label>
                         <textarea rows="4" id="tbAbout" name="about-u" class="form-control @if($errors->has("about-u")) is-invalid @endif" placeholder="Tell us something about you...">{{old("about-u")}}</textarea>
                         <div class="invalid-feedback">
                           @if($errors->has("about-u"))
