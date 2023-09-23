@@ -57,8 +57,8 @@ Route::get('/login', function () {
 
 
 Route::get("/jobs", [ResourceJobController::class, "index"])->name("jobs");
-
 Route::get("/companies", [ResourceCompanyController::class, "index"])->name("companies");
+Route::get("/about-us", [IndexController::class, "aboutUsPage"])->name("about-us");
 
 Route::get("/company-details/{id}", [CompanyDetailsController::class, "index"])->name("company-details");
 Route::post("/company-details/insert-comment", [CompanyDetailsController::class, "insertComment"]);

@@ -61,15 +61,17 @@
                               <div class="comment-body">
                                 <div class="comment-wrapper d-flex justify-content-between">
                                   <h3><a class="text-black" href="{{route("user-profile",$c->user->id)}}">{{$c->user->first_name}} {{$c->user->last_name}}</a></h3>
-                                  @if (session("user")->role_id == 3)
-                                    <div class="btn-group action-list">
-                                      <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-chevron-circle-down h5 m-0"></i>
-                                      </button>
-                                      <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#confirm-delete" data-id="{{$c->id}}">Delete comment</a>
+                                  @if (session()->has('user'))  
+                                    @if (session("user")->role_id == 3)
+                                      <div class="btn-group action-list">
+                                        <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          <i class="fas fa-chevron-circle-down h5 m-0"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#confirm-delete" data-id="{{$c->id}}">Delete comment</a>
+                                        </div>
                                       </div>
-                                    </div>
+                                    @endif
                                   @endif
                                 </div>
                                 <div class="meta">{{date("F j, Y \a\\t H:m",strtotime($c->created_at))}}</div>

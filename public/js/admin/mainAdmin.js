@@ -499,18 +499,28 @@ function cancelJobsFilters() {
 }
 
 function refreshJobStatistics(data) {
+  let donutChartCanvas = null;
+  let donutData = null;
+  let donutOptions = null;
+  let dataLabels = [];
+  let dataVisits = [];
 
-  let dataLabels = data.map(function (c) {
+  dataLabels = data.map(function (c) {
     return c.title;
   });
 
-  let dataVisits = data.map(function (c) {
+  dataVisits = data.map(function (c) {
     return c.statistics;
   });
   console.log(dataVisits, dataLabels);
 
-  var donutChartCanvas = $('#jobStatisticsPaginated').get(0).getContext('2d')
-  var donutData = {
+  donutChartCanvas = $('#jobStatisticsPaginated').get(0).getContext('2d')
+  new Chart(donutChartCanvas, {
+    type: 'doughnut',
+    data: donutData,
+    options: donutOptions
+  })
+  donutData = {
     labels: dataLabels,
     datasets: [
       {
@@ -519,7 +529,7 @@ function refreshJobStatistics(data) {
       }
     ]
   }
-  var donutOptions = {
+  donutOptions = {
     maintainAspectRatio: false,
     responsive: true,
   }
@@ -536,6 +546,9 @@ function refreshTopJobsStatistics() {
 
   var dataLabels = [];
   var dataVisits = [];
+  var donutChartCanvas = null;
+  var donutData = null;
+  var donutOptions = null;
 
   $.ajax({
     url: "/admin/jobs-stats",
@@ -565,8 +578,8 @@ function refreshTopJobsStatistics() {
     }
   })
 
-  var donutChartCanvas = $('#topJobsStatistics').get(0).getContext('2d')
-  var donutData = {
+  donutChartCanvas = $('#topJobsStatistics').get(0).getContext('2d')
+  donutData = {
     labels: dataLabels,
     datasets: [
       {
@@ -575,7 +588,7 @@ function refreshTopJobsStatistics() {
       }
     ]
   }
-  var donutOptions = {
+  donutOptions = {
     maintainAspectRatio: false,
     responsive: true,
   }

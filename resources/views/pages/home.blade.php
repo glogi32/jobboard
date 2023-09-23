@@ -47,7 +47,6 @@
       <div class="row mb-5 justify-content-center">
         <div class="col-md-7 text-center">
           <h2 class="section-title mb-2 text-white">JobBoard Site Stats</h2>
-          <p class="lead text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita unde officiis recusandae sequi excepturi corrupti.</p>
         </div>
       </div>
       <div class="row pb-0 block__19738 section-counter">

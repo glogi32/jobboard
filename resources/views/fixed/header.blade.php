@@ -8,10 +8,11 @@
             <li><a href="{{route("/")}}" class="nav-link {{ (request()->is('home') || request()->is('/')) ? 'active' : '' }}">Home</a></li>
             <li><a href="{{url("/jobs")}}" class="nav-link {{ (request()->is('jobs') ) ? 'active' : '' }}">Jobs</a></li>
             <li><a href="{{url("/companies")}}" class="nav-link {{ (request()->is('companies') ) ? 'active' : '' }}">Companies</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="{{url("/contact")}}" class="{{ (request()->is('contact') ) ? 'active' : '' }}">Contact</a></li>
-            <li class="d-lg-none"><a href="post-job.html"><span class="mr-2">+</span> Post a Job</a></li>
-            <li class="d-lg-none"><a href="login.html">Log In</a></li>
+            {{-- <li><a href="/">About</a></li> --}}
+            <li><a href="{{url("/about-us")}}" class="{{ (request()->is('about-us') ) ? 'active' : '' }}">About us</a></li>
+            @if (session()->has('user') && session('user')->role_id == 1)
+              <li><a href="{{url("/admin/users")}}" class="nav-link ">Admin</a></li>
+            @endif
           </ul>
         </nav>
         
@@ -37,7 +38,14 @@
                 </div>
               </nav>
             @else
-              <a href="{{route("login-page")}}" class="btn btn-primary border-width-2 d-none d-lg-inline-block"><i class="fa fa-user mr-2"></i></span>Log In</a>
+              <a href="{{route("login-page")}}" class="btn btn-primary border-width-2 d-none d-lg-inline-block">
+              <i class="fa fa-user mr-2"></i>
+                Login
+              </a>
+              <a href="{{route("sign-up")}}" class="btn btn-info border-width-2 d-none d-lg-inline-block">
+                <i class="fa fa-user-plus mr-2"></i>
+                Sign up
+              </a>
             @endif
           </div>
           <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-xl-none mt-lg-2 ml-3"><span class="icon-menu h3 m-0 p-0 mt-2"></span></a>
