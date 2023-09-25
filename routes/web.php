@@ -41,6 +41,18 @@ Route::get("/test", function () {
     return view("admin.layout.admin-template");
 });
 
+Route::get('/optimize-clear', function () {
+    \Artisan::call('optimize:clear');
+    return 'View cache cleared';
+});
+
+// Clear application cache
+Route::get('/clear-cache', function () {
+    \Artisan::call('cache:clear');
+    return 'Application cache cleared';
+});
+
+
 Route::get('/home', [IndexController::class, "index"])->name("home");
 
 Route::get('/contact', function () {
@@ -71,7 +83,7 @@ Route::post("/job-details/save-job", [JobDetailsController::class, "saveJob"]);
 Route::delete("/job-details/unsave-job", [JobDetailsController::class, "unsaveJob"]);
 Route::post("/job-details/job-apply", [JobDetailsController::class, "jobApplication"])->name("job-apply");
 
-Route::prefix("options")->group(function () {
+Route::prefix("options")->middleware('isAuthorized')->group(function () {
     Route::get('/user-edit', [OptionController::class, "index"])->name("user-edit");
     Route::get('/user-companies', [OptionController::class, "companies"])->name("user-companies");
     Route::get('/user-jobs', [OptionController::class, "jobs"])->name("user-jobs");
@@ -96,7 +108,7 @@ Route::get("/verify", [AuthController::class, "verifyAccount"]);
 Route::delete("/remove-user-cv", [OptionController::class, "removeUserCV"])->name("remove-cv");
 Route::delete("/remove-user-docs", [OptionController::class, "removeUserDocs"])->name("remove-docs");
 
-Route::prefix("admin")->group(function () {
+Route::prefix("admin")->middleware(['isAuthorized', 'isAdmin'])->group(function () {
     Route::get("users", [UsersAdminController::class, "usersPage"])->name("users-page");
     Route::get("jobs", [JobsAdminController::class, "jobsPage"])->name("jobs-page");
     Route::get("companies", [CompaniesAdminController::class, "companiesPage"])->name("companies-page");

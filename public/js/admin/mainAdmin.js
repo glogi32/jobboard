@@ -1,4 +1,3 @@
-
 var token = $("input[name=_token]").val();
 const base_url = window.location.origin;
 
@@ -258,13 +257,11 @@ function makeNotification(errorType, title, message) {
     title: `<strong>${title}</strong>`,
     message: message
 
-  },
-    {
-      type: types[errorType]
-    },
-    {
-      newest_on_top: true
-    });
+  }, {
+    type: types[errorType]
+  }, {
+    newest_on_top: true
+  });
 
 }
 
@@ -522,12 +519,10 @@ function refreshJobStatistics(data) {
   })
   donutData = {
     labels: dataLabels,
-    datasets: [
-      {
-        data: dataVisits,
-        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
-      }
-    ]
+    datasets: [{
+      data: dataVisits,
+      backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
+    }]
   }
   donutOptions = {
     maintainAspectRatio: false,
@@ -581,12 +576,10 @@ function refreshTopJobsStatistics() {
   donutChartCanvas = $('#topJobsStatistics').get(0).getContext('2d')
   donutData = {
     labels: dataLabels,
-    datasets: [
-      {
-        data: dataVisits,
-        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
-      }
-    ]
+    datasets: [{
+      data: dataVisits,
+      backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
+    }]
   }
   donutOptions = {
     maintainAspectRatio: false,
@@ -782,12 +775,10 @@ function refreshCompanyStatistics(data) {
   var donutChartCanvas = $('#companyStatisticsPaginated').get(0).getContext('2d')
   var donutData = {
     labels: dataLabels,
-    datasets: [
-      {
-        data: dataVisits,
-        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
-      }
-    ]
+    datasets: [{
+      data: dataVisits,
+      backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
+    }]
   }
   var donutOptions = {
     maintainAspectRatio: false,
@@ -836,12 +827,10 @@ function refreshTopCompaniesStatistics() {
   var donutChartCanvas = $('#companyStatisticsTop').get(0).getContext('2d')
   var donutData = {
     labels: dataLabels,
-    datasets: [
-      {
-        data: dataVisits,
-        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
-      }
-    ]
+    datasets: [{
+      data: dataVisits,
+      backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', "navy", "red", "orange"],
+    }]
   }
   var donutOptions = {
     maintainAspectRatio: false,

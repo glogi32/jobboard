@@ -6,35 +6,25 @@
 
     <div class="container">
       <div class="row mb-5">
-        <div class="col-6 col-md-3 mb-4 mb-md-0">
-          <h3>Search Trending</h3>
+        <div class="col-6 col-md-4 mb-4 mb-md-0">
+          <h3>Pages</h3>
           <ul class="list-unstyled">
-            <li><a href="#">Web Design</a></li>
-            <li><a href="#">Graphic Design</a></li>
-            <li><a href="#">Web Developers</a></li>
-            <li><a href="#">Python</a></li>
-            <li><a href="#">HTML5</a></li>
-            <li><a href="#">CSS3</a></li>
+            <li><a href="{{route("/")}}" >Home</a></li>
+            <li><a href="{{url("/jobs")}}" >Jobs</a></li>
+            <li><a href="{{url("/companies")}}" >Companies</a></li>
+            <li><a href="{{url("/about-us")}}" >About Us</a></li>
           </ul>
         </div>
-        <div class="col-6 col-md-3 mb-4 mb-md-0">
-          <h3>Company</h3>
+        <div class="col-6 col-md-4 mb-4 mb-md-0">
+          <h3>Address</h3>
           <ul class="list-unstyled">
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Career</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Resources</a></li>
+            <li><a href="#">Address</a></li>
+            <li><a href="#">203 Fake St. Mountain View, San Francisco, California, USA</a></li>
+            <li><a href="#">+1 232 3235 324</a></li>
+            <li><a href="#">youremail@domain.com</a></li>
           </ul>
         </div>
-        <div class="col-6 col-md-3 mb-4 mb-md-0">
-          <h3>Support</h3>
-          <ul class="list-unstyled">
-            <li><a href="#">Support</a></li>
-            <li><a href="#">Privacy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
-        </div>
-        <div class="col-6 col-md-3 mb-4 mb-md-0">
+        <div class="col-6 col-md-4 mb-4 mb-md-0 text-center">
           <h3>Contact Us</h3>
           <div class="footer-social">
             <a href="#"><span class="icon-facebook"></span></a>
