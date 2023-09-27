@@ -88,53 +88,7 @@
       <hr />
           
       <ul class="job-listings mb-5" id="jobs">
-        {{-- <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center row">
-          <a href="job-single.html"></a>
-          <div class="job-listing-logo col-md-3">
-            <img src="{{asset("img/home/job_logo_1.jpg")}}" alt="Free Website Template by Free-Template.co" class="img-fluid">
-          </div>
-
-          <div class="col-md-9">
-
-            <div class="col-md-12  d-sm-flex custom-width mt-3 justify-content-between">
-
-                <div class="job-listing-position custom-width w-75 mb-3 mb-sm-0">
-                  <h2> Senior Software Development Engineer in Test </h2>
-                  <strong>Company123</strong> <span> / </span> <span class="icon-room"></span> Belgrade
-                </div>
-                <div class="job-listing-location mb-3 mb-sm-0 custom-width">
-                  
-                </div>
-                <div class="job-listing-meta ">
-                  <span class="badge badge-danger">Full Time</span>
-                </div>
-
-            </div>
-            <div class="col-md-12 d-flex justify-content-between">
-              <div class="tags">
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-                <span class="badge badge-info">Info</span>
-
-              </div>
-                
-              <div class="expire-date ml-4">
-                <p>Days left: 45</p>
-              </div>
-            </div>
-
-          </div>
-           
-        </li> --}}
+       
       </ul>
 
       <div class="row pagination-wrap">

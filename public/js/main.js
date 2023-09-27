@@ -2,363 +2,363 @@
 var token = $("input[name=_token]").val();
 const base_url = window.location.origin;
 
-$(document).ready(function(){
+$(document).ready(function () {
 
 
   $(".my-select").multipleSelect({
     filter: true
-  }); 
-  
-  
-  if(window.location.pathname == "/options/user-companies"){
+  });
+
+
+  if (window.location.pathname == "/options/user-companies") {
     refreshUserCompanies();
   }
 
-  if(window.location.pathname == "/options/user-jobs"){
+  if (window.location.pathname == "/options/user-jobs") {
     refreshUserJobs();
-    $("#ddlCompanies").on("change",refreshUserJobs);
-    $("#ddlSort").on("change",refreshUserJobs);
-    $("#keyword").on("keyup",refreshUserJobs);
+    $("#ddlCompanies").on("change", refreshUserJobs);
+    $("#ddlSort").on("change", refreshUserJobs);
+    $("#keyword").on("keyup", refreshUserJobs);
   }
 
-  if(window.location.pathname.includes("/job-details/")){
-    
-    if($("#cv-apply").is(":checked")){
+  if (window.location.pathname.includes("/job-details/")) {
+
+    if ($("#cv-apply").is(":checked")) {
       manageCvInput();
     }
 
-    $("#cv-apply").on("click",manageCvInput);
+    $("#cv-apply").on("click", manageCvInput);
   }
 
-  if(window.location.pathname.includes("/company-details")){
-    $(document).on("click" , "#btn-confirm-delete" ,function(e){
+  if (window.location.pathname.includes("/company-details")) {
+    $(document).on("click", "#btn-confirm-delete", function (e) {
       let id = $(this).data("id");
       let companyId = $("#companyId").val();
 
       $.ajax({
-        url: "/company-details/delete-comment/"+id,
-        datatype : "json",
+        url: "/company-details/delete-comment/" + id,
+        datatype: "json",
         method: "DELETE",
         data: {
-          commentId : id,
-          companyId : companyId,
-          _token : token
+          commentId: id,
+          companyId: companyId,
+          _token: token
         },
-        success: function(data){
+        success: function (data) {
           refreshCompanyComments(companyId);
-          makeNotification(0,"Success: ",data.message)
+          makeNotification(0, "Success: ", data.message)
         },
-        error : function (xhr) {
-          switch(xhr.status){
+        error: function (xhr) {
+          switch (xhr.status) {
             case 422:
               let errorsArray = Object.entries(xhr.responseJSON.errors);
               console.log(errorsArray)
-  
-              for(let error of errorsArray){
-                makeNotification(1,error[0],error[1]);
+
+              for (let error of errorsArray) {
+                makeNotification(1, error[0], error[1]);
               }
               break;
-            case 500: 
-              makeNotification(1,"Error: ",xhr.responseJSON.message);
+            case 500:
+              makeNotification(1, "Error: ", xhr.responseJSON.message);
               break;
           }
-  
-          
+
+
         }
-      }).done(function(){
+      }).done(function () {
         $('#confirm-delete').modal("hide");
       })
     })
-    
+
 
     var star = '.star',
-    selected = '.selected';
+      selected = '.selected';
 
-    $(star).on('click', function(){
-      $(selected).each(function(){
+    $(star).on('click', function () {
+      $(selected).each(function () {
         $(this).removeClass('selected');
       });
       $(this).addClass('selected');
     });
   }
 
-  if(window.location.pathname == "/options/user-applications"){
-    $("#ddlSort").on("change",refreshApplications);
-    $("#ddlCompanies").on("change",refreshApplications);
-    $("#keyword").on("keyup",refreshApplications);
+  if (window.location.pathname == "/options/user-applications") {
+    $("#ddlSort").on("change", refreshApplications);
+    $("#ddlCompanies").on("change", refreshApplications);
+    $("#keyword").on("keyup", refreshApplications);
     refreshApplications();
   }
 
-  if(window.location.pathname == "/jobs"){
+  if (window.location.pathname == "/jobs") {
     refreshJobs();
-    $("#btnSearch").on("click",refreshJobs);
-    $("#ddlTech").on("change",refreshJobs);
-    $("#ddlArea").on("change",refreshJobs);
-    $("#ddlCity").on("change",refreshJobs);
-    $("#ddlSeniority").on("change",refreshJobs);
-    $("#ddlSort").on("change",refreshJobs);
-    $("#ddlPerPage").on("change",refreshJobs);
+    $("#btnSearch").on("click", refreshJobs);
+    $("#ddlTech").on("change", refreshJobs);
+    $("#ddlArea").on("change", refreshJobs);
+    $("#ddlCity").on("change", refreshJobs);
+    $("#ddlSeniority").on("change", refreshJobs);
+    $("#ddlSort").on("change", refreshJobs);
+    $("#ddlPerPage").on("change", refreshJobs);
   }
 
-  if(window.location.pathname == "/companies"){
+  if (window.location.pathname == "/companies") {
     refreshCompanies();
-    $("#ddlSort").on("change",refreshCompanies);
-    $("#ddlCity").on("change",refreshCompanies);
-    $("#btnSearch").on("click",refreshCompanies);
-    $("#ddlRating").on("change",refreshCompanies);
-    $("#ddlPerPage").on("change",refreshCompanies);
+    $("#ddlSort").on("change", refreshCompanies);
+    $("#ddlCity").on("change", refreshCompanies);
+    $("#btnSearch").on("click", refreshCompanies);
+    $("#ddlRating").on("change", refreshCompanies);
+    $("#ddlPerPage").on("change", refreshCompanies);
   }
-  
-  $("#chbShowPass").on("click",togglePasswordVisibility);
 
-  $("#btnComment").on("click",function () {
+  $("#chbShowPass").on("click", togglePasswordVisibility);
+
+  $("#btnComment").on("click", function () {
     let message = $("#message").val();
     let userId = $("#userId").val();
     let companyId = $("#companyId").val();
 
     $.ajax({
-      url : "/company-details/insert-comment",
-      method : "POST",
-      datatype : "json",
-      data : {
-        message : message,
-        userId : userId,
-        companyId : companyId,
-        _token : token
+      url: "/company-details/insert-comment",
+      method: "POST",
+      datatype: "json",
+      data: {
+        message: message,
+        userId: userId,
+        companyId: companyId,
+        _token: token
       },
-      success : function (data) {
-        makeNotification(0,"Success: ",data.message)
+      success: function (data) {
+        makeNotification(0, "Success: ", data.message)
         refreshCompanyComments(companyId);
       },
-      error : function (xhr) {
-        switch(xhr.status){
+      error: function (xhr) {
+        switch (xhr.status) {
           case 422:
             let errorsArray = Object.entries(xhr.responseJSON.errors);
             console.log(errorsArray)
 
-            for(let error of errorsArray){
-              makeNotification(1,error[0],error[1]);
+            for (let error of errorsArray) {
+              makeNotification(1, error[0], error[1]);
             }
             break;
-          case 500: 
-            makeNotification(1,"Error: ",xhr.responseJSON.message);
+          case 500:
+            makeNotification(1, "Error: ", xhr.responseJSON.message);
             break;
         }
 
-        
+
       }
     })
   })
 
-  $(".vote").on("click",function(){
+  $(".vote").on("click", function () {
     let vote = $(this).data("id");
     let companyId = $("#companyId").val();
     let userId = $("#userId").val();
 
 
     $.ajax({
-      url : "/company-details/"+companyId+"/vote",
-      method : "POST",
-      data : {
-        _token : token,
-        vote : vote,
-        companyId : companyId,
-        userId : userId
+      url: "/company-details/" + companyId + "/vote",
+      method: "POST",
+      data: {
+        _token: token,
+        vote: vote,
+        companyId: companyId,
+        userId: userId
       },
-      success : function(data){
-        makeNotification(0,"Success: ",data.message);
+      success: function (data) {
+        makeNotification(0, "Success: ", data.message);
       },
-      error : function(xhr){
-        switch(xhr.status){
+      error: function (xhr) {
+        switch (xhr.status) {
           case 422:
             let errorsArray = Object.entries(xhr.responseJSON.errors);
             console.log(errorsArray)
 
-            for(let error of errorsArray){
-              makeNotification(1,error[0],error[1]);
+            for (let error of errorsArray) {
+              makeNotification(1, error[0], error[1]);
             }
             break;
-          case 500,404: 
-            makeNotification(1,"Error: ",xhr.responseJSON.message);
+          case 500, 404:
+            makeNotification(1, "Error: ", xhr.responseJSON.message);
             break;
         }
       }
     })
   })
 
-  $("#loadMore").on("click",function(e) {
+  $("#loadMore").on("click", function (e) {
     e.preventDefault();
 
     let companyId = $("#companyId").val();
-    
-    
+
+
     let take = parseInt($(this).data("take"));
-    
-    $(this).data("take", take+5 ); 
+
+    $(this).data("take", take + 5);
 
     refreshCompanyComments(companyId);
   })
-  $("#loadMoreUserJobs").on("click",function(e){
+  $("#loadMoreUserJobs").on("click", function (e) {
     e.preventDefault();
 
     let take = parseInt($(this).data("take"));
-    
-    $(this).data("take",take+5);
+
+    $(this).data("take", take + 5);
 
     refreshUserJobs();
   });
-  $("#loadMoreApplications").on("click",function(e){
+  $("#loadMoreApplications").on("click", function (e) {
     e.preventDefault();
 
     let take = parseInt($(this).data("take"));
-    
-    $(this).data("take",take+15);
+
+    $(this).data("take", take + 15);
 
     refreshApplications();
   });
-  
-  $("#saveJob").on("click",function() {
+
+  $("#saveJob").on("click", function () {
     let span = $("#saveJob span");
     let userId = $("#userId").val();
     let jobId = $("#jobId").val();
 
-    if(span.hasClass("icon-heart-o")){
+    if (span.hasClass("icon-heart-o")) {
 
       $.ajax({
-        url : "/job-details/save-job",
-        method : "POST",
-        data : {
-          userId : userId,
-          jobId : jobId,
-          _token : token
+        url: "/job-details/save-job",
+        method: "POST",
+        data: {
+          userId: userId,
+          jobId: jobId,
+          _token: token
         },
-        datatype : "json",
-        success : function() {
-          makeNotification(0,"Success: ","Job successfully saved.");
+        datatype: "json",
+        success: function () {
+          makeNotification(0, "Success: ", "Job successfully saved.");
           span.removeClass("icon-heart-o");
           span.addClass("icon-heart");
         },
-        error : function(xhr){
-          switch(xhr.status){
+        error: function (xhr) {
+          switch (xhr.status) {
             case 422:
               let errorsArray = Object.entries(xhr.responseJSON.errors);
               console.log(errorsArray)
-  
-              for(let error of errorsArray){
-                makeNotification(1,error[0],error[1]);
+
+              for (let error of errorsArray) {
+                makeNotification(1, error[0], error[1]);
               }
               break;
             case 409:
-              makeNotification(1,"Error: ",xhr.responseJSON.message);
+              makeNotification(1, "Error: ", xhr.responseJSON.message);
               break;
-            case 500: 
-              makeNotification(1,"Error: ",xhr.responseJSON.message);
+            case 500:
+              makeNotification(1, "Error: ", xhr.responseJSON.message);
               break;
           }
         }
       })
 
-      
-    }else{
+
+    } else {
       $.ajax({
-        url : "/job-details/unsave-job",
-        method : "DELETE",
-        data : {
-          userId : userId,
-          jobId : jobId,
-          _token : token
+        url: "/job-details/unsave-job",
+        method: "DELETE",
+        data: {
+          userId: userId,
+          jobId: jobId,
+          _token: token
         },
-        datatype : "json",
-        success : function() {
-          makeNotification(0,"Success: ","Job successfully unsaved.");
+        datatype: "json",
+        success: function () {
+          makeNotification(0, "Success: ", "Job successfully unsaved.");
           span.removeClass("icon-heart");
           span.addClass("icon-heart-o");
         },
-        error : function(xhr){
-          switch(xhr.status){
+        error: function (xhr) {
+          switch (xhr.status) {
             case 422:
               let errorsArray = Object.entries(xhr.responseJSON.errors);
               console.log(errorsArray)
-  
-              for(let error of errorsArray){
-                makeNotification(1,error[0],error[1]);
+
+              for (let error of errorsArray) {
+                makeNotification(1, error[0], error[1]);
               }
               break;
             case 404:
-              makeNotification(1,"Error: ",xhr.responseJSON.message);
+              makeNotification(1, "Error: ", xhr.responseJSON.message);
               break;
-            case 500: 
-              makeNotification(1,"Error: ",xhr.responseJSON.message);
+            case 500:
+              makeNotification(1, "Error: ", xhr.responseJSON.message);
               break;
           }
         }
       })
 
-      
-     
+
+
     }
-    
+
   })
 
-  $(".btn-remove-docs").on("click",function(){
-    
+  $(".btn-remove-docs").on("click", function () {
+
     let id = $(this).data("id");
 
     $.ajax({
-      url : "/remove-user-docs",
-      method : "DELETE",
-      data : {
-        _token : token,
-        id : id
+      url: "/remove-user-docs",
+      method: "DELETE",
+      data: {
+        _token: token,
+        id: id
       },
-      success : function(){
+      success: function () {
         window.location.reload();
-        makeNotification(0,"Success: ","Document successfully deleted.");
+        makeNotification(0, "Success: ", "Document successfully deleted.");
       },
-      error : function(xhr){
-        switch(xhr.status){
+      error: function (xhr) {
+        switch (xhr.status) {
           case 500:
-            makeNotification(1,"Error",xhr.responseJSON.message);
+            makeNotification(1, "Error", xhr.responseJSON.message);
             break;
           case 404:
-            makeNotification(1,"Error",xhr.responseJSON.message);
+            makeNotification(1, "Error", xhr.responseJSON.message);
             break;
         }
       }
     })
   })
 
-  $('#confirm-delete').on('show.bs.modal', function(e) {
+  $('#confirm-delete').on('show.bs.modal', function (e) {
     $(this).find('.btn-ok').attr('data-id', $(e.relatedTarget).data('id'));
   });
 
-  
+
 })
 
 function manageCvInput() {
-  if($("#cv-apply").is(":checked")){
-    $("#cv").attr("disabled","disabled");
+  if ($("#cv-apply").is(":checked")) {
+    $("#cv").attr("disabled", "disabled");
     $("#user-cvs").removeAttr("disabled");
-  }else{
-    $("#user-cvs").attr("disabled","disabled");
+  } else {
+    $("#user-cvs").attr("disabled", "disabled");
     $("#cv").removeAttr("disabled");
   }
 }
 
-function makeNotification(errorType,title,message){
-  var types = ["success","danger","info","warning"];
+function makeNotification(errorType, title, message) {
+  var types = ["success", "danger", "info", "warning"];
 
   $.notify({
     title: `<strong>${title}</strong>`,
     message: message
-    
+
   },
-  {
-    type: types[errorType]
-  },
-  {
-    newest_on_top: true
-  });
+    {
+      type: types[errorType]
+    },
+    {
+      newest_on_top: true
+    });
 
 }
 
@@ -373,35 +373,35 @@ function togglePasswordVisibility() {
 
 
 function refreshCompanyComments(id) {
-  
+
   let loadMore = $("#loadMore");
   let skip = loadMore.data("skip");
   let take = loadMore.data("take");
 
-  
-  
+
+
   $.ajax({
-    url : "/api/company-details/get-comments",
-    method : "GET",
-    datatype : "json",
-    data : {
-      id : id,
-      skip : parseInt(skip),
-      take : parseInt(take),
-      _token : token
+    url: "/api/company-details/get-comments",
+    method: "GET",
+    datatype: "json",
+    data: {
+      id: id,
+      skip: parseInt(skip),
+      take: parseInt(take),
+      _token: token
     },
-    success : function(data) {
+    success: function (data) {
       console.log(data);
       printComments(data)
     },
-    error : function(xhr) {
-      
-      switch(xhr.status){
+    error: function (xhr) {
+
+      switch (xhr.status) {
         case 404:
-          makeNotification(1,xhr.responseJSON.message);
+          makeNotification(1, xhr.responseJSON.message);
           break;
         case 500:
-          makeNotification(1,"Error","Server error, please try again later.");
+          makeNotification(1, "Error", "Server error, please try again later.");
           break;
       }
     }
@@ -410,11 +410,11 @@ function refreshCompanyComments(id) {
 function printComments(data) {
   let html = "";
   let userRole = $("#userRole").val();
-  
-  if(!data.nextPage){
+
+  if (!data.nextPage) {
     $("#loadMore").addClass("sr-only");
   }
-  for(let c of data.comments){
+  for (let c of data.comments) {
     html += `<li class="comment">
               <div class="vcard bio">
                 <img src="${c.image}" alt="${c.user.image.src}">
@@ -446,25 +446,25 @@ function refreshUserCompanies() {
   let userId = $("#userId").val();
 
   $.ajax({
-    url : "/options/companies",
-    method : "GET",
-    data : {
-      _token : token,
-      userId : userId
+    url: "/options/companies",
+    method: "GET",
+    data: {
+      _token: token,
+      userId: userId
     },
-    success : function(data) {
-     
-      if(data.data.companies.length){
+    success: function (data) {
+
+      if (data.data.companies.length) {
         printUserCompanies(data.data.companies);
-      }else{
+      } else {
         $("#companies").html("<h2>You don't have any companies assigned.</h2>");
       }
-      
+
     },
-    error : function(xhr,status,error) {
-      switch(xhr.status){
+    error: function (xhr, status, error) {
+      switch (xhr.status) {
         case 500:
-          makeNotification(1,"Error","Server error, please try again later.");
+          makeNotification(1, "Error", "Server error, please try again later.");
           break;
       }
     }
@@ -472,18 +472,18 @@ function refreshUserCompanies() {
 }
 function printUserCompanies(data) {
   let html = ``;
-  for(let c of data){
+  for (let c of data) {
     html += `<div class="card col-md-5 col-lg-5 col-sm-12 mt-4" style="width: 18rem;">
               <img class="card-img-top" src="${c.logo_image_src}" height="200" alt="${c.logo_image_alt}">
               <div class="card-body">
                   <h5 class="card-title">${c.name}</h5>
                   <p class="card-text mb-0">Email: ${c.email}</p>`;
 
-                  if(c.website){
-                    html += `<a href="${c.website}" target="_blank" class="card-link mb-5 text-secondary">Website: ${c.website.split(".")[1]}</a>`;
-                  }
+    if (c.website) {
+      html += `<a href="${c.website}" target="_blank" class="card-link mb-5 text-secondary">Website: ${c.website.split(".")[1]}</a>`;
+    }
 
-                  html += `<div class="row d-flex justify-content-around">
+    html += `<div class="row d-flex justify-content-around">
                     <a href="${c.company_details}" class="btn btn-info mt-3 text-white">See details</a>
                     <a href="${c.company_edit}"  class="btn btn-info mt-3 text-white">Edit</a>
                     <button  data-id="${c.id}" class="btn btn-danger mt-3 btn-companyDelete">Delete</button>
@@ -492,7 +492,7 @@ function printUserCompanies(data) {
           </div>`;
   }
   $("#companies").html(html);
-  $(".btn-companyDelete").on("click",deleteCompany);
+  $(".btn-companyDelete").on("click", deleteCompany);
 }
 
 
@@ -505,44 +505,44 @@ function refreshUserJobs() {
 
   let loadMore = $("#loadMoreUserJobs");
   let take = loadMore.data("take");
- 
+
   console.log(take);
   let data = {
-    "userId" : userId,
-    "pageType" : pageType,
-    "perPage" : take,
-    "_token" : token
+    "userId": userId,
+    "pageType": pageType,
+    "perPage": take,
+    "_token": token
   };
 
-  if(sort){
+  if (sort) {
     let sortValues = sort.split("-");
     data.orderBy = sortValues[0];
     data.order = sortValues[1];
   }
-  if(companyId){
+  if (companyId) {
     data.companyId = companyId;
   }
-  if(keyword){
+  if (keyword) {
     data.keyword = keyword
   }
-  
+
   $.ajax({
-    url : "/options/jobs",
-    method : "GET",
-    data : data,
-    datatype : "json",
-    success : function(data) {
+    url: "/options/jobs",
+    method: "GET",
+    data: data,
+    datatype: "json",
+    success: function (data) {
       console.log(data.jobs)
-      if(data.jobs.length){
+      if (data.jobs.length) {
         printUserJobs(data);
-      }else{
+      } else {
         $("#jobs").html("<h2>You don't have any jobs.</h2>");
       }
     },
-    error : function(xhr){
-      switch(xhr.status){
+    error: function (xhr) {
+      switch (xhr.status) {
         case 500:
-          makeNotification(1,"Error","Server error, please try again later.");
+          makeNotification(1, "Error", "Server error, please try again later.");
           break;
       }
     }
@@ -550,10 +550,10 @@ function refreshUserJobs() {
 }
 function printUserJobs(data) {
   let html = ``;
-  if(!data.nextPage){
+  if (!data.nextPage) {
     $("#load-more").addClass("sr-only");
   }
-  for(let j of data.jobs){
+  for (let j of data.jobs) {
     html += `<div class="col-lg-12 col-md-12 job-listing d-block d-sm-flex pb-3 pb-sm-0 p-4 align-items-center">
 
               <div class="row w-100 bg-white">
@@ -573,12 +573,12 @@ function printUserJobs(data) {
                   </div>
                   <div class="col-md-12 d-flex justify-content-between ">
                   <div class="tags">`;
-                      
-                      for(let t of j.technologies){
-                          html+=`<span class="badge badge-info mx-1">${t.name}</span>`;
-                      }
 
-                    html += `</div>
+    for (let t of j.technologies) {
+      html += `<span class="badge badge-info mx-1">${t.name}</span>`;
+    }
+
+    html += `</div>
                       
                   <div class="expire-date ml-4">
                       <p>Days left: ${j.deadline_formated}</p>
@@ -592,62 +592,62 @@ function printUserJobs(data) {
   $("#jobs").html(html);
 }
 
-function refreshApplications(){
+function refreshApplications() {
   let sort = $("#ddlSort").val();
   let companyId = $("#ddlCompanies").val();
   let keyword = $("#keyword").val();
 
-  
+
   let take = $("#loadMoreApplications").data("take");
 
   let data = {
-    role : $("#role").val(),
-    userId : $("#userId").val(),
-    perPage : take,
-    _token : token
+    role: $("#role").val(),
+    userId: $("#userId").val(),
+    perPage: take,
+    _token: token
   };
 
-  
 
-  if(sort){
+
+  if (sort) {
     let sortValues = sort.split("-");
     data.orderBy = sortValues[0];
     data.order = sortValues[1];
   }
-  if(companyId){
+  if (companyId) {
     data.companyId = companyId;
   }
-  if(keyword){
+  if (keyword) {
     data.keyword = keyword;
   }
 
 
   $.ajax({
-    url : "/options/applications",
-    method : "GET",
-    data : data,
-    datatype : "json",
-    success : function(data){
+    url: "/options/applications",
+    method: "GET",
+    data: data,
+    datatype: "json",
+    success: function (data) {
       console.log(data.data);
       printApplications(data);
     },
-    error : function(xhr){
-      switch(xhr.status){
+    error: function (xhr) {
+      switch (xhr.status) {
         case 500:
-          makeNotification(1,"Error",xhr.responseJSON.message);
+          makeNotification(1, "Error", xhr.responseJSON.message);
           break;
       }
     }
   })
 }
-function printApplications(data){
+function printApplications(data) {
   let html = ``;
   let br = 1;
   console.log(data)
-  if(data.nextPage == false){
+  if (data.nextPage == false) {
     $("#load-more-app").addClass("sr-only");
   }
-  for(let a of data.applications){
+  for (let a of data.applications) {
     html += `<tr>
               <th scope="row">${br}</th>
               <td><a href="${a.job_url}" class="text-secondary">${a.job.title}</a></td>
@@ -659,31 +659,31 @@ function printApplications(data){
     br++;
   }
   $("#applications").html(html);
-  $(".details").on("click",getOneApplication);
+  $(".details").on("click", getOneApplication);
 }
-function getOneApplication(e){
+function getOneApplication(e) {
   e.preventDefault();
   let appId = $(this).data("id");
 
   $.ajax({
-    url : "/options/applications/"+appId,
-    method : "GET",
-    datatype : "json",
-    success : function(data){
+    url: "/options/applications/" + appId,
+    method: "GET",
+    datatype: "json",
+    success: function (data) {
       console.log(data.data)
       printSingleApplication(data.data);
     },
-    error : function(xhr){
-      switch(xhr.status){
+    error: function (xhr) {
+      switch (xhr.status) {
         case 500:
-          makeNotification(1,"Error",xhr.responseJSON.message);
+          makeNotification(1, "Error", xhr.responseJSON.message);
           break;
       }
     }
   })
 }
-function printSingleApplication(app){
-  app.app_status = Object.values(app.app_status) 
+function printSingleApplication(app) {
+  app.app_status = Object.values(app.app_status)
   let role = $("#role").val();
   let html = `
             <div class="modal-content ">
@@ -741,8 +741,8 @@ function printSingleApplication(app){
                           </div>
                         </div>
                         <hr>`;
-                        if(app.user.linkedin){
-                          html += `<div class="row">
+  if (app.user.linkedin) {
+    html += `<div class="row">
                                     <div class="col-sm-3">
                                       <h6 class="mb-0">Linkedin</h6>
                                     </div>
@@ -751,9 +751,9 @@ function printSingleApplication(app){
                                     </div>
                                   </div>
                                   <hr>`;
-                        }
-                        if(app.user.github){
-                          html +=`<div class="row">
+  }
+  if (app.user.github) {
+    html += `<div class="row">
                                     <div class="col-sm-3">
                                       <h6 class="mb-0">Github</h6>
                                     </div>
@@ -762,9 +762,9 @@ function printSingleApplication(app){
                                     </div>
                                   </div>
                                   <hr>`;
-                        }
-                        if(app.user.portfolio_link){
-                          html += `<div class="row">
+  }
+  if (app.user.portfolio_link) {
+    html += `<div class="row">
                                     <div class="col-sm-3">
                                       <h6 class="mb-0">Portfolio website</h6>
                                     </div>
@@ -773,9 +773,9 @@ function printSingleApplication(app){
                                     </div>
                                   </div>
                                   <hr>`
-                        }
-                        
-                        html +=`<div class="row">
+  }
+
+  html += `<div class="row">
                             <div class="col-sm-12">
                             <a class="btn btn-info" href="${app.userCV}" download>Download CV</a>
                             </div>
@@ -795,12 +795,12 @@ function printSingleApplication(app){
                         </div>
                         <hr>
                         <div class="row p-3">`;
-                         if(app.message){
-                           html += `${app.message}`;
-                         }else{
-                           html += `<h4>No message</h4>`
-                         }
-                        html += `</div>
+  if (app.message) {
+    html += `${app.message}`;
+  } else {
+    html += `<h4>No message</h4>`
+  }
+  html += `</div>
                       </div>
                     </div>
                   </div>
@@ -859,21 +859,21 @@ function printSingleApplication(app){
                             <h6 class="mb-0">Status</h6>
                           </div>
                           <div class="col-sm-8 text-secondary">`;
-                            if(role == "Employer"){
-                              html += `<input type="hidden" id="appId" name="appId" value="${app.id}">`
-                              html += `<select class="form-control" name="changeStatus" id="changeStatus">`;
-                                        for(let key in app.app_status){
-                                          html +=`<option value="${key}"`;
-                                          if(key == app.status){
-                                            html += `selected`;
-                                          }
-                                          html +=`>${app.app_status[key]}</option>`;
-                                        }
-                              html += `</select>`;
-                            }else{
-                              html += `${app.app_status[app.status]}`
-                            }
-                          html+=`</div>
+  if (role == "Employer") {
+    html += `<input type="hidden" id="appId" name="appId" value="${app.id}">`
+    html += `<select class="form-control" name="changeStatus" id="changeStatus">`;
+    for (let key in app.app_status) {
+      html += `<option value="${key}"`;
+      if (key == app.status) {
+        html += `selected`;
+      }
+      html += `>${app.app_status[key]}</option>`;
+    }
+    html += `</select>`;
+  } else {
+    html += `${app.app_status[app.status]}`
+  }
+  html += `</div>
                         </div>
                         <hr>
                       </div>
@@ -886,36 +886,36 @@ function printSingleApplication(app){
               </div>
             </div>`;
   $("#application-dialog").html(html);
-  $("#changeStatus").on("change",changeAppStatus);
+  $("#changeStatus").on("change", changeAppStatus);
 }
-function changeAppStatus(){
+function changeAppStatus() {
   let appStatus = $(this).val();
   let appId = $("#appId").val();
-  
+
   $.ajax({
-    url : "/options/applications/"+appId,
-    method : "PATCH",
-    data : {
-      appStatus : appStatus,
-      _token : token
+    url: "/options/applications/" + appId,
+    method: "PATCH",
+    data: {
+      appStatus: appStatus,
+      _token: token
     },
-    success : function(data){
-      makeNotification(0,"Success: ","Application status successfully changed.");
+    success: function (data) {
+      makeNotification(0, "Success: ", "Application status successfully changed.");
     },
-    error : function(xhr){
-      switch(xhr.status){
+    error: function (xhr) {
+      switch (xhr.status) {
         case 404:
-          makeNotification(1,xhr.responseJSON.message);
+          makeNotification(1, xhr.responseJSON.message);
           break;
         case 500:
-          makeNotification(1,"Error","Server error, please try again later.");
+          makeNotification(1, "Error", "Server error, please try again later.");
           break;
       }
     }
   })
 }
 
-function refreshJobs(e,page = 1){
+function refreshJobs(e, page = 1) {
   let pageType = $("#pageType").val();
   let keyword = $("#keyword").val();
   let techs = $("#ddlTech").val();
@@ -924,60 +924,59 @@ function refreshJobs(e,page = 1){
   let seniorites = $("#ddlSeniority").val();
   let sort = $("#ddlSort").val();
   let perPage = $("#ddlPerPage").val();
-  
+
 
   data = {
-    pageType : pageType,
-    page : page
+    pageType: pageType,
+    page: page
   };
 
-  if(techs.length > 0){
+  if (techs.length > 0) {
     data.techs = techs
   }
-  if(cities.length > 0){
+  if (cities.length > 0) {
     data.cities = cities
   }
-  if(areas.length > 0){
+  if (areas.length > 0) {
     data.areas = areas
   }
-  if(seniorites.length > 0){
+  if (seniorites.length > 0) {
     data.seniorites = seniorites
   }
-  if(keyword){
+  if (keyword) {
     data.keyword = keyword
   }
-  if(perPage){
+  if (perPage) {
     data.perPage = perPage
   }
- 
-  if(sort){
+
+  if (sort) {
     let sortValues = sort.split("-");
     data.orderBy = sortValues[0];
     data.order = sortValues[1];
   }
 
   $.ajax({
-    url : "/options/jobs",
-    method : "GET",
-    data : data,
-    success : function(data){
-      console.log(data)
+    url: "/options/jobs",
+    method: "GET",
+    data: data,
+    success: function (data) {
       printJobs(data.jobs);
       printJobsPagination(data);
     },
-    error : function(xhr){
-      switch(xhr.status){
+    error: function (xhr) {
+      switch (xhr.status) {
         case 500:
-          makeNotification(1,"Error","Server error loading jobs, please try again later.");
+          makeNotification(1, "Error", "Server error loading jobs, please try again later.");
           break;
       }
     }
-    
+
   })
 }
-function printJobs(jobs){
+function printJobs(jobs) {
   html = ``;
-  for(let j of jobs){
+  for (let j of jobs) {
     html += `<li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center row">
               <a href="job-single.html"></a>
 
@@ -1005,12 +1004,12 @@ function printJobs(jobs){
                 </div>
                 <div class="col-md-12 d-flex justify-content-between">
                   <div class="tags">`;
-                  if(j.technologies.length > 0){
-                    for(let t of j.technologies){
-                      html+=`<span class="badge badge-info mx-1">${t.name}</span>`;
-                    }
-                  }
-                  html += `</div>
+    if (j.technologies.length > 0) {
+      for (let t of j.technologies) {
+        html += `<span class="badge badge-info mx-1">${t.name}</span>`;
+      }
+    }
+    html += `</div>
                     
                   <div class="expire-date ml-4">
                     <p>Days left: ${j.deadline_formated}</p>
@@ -1021,18 +1020,18 @@ function printJobs(jobs){
   }
   $("#jobs").html(html);
 }
-function printJobsPagination(data){
-  html = `<a href="#" id="prevPage" class="prev jobPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage-1}">Prev</a>`;
-  for(let p=1; p<=data.totalPages; p++){
-    html+= `<a href="#" class="jobPage ${p == data.curentPage ? 'active' : ''}" data-id="${p}">${p}</a>`;
+function printJobsPagination(data) {
+  html = `<a href="#" id="prevPage" class="prev jobPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage - 1}">Prev</a>`;
+  for (let p = 1; p <= data.totalPages; p++) {
+    html += `<a href="#" class="jobPage ${p == data.curentPage ? 'active' : ''}" data-id="${p}">${p}</a>`;
   }
-  html += `<a href="#" id="nextPage" class="next jobPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage+1}">Next</a>`
+  html += `<a href="#" id="nextPage" class="next jobPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage + 1}">Next</a>`
   $("#jobsPagination").html(html);
-  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip+data.jobs.length-1} Of ${data.totalJobs} Jobs`);
-  $(".jobPage").on("click",function(e){
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip + data.jobs.length - 1} Of ${data.totalJobs} Jobs`);
+  $(".jobPage").on("click", function (e) {
     e.preventDefault();
     let page = $(this).data("id");
-    refreshJobs(e,page);
+    refreshJobs(e, page);
   })
   $("#totalJobsTitle").html(`${data.totalJobs} Job Found`)
 }
@@ -1041,66 +1040,66 @@ function printJobsPagination(data){
 function deleteCompany() {
 
   let companyId = $(this).data("id");
-  
+
   $.ajax({
-    url : "/options/companies/"+companyId,
-    method : "DELETE",
-    data : {
-      _token : token
+    url: "/options/companies/" + companyId,
+    method: "DELETE",
+    data: {
+      _token: token
     },
-    success : function(data) {
+    success: function (data) {
       console.log(data);
-      makeNotification(0,"Success: ","Company successfully deleted.");
+      makeNotification(0, "Success: ", "Company successfully deleted.");
       refreshCompanies();
     },
-    error : function(xhr,status,error) {
+    error: function (xhr, status, error) {
       console.log(xhr);
-      makeNotification(1,"Error: ",xhr.responseJSON.message);
+      makeNotification(1, "Error: ", xhr.responseJSON.message);
     }
   })
 }
 
-function refreshCompanies(e,page = 1) {
+function refreshCompanies(e, page = 1) {
   let sort = $("#ddlSort").val();
   let keyword = $("#keyword").val();
   let city = $("#ddlCity").val();
   let rating = $("#ddlRating").val();
   let perPage = $("#ddlPerPage").val();
 
- 
+
   data = {
-    perPage : perPage,
-    page : page
+    perPage: perPage,
+    page: page
   };
 
-  if(keyword){
+  if (keyword) {
     data.keyword = keyword;
   }
-  if(city){
+  if (city) {
     data.city = city;
   }
-  if(rating){
+  if (rating) {
     data.rating = rating;
   }
-  if(sort){
+  if (sort) {
     let sortValues = sort.split("-");
     data.orderBy = sortValues[0];
     data.order = sortValues[1];
   }
 
   $.ajax({
-    url : "/options/companies",
-    method : "GET",
-    data : data,
-    success : function(data){
+    url: "/options/companies",
+    method: "GET",
+    data: data,
+    success: function (data) {
       console.log(data);
       printCompanies(data.data.companies)
       printCompaniesPagination(data.data);
     },
-    error : function(xhr){
-      switch(xhr.status){
+    error: function (xhr) {
+      switch (xhr.status) {
         case 500:
-          makeNotification(1,"Error","Server error loading companies, please try again later.");
+          makeNotification(1, "Error", "Server error loading companies, please try again later.");
           break;
       }
     }
@@ -1108,7 +1107,7 @@ function refreshCompanies(e,page = 1) {
 }
 function printCompanies(data) {
   let html = ``;
-  for(let c of data){
+  for (let c of data) {
     html += `<div class="col-md-4 p-2">
           
                 <div class="card col-md-12">
@@ -1145,18 +1144,18 @@ function printCompanies(data) {
   }
   $("#companies").html(html);
 }
-function printCompaniesPagination(data){
-  let html = `<a href="#" id="prevPage" class="prev companyPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage-1}">Prev</a>`;
-  for(let p=1; p<=data.totalPages; p++){
-    html+= `<a href="#" class="companyPage ${p == data.curentPage ? 'active' : ''}" data-id="${p}">${p}</a>`;
+function printCompaniesPagination(data) {
+  let html = `<a href="#" id="prevPage" class="prev companyPage btn-link ${data.prevPage ? "" : "disabled"}" data-id="${data.curentPage - 1}">Prev</a>`;
+  for (let p = 1; p <= data.totalPages; p++) {
+    html += `<a href="#" class="companyPage ${p == data.curentPage ? 'active' : ''}" data-id="${p}">${p}</a>`;
   }
-  html += `<a href="#" id="nextPage" class="next companyPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage+1}">Next</a>`
+  html += `<a href="#" id="nextPage" class="next companyPage btn-link ${data.nextPage ? "" : "disabled"}" data-id="${data.curentPage + 1}">Next</a>`
   $("#companiesPagination").html(html);
-  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip+data.companies.length-1} Of ${data.totalCompanies} Companies`);
-  $(".companyPage").on("click",function(e){
+  $("#paginationInfo").html(`Showing ${data.skip}-${data.skip + data.companies.length - 1} Of ${data.totalCompanies} Companies`);
+  $(".companyPage").on("click", function (e) {
     e.preventDefault();
     let page = $(this).data("id");
-    refreshCompanies(e,page);
+    refreshCompanies(e, page);
   })
   $("#totalCompaniesTitle").html(`${data.totalCompanies} Comapnies Found`)
 }

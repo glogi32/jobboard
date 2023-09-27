@@ -125,6 +125,23 @@
                   </div>
                   <div class="row form-group mb-4">
                     <div class="col-md-12 mb-1 mb-md-0">
+                      <label class="text-black" for="role">Role</label>
+                      <select name="role" id="role" class="form-control">
+                        @foreach ($roles as $role)
+                            <option value="{{$role->id}}" @if($user->role_id == $role->id) selected @endif>{{$role->name}}</option>
+                        @endforeach
+                      </select>
+                      <div class="invalid-feedback">
+                        @if($errors->has("email"))
+                          @foreach ($errors->get("email") as $msg)
+                              {{$msg}}
+                          @endforeach
+                        @endif
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row form-group mb-4">
+                    <div class="col-md-12 mb-1 mb-md-0">
                       <label class="text-black" for="tbPhone">Phone</label>
                       <input type="text" id="tbPhone" name="phone" aria-describedby="phone" class="form-control @if($errors->has("phone")) is-invalid @endif" value="{{$user->phone}}">
                       <small id="phone" class="form-text ">Phone numbers can be seperated with - or space.</small>

@@ -15,10 +15,19 @@ use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
+    public function loginPage()
+    {
+        return view('pages.login');
+    }
 
+    public function signUpPage()
+    {
+        return view('pages.sign-up');
+    }
 
-    public function signUp(SignUpRequest $request){
-        
+    public function signUp(SignUpRequest $request)
+    {
+
         $user = new User();
         $user->first_name = $request->input("first-name");
         $user->last_name = $request->input("last-name");
@@ -29,24 +38,24 @@ class AuthController extends Controller
         $user->github = $request->input("github");
         $user->portfolio_link = $request->input("portfolio-website");
         $user->about_me = $request->input("about-u");
-        $user->verification_number = rand(10000,10000000);
+        $user->verification_number = rand(10000, 10000000);
 
         $user->role_id = 2;
 
         DB::beginTransaction();
-        
+
         try {
             $fileCV = $request->file("cv");
             $filesOtherDocs = $request->file("otherDocs");
             $fileImage = $request->file("image");
             $userInsert = $user->save();
 
-            if($fileCV){
-                $fileName = time()."_".$fileCV->getClientOriginalName();
-                $directory = \public_path()."/user_cv-s";
-                $path = "user_cv-s/".$fileName;
+            if ($fileCV) {
+                $fileName = time() . "_" . $fileCV->getClientOriginalName();
+                $directory = \public_path() . "/user_cv-s";
+                $path = "user_cv-s/" . $fileName;
 
-                $fileUpload = $fileCV->move($directory,$fileName);
+                $fileUpload = $fileCV->move($directory, $fileName);
 
                 $user_cv = new User_cv();
                 $user_cv->name = $fileCV->getClientOriginalName();
@@ -56,13 +65,13 @@ class AuthController extends Controller
                 $user_cv->save();
             }
 
-            if($filesOtherDocs){
+            if ($filesOtherDocs) {
                 foreach ($filesOtherDocs as $cv) {
-                    $fileName = time()."_".$cv->getClientOriginalName();
-                    $directory = \public_path()."/user_cv-s";
-                    $path = "user_cv-s/".$fileName;
+                    $fileName = time() . "_" . $cv->getClientOriginalName();
+                    $directory = \public_path() . "/user_cv-s";
+                    $path = "user_cv-s/" . $fileName;
 
-                    $fileUpload = $cv->move($directory,$fileName);
+                    $fileUpload = $cv->move($directory, $fileName);
 
                     $user_cv = new User_cv();
                     $user_cv->name = $cv->getClientOriginalName();
@@ -73,20 +82,19 @@ class AuthController extends Controller
                 }
             }
 
-            $image_directory = \public_path()."/img/users";
+            $image_directory = \public_path() . "/img/users";
             $imageable_type = "App\Models\User";
 
-            if($fileImage){
-                $imageName = time()."_".$fileImage->getClientOriginalName();
-                $path = "img/users/".$imageName;
+            if ($fileImage) {
+                $imageName = time() . "_" . $fileImage->getClientOriginalName();
+                $path = "img/users/" . $imageName;
 
-                $imageUpload = $fileImage->move($image_directory,$imageName);
-                
-            }else{
+                $imageUpload = $fileImage->move($image_directory, $imageName);
+            } else {
                 $imageName = "default.jpg";
-                $path = "img/users/".$imageName;
+                $path = "img/users/" . $imageName;
             }
-            
+
             $image = new Image();
             $image->src = $path;
             $image->alt = $imageName;
@@ -96,85 +104,80 @@ class AuthController extends Controller
 
             DB::commit();
 
-            
+
             Mail::to($user->email)->send(new VerificationMail($user->verification_number));
 
-            
-            return redirect()->back()->with("success",["title" => "Success: ", "message" => "Successfull sign up, check your email so u can verify your account."]);
 
+            return redirect()->back()->with("success", ["title" => "Success: ", "message" => "Successfull sign up, check your email so u can verify your account."]);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return redirect()->back()->with("error" ,["title" => "Error","message" => "Server error on sign up, try again later."])->withInput();
+            return redirect()->back()->with("error", ["title" => "Error", "message" => "Server error on sign up, try again later."])->withInput();
         }
-        
-        
-        
     }
 
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $email = $request->input("email");
         $password = md5($request->input("password"));
 
         try {
-            $user = User::with("role","image","user_cvs","user_main_cv","user_other_docs")->where([
-                ["email","=",$email],
-                ["password","=",$password]
+            $user = User::with("role", "image", "user_cvs", "user_main_cv", "user_other_docs")->where([
+                ["email", "=", $email],
+                ["password", "=", $password]
             ])->first();
 
-            if(!empty($user)){
+            if (!empty($user)) {
 
-                if(!$user->verified){
-                    session()->put("verificationError","Your account has not been verified, check your email.");
-                    return redirect()->back()->with("error",["title" => "Error login: ","message" => "Your account has not been verified."]);
-                }
-                else{
-                    if(session()->has("verificationError")){
+                if (!$user->verified) {
+                    session()->put("verificationError", "Your account has not been verified, check your email.");
+                    return redirect()->back()->with("error", ["title" => "Error login: ", "message" => "Your account has not been verified."]);
+                } else {
+                    if (session()->has("verificationError")) {
                         session()->forget("verificationError");
                     }
                 }
 
-                session()->put("user",$user);
-                return redirect()->back()->with("success",["title" => "Success: ","message" => "Login is successful."]);
-            }
-            else{
-                return redirect()->back()->with("error",["title" => "Error login: ","message" => "Wrong credentials."])->withInput();
+                session()->put("user", $user);
+                return redirect()->back()->with("success", ["title" => "Success: ", "message" => "Login is successful."]);
+            } else {
+                return redirect()->back()->with("error", ["title" => "Error login: ", "message" => "Wrong credentials."])->withInput();
             }
         } catch (\Throwable $th) {
             Log::error($th);
-            return redirect()->back()->with("error",["title" => "Error: ","message" => "Server error, try again later."])->withInput();
+            return redirect()->back()->with("error", ["title" => "Error: ", "message" => "Server error, try again later."])->withInput();
         }
     }
 
-    
+
     public function logout()
     {
-        if(session()->has("user")){
+        if (session()->has("user")) {
             session()->forget("user");
         }
-        
+
         return redirect("/");
     }
 
-    public function verifyAccount(Request $request){
+    public function verifyAccount(Request $request)
+    {
         $verification_number = $request->input("key");
 
-        $user = User::where("verification_number",$verification_number)->first();
+        $user = User::where("verification_number", $verification_number)->first();
 
-        if($user){
+        if ($user) {
             $user->verified = time();
-            
+
             try {
                 $user->save();
-                return redirect('/login')->with("success",["title" => "Success: ","message" => "You successfully verified your account, you can log in now."]);
-                
+                return redirect('/login')->with("success", ["title" => "Success: ", "message" => "You successfully verified your account, you can log in now."]);
             } catch (\Throwable $th) {
                 Log::error($th->getMessage());
-                return redirect('/login')->with("success",["error" => "Success: ","message" => "Server error, contact our adminstrators."]);
+                return redirect('/login')->with("success", ["error" => "Success: ", "message" => "Server error, contact our adminstrators."]);
             }
-        }else{
-            Log::error("User tryed to verify account with verification number ".$verification_number.". Ip address: ".$request->ip().", at time:". date("d-m-Y H:i:s",time()));
-            return redirect('/login')->with("success",["error" => "Success: ","message" => "Server error, contact our adminstrators."]);
+        } else {
+            Log::error("User tryed to verify account with verification number " . $verification_number . ". Ip address: " . $request->ip() . ", at time:" . date("d-m-Y H:i:s", time()));
+            return redirect('/login')->with("success", ["error" => "Success: ", "message" => "Server error, contact our adminstrators."]);
         }
     }
 }

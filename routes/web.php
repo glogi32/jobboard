@@ -37,37 +37,9 @@ use App\Http\Controllers\UserProfileController;
 
 Route::get('/', [IndexController::class, "index"])->name("/");
 
-Route::get("/test", function () {
-    return view("admin.layout.admin-template");
-});
-
-Route::get('/optimize-clear', function () {
-    \Artisan::call('optimize:clear');
-    return 'View cache cleared';
-});
-
-// Clear application cache
-Route::get('/clear-cache', function () {
-    \Artisan::call('cache:clear');
-    return 'Application cache cleared';
-});
-
-
 Route::get('/home', [IndexController::class, "index"])->name("home");
-
-Route::get('/contact', function () {
-    return view('pages.contact');
-})->name("contact");
-
-Route::get('/sign-up', function () {
-    return view('pages.sign-up');
-})->name("sign-up-page");
-
-Route::get('/login', function () {
-    return view('pages.login');
-})->name("login-page");
-
-
+Route::get('/sign-up', [AuthController::class, 'signUpPage'])->name("sign-up-page");
+Route::get('/login', [AuthController::class, 'loginPage'])->name("login-page");
 Route::get("/jobs", [ResourceJobController::class, "index"])->name("jobs");
 Route::get("/companies", [ResourceCompanyController::class, "index"])->name("companies");
 Route::get("/about-us", [IndexController::class, "aboutUsPage"])->name("about-us");
@@ -83,20 +55,19 @@ Route::post("/job-details/save-job", [JobDetailsController::class, "saveJob"]);
 Route::delete("/job-details/unsave-job", [JobDetailsController::class, "unsaveJob"]);
 Route::post("/job-details/job-apply", [JobDetailsController::class, "jobApplication"])->name("job-apply");
 
-Route::prefix("options")->middleware('isAuthorized')->group(function () {
-    Route::get('/user-edit', [OptionController::class, "index"])->name("user-edit");
-    Route::get('/user-companies', [OptionController::class, "companies"])->name("user-companies");
-    Route::get('/user-jobs', [OptionController::class, "jobs"])->name("user-jobs");
-    Route::get('/saved-jobs', [OptionController::class, "savedJobs"])->name("saved-jobs");
-    Route::get('/user-applications', [OptionController::class, "applications"])->name("user-applications");
+Route::prefix("options")->group(function () {
+    Route::middleware('isAuthorized')->group(function () {
+        Route::get('/user-edit', [OptionController::class, "index"])->name("user-edit");
+        Route::get('/user-companies', [OptionController::class, "companies"])->name("user-companies");
+        Route::get('/user-jobs', [OptionController::class, "jobs"])->name("user-jobs");
+        Route::get('/saved-jobs', [OptionController::class, "savedJobs"])->name("saved-jobs");
+        Route::get('/user-applications', [OptionController::class, "applications"])->name("user-applications");
+    });
 
     Route::resource("companies", CompanyController::class);
     Route::resource("jobs", JobController::class);
     Route::resource("applications", ApplicationController::class);
 });
-
-
-
 
 Route::get("/user-profile/{id}", [UserProfileController::class, "index"])->name("user-profile");
 
@@ -108,13 +79,15 @@ Route::get("/verify", [AuthController::class, "verifyAccount"]);
 Route::delete("/remove-user-cv", [OptionController::class, "removeUserCV"])->name("remove-cv");
 Route::delete("/remove-user-docs", [OptionController::class, "removeUserDocs"])->name("remove-docs");
 
-Route::prefix("admin")->middleware(['isAuthorized', 'isAdmin'])->group(function () {
-    Route::get("users", [UsersAdminController::class, "usersPage"])->name("users-page");
-    Route::get("jobs", [JobsAdminController::class, "jobsPage"])->name("jobs-page");
-    Route::get("companies", [CompaniesAdminController::class, "companiesPage"])->name("companies-page");
-    Route::get("cities", [CitiesController::class, "citiesPage"])->name("cities-page");
-    Route::get("technologies", [TechnologiesController::class, "technologiesPage"])->name("tech-page");
-    Route::get("areas", [AreasController::class, "areasPage"])->name("areas-page");
+Route::prefix("admin")->middleware(['isAuthorized'])->group(function () {
+    Route::middleware('isAdmin')->group(function () {
+        Route::get("users", [UsersAdminController::class, "usersPage"])->name("users-page");
+        Route::get("jobs", [JobsAdminController::class, "jobsPage"])->name("jobs-page");
+        Route::get("companies", [CompaniesAdminController::class, "companiesPage"])->name("companies-page");
+        Route::get("cities", [CitiesController::class, "citiesPage"])->name("cities-page");
+        Route::get("technologies", [TechnologiesController::class, "technologiesPage"])->name("tech-page");
+        Route::get("areas", [AreasController::class, "areasPage"])->name("areas-page");
+    });
 
 
     Route::get("user-edit/{id}", [UsersAdminController::class, "usersEditPage"])->name("user-edit-admin");
