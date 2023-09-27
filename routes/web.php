@@ -89,7 +89,6 @@ Route::prefix("admin")->middleware(['isAuthorized'])->group(function () {
         Route::get("areas", [AreasController::class, "areasPage"])->name("areas-page");
     });
 
-
     Route::get("user-edit/{id}", [UsersAdminController::class, "usersEditPage"])->name("user-edit-admin");
 
     Route::get("companies-stats", [CompaniesAdminController::class, "topCompaniesStatistics"]);
