@@ -18,15 +18,11 @@ class CityController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->input("keyword");
-
         $perPage = $request->input("perPage", 5);
         $page = $request->input("page", 1);
-
         $response = [];
         $pageType = $request->input("pageType");
-
         $query = City::query();
-
         if (!empty($keyword)) {
             $query = $query->where("name", "like", "%" . $keyword . "%");
         }
@@ -40,20 +36,16 @@ class CityController extends Controller
             $response["prevPage"] = $page <= 1 ? false : true;
             $response["skip"] = $skip + 1;
 
-
             $response["cities"] = $query->skip($skip)->take($perPage)->get();
-
             if ($pageType == "adminCities") {
                 $this->formatAdminCities($response["cities"], $response["skip"]);
             }
-
             return response(["data" => $response], 200);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
             return response(["message" => "Server error, try again later."], 500);
         }
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -63,12 +55,10 @@ class CityController extends Controller
     {
         //
     }
-
     public function store(CityRequest $request)
     {
         $city = new City();
         $city->name = $request->input('cityName');
-
         try {
             $city->save();
             return redirect()->back()->with("success", ["title" => "Success: ", "message" => "City successfully added."]);
@@ -77,28 +67,6 @@ class CityController extends Controller
             return redirect()->back()->with("error", ["title" => "Error: ", "message" => "Server error, try again later"]);
         }
     }
-
-    /**
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -119,15 +87,12 @@ class CityController extends Controller
             return response(["message" => "Server error on deleteing city"], 500);
         }
     }
-
     function formatAdminCities($cities, $skip = 1)
     {
         foreach ($cities as $c) {
             $c->listNumber = $skip;
             $skip++;
-
             $c->created_at_formated = date("d.m.Y H:i", $c->created_at->timestamp);
-
             if ($c->created_at->timestamp == $c->updated_at->timestamp) {
                 $c->updated_at_formated = null;
             } else {

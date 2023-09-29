@@ -7,7 +7,6 @@ use App\Models\Company;
 use App\Models\Job;
 use App\Models\Technology;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class IndexController extends FrontController
 {

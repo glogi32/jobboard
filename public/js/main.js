@@ -705,7 +705,6 @@ function printSingleApplication(app) {
                             <h4>${app.user.first_name} ${app.user.last_name}</h4>
                             <p class="text-secondary mb-1">Candidate</p>
                             <button class="btn btn-primary"><a class="text-white" href="${app.user_profile}">See profile</a></button>
-                            <button class="btn btn-outline-primary">Message</button>
                           </div>
                         </div>
                       </div>

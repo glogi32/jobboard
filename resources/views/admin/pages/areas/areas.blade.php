@@ -1,9 +1,7 @@
 @extends("admin.layout.admin-template")
-
 @section("title")
   Admin | Areas
 @endsection
-
 @section("styles")
   <style>
     .select2-selection__choice{
@@ -14,11 +12,9 @@
     }
   </style>
 @endsection
-
 @section("scripts")
   <script src="{{asset('js/admin/mainAdmin.js')}}"></script>
 @endsection
-
 @section("content")
     <div class="content-header">
         <div class="container-fluid">
@@ -36,7 +32,6 @@
         </div><!-- /.container-fluid -->
   </div>
   <!-- /.content-header -->
-
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
@@ -91,14 +86,11 @@
                     <option value="99999">All</option>
                 </select>
               </div>
-
               <ul id="areasPagination" class="pagination pagination-sm m-0 float-right">
-
               </ul>
             </div>
           </div>
           <!-- /.card -->
-
         </div>
        
       </div>

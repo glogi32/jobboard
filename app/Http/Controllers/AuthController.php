@@ -19,15 +19,12 @@ class AuthController extends Controller
     {
         return view('pages.login');
     }
-
     public function signUpPage()
     {
         return view('pages.sign-up');
     }
-
     public function signUp(SignUpRequest $request)
     {
-
         $user = new User();
         $user->first_name = $request->input("first-name");
         $user->last_name = $request->input("last-name");
@@ -39,24 +36,18 @@ class AuthController extends Controller
         $user->portfolio_link = $request->input("portfolio-website");
         $user->about_me = $request->input("about-u");
         $user->verification_number = rand(10000, 10000000);
-
         $user->role_id = 2;
-
         DB::beginTransaction();
-
         try {
             $fileCV = $request->file("cv");
             $filesOtherDocs = $request->file("otherDocs");
             $fileImage = $request->file("image");
             $userInsert = $user->save();
-
             if ($fileCV) {
                 $fileName = time() . "_" . $fileCV->getClientOriginalName();
                 $directory = \public_path() . "/user_cv-s";
                 $path = "user_cv-s/" . $fileName;
-
                 $fileUpload = $fileCV->move($directory, $fileName);
-
                 $user_cv = new User_cv();
                 $user_cv->name = $fileCV->getClientOriginalName();
                 $user_cv->src = $path;
@@ -64,15 +55,12 @@ class AuthController extends Controller
                 $user_cv->user_id = $user->id;
                 $user_cv->save();
             }
-
             if ($filesOtherDocs) {
                 foreach ($filesOtherDocs as $cv) {
                     $fileName = time() . "_" . $cv->getClientOriginalName();
                     $directory = \public_path() . "/user_cv-s";
                     $path = "user_cv-s/" . $fileName;
-
                     $fileUpload = $cv->move($directory, $fileName);
-
                     $user_cv = new User_cv();
                     $user_cv->name = $cv->getClientOriginalName();
                     $user_cv->src = $path;
@@ -81,32 +69,25 @@ class AuthController extends Controller
                     $user_cv->save();
                 }
             }
-
             $image_directory = \public_path() . "/img/users";
             $imageable_type = "App\Models\User";
-
             if ($fileImage) {
                 $imageName = time() . "_" . $fileImage->getClientOriginalName();
                 $path = "img/users/" . $imageName;
-
                 $imageUpload = $fileImage->move($image_directory, $imageName);
             } else {
                 $imageName = "default.jpg";
                 $path = "img/users/" . $imageName;
             }
-
             $image = new Image();
             $image->src = $path;
             $image->alt = $imageName;
             $image->imageable_type = $imageable_type;
             $image->imageable_id = $user->id;
             $image->save();
-
             DB::commit();
 
-
             Mail::to($user->email)->send(new VerificationMail($user->verification_number));
-
 
             return redirect()->back()->with("success", ["title" => "Success: ", "message" => "Successfull sign up, check your email so u can verify your account."]);
         } catch (\Throwable $th) {
@@ -115,20 +96,16 @@ class AuthController extends Controller
         }
     }
 
-
     public function login(Request $request)
     {
         $email = $request->input("email");
         $password = md5($request->input("password"));
-
         try {
             $user = User::with("role", "image", "user_cvs", "user_main_cv", "user_other_docs")->where([
                 ["email", "=", $email],
                 ["password", "=", $password]
             ])->first();
-
             if (!empty($user)) {
-
                 if (!$user->verified) {
                     session()->put("verificationError", "Your account has not been verified, check your email.");
                     return redirect()->back()->with("error", ["title" => "Error login: ", "message" => "Your account has not been verified."]);
@@ -137,7 +114,6 @@ class AuthController extends Controller
                         session()->forget("verificationError");
                     }
                 }
-
                 session()->put("user", $user);
                 return redirect()->back()->with("success", ["title" => "Success: ", "message" => "Login is successful."]);
             } else {
@@ -149,25 +125,19 @@ class AuthController extends Controller
         }
     }
 
-
     public function logout()
     {
         if (session()->has("user")) {
             session()->forget("user");
         }
-
         return redirect("/");
     }
-
     public function verifyAccount(Request $request)
     {
         $verification_number = $request->input("key");
-
         $user = User::where("verification_number", $verification_number)->first();
-
         if ($user) {
             $user->verified = time();
-
             try {
                 $user->save();
                 return redirect('/login')->with("success", ["title" => "Success: ", "message" => "You successfully verified your account, you can log in now."]);

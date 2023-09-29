@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EmploymentStatus;
-use App\Mail\VerificationMail;
 use App\Models\Company;
 use App\Models\Job;
 use App\Models\User_cv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class OptionController extends FrontController
 {
