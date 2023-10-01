@@ -1070,7 +1070,7 @@ function refreshCompanies(e, page = 1) {
     perPage: perPage,
     page: page
   };
-
+  data.userId = $("#userId").val();
   if (keyword) {
     data.keyword = keyword;
   }
@@ -1091,7 +1091,6 @@ function refreshCompanies(e, page = 1) {
     method: "GET",
     data: data,
     success: function (data) {
-      console.log(data);
       printCompanies(data.data.companies)
       printCompaniesPagination(data.data);
     },

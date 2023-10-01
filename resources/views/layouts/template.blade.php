@@ -10,9 +10,6 @@
 
 <div class="site-wrap">
 
-    @include('fixed.mobile-menu')
-    
-
     <!-- NAVBAR -->
     @include('fixed.header')
 
